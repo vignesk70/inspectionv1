@@ -24,7 +24,7 @@ class ItemInCategory(models.Model):
         verbose_name_plural = "Items"
 
     def __str__(self):
-        return self.name
+        return self.items
 
     def get_absolute_url(self):
         return reverse("item_detail", kwargs={"pk": self.pk})

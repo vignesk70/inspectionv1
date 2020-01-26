@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class InspectionCategory(models.Model):
-    category = models.CharField("Category", max_length=50)
+    category = models.CharField("Category", max_length=200)
     
 
     class Meta:
@@ -16,8 +16,9 @@ class InspectionCategory(models.Model):
         return reverse("category_detail", kwargs={"pk": self.pk})
  
 class ItemInCategory(models.Model):
-    category = models.ForeignKey("InspectionCategory", verbose_name="Items", on_delete=models.CASCADE)
-    items = models.CharField("Item", max_length=20)
+    category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE)
+    items = models.CharField("Item", max_length=200)
+    throw_error = models.BooleanField("Throw error if True")
 
     class Meta:
         verbose_name = "Item"

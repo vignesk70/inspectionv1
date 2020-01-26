@@ -29,3 +29,22 @@ class ItemInCategory(models.Model):
 
     def get_absolute_url(self):
         return reverse("item_detail", kwargs={"pk": self.pk})
+
+
+class Sites(models.Model):
+    name = models.CharField("Site name", max_length=100)
+    latitude = models.FloatField("Latitude")
+    longitude = models.FloatField("Longitude")
+    state =  models.CharField("State", max_length=50)
+    address = models.CharField("Address", max_length=300)
+    
+
+    class Meta:
+        verbose_name = "Site"
+        verbose_name_plural = "Sites"
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("site_detail", kwargs={"pk": self.pk})

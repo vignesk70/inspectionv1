@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 class InspectionCategory(models.Model):
     category = models.CharField("Category", max_length=200)
+    sequence = models.IntegerField("Sequence")
     
 
     class Meta:
@@ -19,6 +20,7 @@ class ItemInCategory(models.Model):
     category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE)
     items = models.CharField("Item", max_length=200)
     throw_error = models.BooleanField("Throw error if True")
+    sequence = models.IntegerField("Sequence")
 
     class Meta:
         verbose_name = "Item"

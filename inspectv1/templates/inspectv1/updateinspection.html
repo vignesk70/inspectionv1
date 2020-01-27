@@ -1,0 +1,30 @@
+{% extends 'inspectv1/base.html' %}
+
+{% block content %}
+    This is the list content
+<ul>
+    {% for cat in category %}
+    <li class="nocircle">{{cat}}</li>
+    {%for list in cat.items.order_by__sequence%}
+    <p>{{list}}</p>
+    {% endfor %}
+    {%endfor%}
+</ul>
+{% for cat in category %} 
+<div class="row">
+  <div class="col-sm-1-12">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">{{cat}}</h3>
+        {%for list in cat.items.all%}
+        <p class="card-text">{{list}}</p>
+        {%endfor%}
+      </div>
+    </div>
+  </div>
+  
+</div>
+{%endfor%}
+
+{% endblock content %}
+    

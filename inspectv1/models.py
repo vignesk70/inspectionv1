@@ -14,10 +14,10 @@ class InspectionCategory(models.Model):
         return self.category
 
     def get_absolute_url(self):
-        return reverse("category_detail", kwargs={"pk": self.pk})
+        return reverse("category_detail", kwargs={"pk": self.pk})   
  
 class ItemInCategory(models.Model):
-    category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE)
+    category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items')
     items = models.CharField("Item", max_length=200)
     throw_error = models.BooleanField("Throw error if True")
     sequence = models.IntegerField("Sequence")

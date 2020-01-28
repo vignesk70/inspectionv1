@@ -1,6 +1,6 @@
 body {
     background-color: rgba(0, 0, 0, 0.76);
-    color: white;
+    
 }
 
 
@@ -46,4 +46,9 @@ li .nocircle{
 
 .card-header  {
     background-color: rgba(84, 175, 211, 0.514);
+}
+
+.indexpage {
+
+    color:white;
 }

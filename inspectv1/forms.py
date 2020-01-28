@@ -9,3 +9,4 @@ class CategoryForm(forms.ModelForm):
         fields = ("category",)
 
 CategoryItemsFormSet = inlineformset_factory(InspectionCategory,ItemInCategory, fields=("items",))
+

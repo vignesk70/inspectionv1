@@ -9,6 +9,7 @@ class InspectionCategory(models.Model):
     class Meta:
         verbose_name = "Category"
         verbose_name_plural = "Categories"
+        ordering = ['sequence',]
 
     def __str__(self):
         return self.category
@@ -25,6 +26,7 @@ class ItemInCategory(models.Model):
     class Meta:
         verbose_name = "Item"
         verbose_name_plural = "Items"
+        ordering = ['sequence',]
 
     def __str__(self):
         return self.items

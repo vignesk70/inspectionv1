@@ -18,11 +18,13 @@ class InspectionCategory(models.Model):
         return reverse("category_detail", kwargs={"pk": self.pk})   
  
 class ItemInCategory(models.Model):
+    FIELDTYPE = [ ('CHECKBOX','CheckBox'),
+    ('TEXTFIELD','Textfield')]
     category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items')
     items = models.CharField("Item", max_length=200)
     throw_error = models.BooleanField("Throw error if True")
     sequence = models.IntegerField("Sequence")
-    fieldtype = models.TextChoices('FieldType','CHECKBOX TEXTFIELD TEXTAREA')
+    fieldtype = models.CharField(max_length=20, choices=FIELDTYPE) 
 
     class Meta:
         verbose_name = "Item"

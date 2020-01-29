@@ -22,6 +22,7 @@ class ItemInCategory(models.Model):
     items = models.CharField("Item", max_length=200)
     throw_error = models.BooleanField("Throw error if True")
     sequence = models.IntegerField("Sequence")
+    fieldtype = models.TextChoices('FieldType','CHECKBOX TEXTFIELD TEXTAREA')
 
     class Meta:
         verbose_name = "Item"
@@ -36,10 +37,12 @@ class ItemInCategory(models.Model):
 
 
 class Sites(models.Model):
+    site_no = models.IntegerField("Site Number")
     name = models.CharField("Site name", max_length=100)
     latitude = models.FloatField("Latitude")
     longitude = models.FloatField("Longitude")
     state =  models.CharField("State", max_length=50)
+    postcode = models.CharField("Postcode", max_length=20)
     address = models.CharField("Address", max_length=300)
     
 

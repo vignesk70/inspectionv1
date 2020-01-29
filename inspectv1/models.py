@@ -19,7 +19,7 @@ class InspectionCategory(models.Model):
  
 class ItemInCategory(models.Model):
     FIELDTYPE = [ ('CHECKBOX','CheckBox'),
-    ('TEXTFIELD','Textfield')]
+    ('TEXTFIELD','Textfield'),('NUMERICFIELD','Numerical'),('DATEFIELD','Date')]
     category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items')
     items = models.CharField("Item", max_length=200)
     throw_error = models.BooleanField("Throw error if True")

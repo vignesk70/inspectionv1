@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inspectv1.apps.Inspectv1Config',
     'bootstrap4',
+    
 ]
 
 MIDDLEWARE = [
@@ -84,11 +85,11 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':  'inspection',
-        'USER' : 'inspection',
-        'PASSWORD' : 'inspectionadmin',
-        'HOST' : 'inspection.grafnet.work',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':  'my_post_database',
+        'USER' : 'postgres',
+        'PASSWORD' : '17ecics046',
+        'HOST' : 'localhost',
         'PORT' : '5432',
     }
 }

@@ -18,3 +18,5 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Sites)
 admin.site.register(InspectionCategory,CategoryAdmin)
 admin.site.register(Shyam)
+admin.site.register(InspectionDetails)
+#admin.site.register(ItemInCategory)

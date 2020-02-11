@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 
@@ -20,14 +21,21 @@ class InspectionCategory(models.Model):
         return reverse("category_detail", kwargs={"pk": self.pk})   
  
 class ItemInCategory(models.Model):
-    FIELDTYPE = [ ('CHECKBOX','CheckBox'),
-    ('TEXTFIELD','Textfield'),('NUMERICFIELD','Numerical'),('DATEFIELD','Date')]
-    category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items')
+    FIELDTYPE = ( ('checkbox','CheckBox'),
+    ('text','Textfield'),('number','NumberField'),('date','DateField'))
+
+    '''ERRORTYPE = [ ('Statutory','Statutory'),
+    ('Safety','Safety'),('Engineering','Engineering'),('Operations','Operations')]'''
+
+    ERRORTYPE = [ ('CHECKBOX','Statutory'),
+    ('TEXTFIELD','Safety'),('NUMBER','Engineering'),('DATEFIELD','Operations')]
+    category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items', default=3)
     items = models.CharField("Item", max_length=200)
     throw_error = models.BooleanField("Throw error if True")
     sequence = models.IntegerField("Sequence")
     fieldtype = models.CharField(max_length=20, choices=FIELDTYPE) 
-
+    #errortype= models.CharField(max_length=20,choices=ERRORTYPE)
+    
     class Meta:
         verbose_name = "Item"
         verbose_name_plural = "Items"
@@ -61,9 +69,27 @@ class Sites(models.Model):
         return reverse("site_detail", kwargs={"pk": self.pk})
 
 class Shyam(models.Model):
-    sno = models.CharField("Site no", max_length=100,default=' ')
-    items=models.CharField("Site item", max_length=100,default=' ')
-    site_field = models.CharField("Site Field", max_length=100,default=' ')
+    
+    sno = models.CharField("Site no", max_length=100,default=" ")
+    items = models.CharField("items", max_length=100,default=" ")
+    field_value = models.CharField("value", max_length=100,default=" ")
+    items = models.CharField("items", max_length=100,default=" ")
+    status=models.CharField("checked", max_length=100,default=" ")
+
+class InspectionDetails(models.Model):
+    users = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    com_lev = models.CharField("Competancy Level", max_length=200)
+    com_cert = models.CharField("Competancy Certificate", max_length=200)
+    signature= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
+    
     class Meta:
-        verbose_name = "Shyam"
-        verbose_name_plural = "Shyams"  
+        verbose_name = "Inspectordetail"
+        verbose_name_plural = "Inspectordetails"
+        
+
+    def __str__(self):
+        return self.com_lev
+
+
+
+    

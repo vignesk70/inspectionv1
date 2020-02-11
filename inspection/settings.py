@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inspectv1.apps.Inspectv1Config',
     'bootstrap4',
+    
 ]
 
 MIDDLEWARE = [

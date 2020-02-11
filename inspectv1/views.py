@@ -19,7 +19,7 @@ class ShowInspectionData(ListView):
     
 def Add(req):
     print("IN ADD")
-    #form=InspectionForm()
+    form=Test()
     if req.method=='POST':
         form=Test(req.POST)
         if form.is_valid():

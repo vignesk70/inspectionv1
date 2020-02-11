@@ -30,27 +30,78 @@
         </div>
       </div>
   </div>
-<div class="col-sm-9">
-{% for cat in category|dictsort:"sequence" %}
-  <div class="row mt-3">
-    <div class="col-sm-12 mx-auto" >
-      <div class="card" style="">
-        <div class="card-header">{{cat}}</div>
-        <div class="card-body">
-          <h3 class="card-title"></h3>
-          {%for list in cat.items.all %}
-          <p class="card-text">{{list}} <i class="fa fa-camera" aria-hidden="true"></i> </p>
-          {%endfor%}
-        </div>
-        <button type="button" class="btn btn-success">Save</button>
-      </div>
-    </div>
-
-  </div>
-  {%endfor%}
-  </div>
-</div>
-  
-</div>
-{% endblock content %}
+  <div class="col-sm-9">
+    <form class="" action="{% url 'inspectv1:add' %}" method="post">
+      {% csrf_token %}
+     
     
+  {% for cat in category|dictsort:"sequence" %}
+  
+    <div class="row mt-3">
+      
+      
+      <div class="col-sm-12 mx-auto" >
+        <div class="card" >
+          
+          
+          <div class="card-header">{{cat}}</div>
+          
+            
+          <table cellspacing="2" cellpadding="2">
+          <div class="card-body">
+            <h3 class="card-title">{{cat.items.category}}</h3>
+  
+           
+                <tr>
+                  <th>S.NO</th>
+                  <th>Items</th>
+                  <th>Field</th>
+                  <th>Status</th>
+                  <th>Add Image</th>
+                  </tr>
+            
+            
+               {%for list in cat.items.all %}
+               <tr>
+               
+  
+               
+  
+            
+              <td><p>{{list.sequence}}.</p>    </td> 
+              <td><p class="para">{{list.items}}</p></td>
+              
+              <td><input type={{list.fieldtype}}></input></td>
+              <td><select  >
+                <option value="select" selected>Select</option>
+                <option value="allgood">All Good</option>
+                <option value="foundfoult">Found Fault</option>
+                <option value="notcomplete">Not Complete</option>
+                <option value="audi">Serious Issue</option>
+              </select></td>
+              <td><input type='Checkbox' class="cboxes"></input></td>
+  
+              <!--<td><div><i class="fa fa-camera" aria-hidden="true"></i></div> </td-->
+          
+              </tr>
+             {%endfor%}
+            
+          </div>
+        </table>
+        
+          <input type="submit" value="submit">
+        
+        </div>
+      </div>
+  
+    </div>
+    {%endfor%}
+    </div>
+  </div>
+  
+    
+  </div>
+  
+  {% endblock content %}
+  </form>
+      

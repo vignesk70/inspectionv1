@@ -1,5 +1,7 @@
 from django.db import models
 
+
+
 # Create your models here.
 class InspectionCategory(models.Model):
     category = models.CharField("Category", max_length=200)
@@ -57,3 +59,11 @@ class Sites(models.Model):
 
     def get_absolute_url(self):
         return reverse("site_detail", kwargs={"pk": self.pk})
+
+class Shyam(models.Model):
+    sno = models.CharField("Site no", max_length=100,default=' ')
+    items=models.CharField("Site item", max_length=100,default=' ')
+    site_field = models.CharField("Site Field", max_length=100,default=' ')
+    class Meta:
+        verbose_name = "Shyam"
+        verbose_name_plural = "Shyams"  

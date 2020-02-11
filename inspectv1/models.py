@@ -56,6 +56,12 @@ class Sites(models.Model):
     state =  models.CharField("State", max_length=50)
     postcode = models.CharField("Postcode", max_length=20)
     address = models.CharField("Address", max_length=300)
+    subsdiary = models.CharField("Subsdiary",max_length=300,default=' ')
+    capacity=models.CharField("Capacity",max_length=300,default=' ')
+    incomer=models.CharField("Incomer",max_length=300,default=' ')
+    msbyear=models.CharField("Msb Year",max_length=300,default=' ')
+    stoffice=models.CharField("ST Office",max_length=300,default=' ')
+
     
 
     class Meta:

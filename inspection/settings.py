@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -83,12 +83,23 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 #    }
 #}
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME':  'inspection',
+#        'USER' : 'inspection',
+#        'PASSWORD' : 'inspectionadmin',
+#        'HOST' : 'inspection.grafnet.work',
+#        'PORT' : '5432',
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME':  'my_post_database',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME':  'inspection',
         'USER' : 'postgres',
-        'PASSWORD' : '17ecics046',
+        'PASSWORD' : 'comp197',
         'HOST' : 'localhost',
         'PORT' : '5432',
     }

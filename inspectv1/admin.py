@@ -21,6 +21,14 @@ class Inspected_ItemAdmin(admin.ModelAdmin):
     list_display=('S_id','Ins_id','item_id','field_value')
     #inlines = [InspectedInline]
     save_as = True
+    '''def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False'''
 
 
 admin.site.register(Inspected_Item, Inspected_ItemAdmin)
@@ -34,3 +42,5 @@ admin.site.register(InspectionCategory,CategoryAdmin)
 #admin.site.register(Inspected_Item)
 admin.site.register(InspectionDetails)
 #admin.site.register(ItemInCategory)
+admin.site.register(sub)
+admin.site.register(stoffice)

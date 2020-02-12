@@ -21,6 +21,7 @@ def Add(request):
     print("In Add")
     if request.method == 'POST':
         print("In Add")
+        
         field_name1 = 'sequence'
         field_name2='id'
         

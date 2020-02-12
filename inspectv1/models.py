@@ -48,12 +48,27 @@ class ItemInCategory(models.Model):
     def get_absolute_url(self):
         return reverse("item_detail", kwargs={"pk": self.pk})
 
+def get_menu_choices():
+    choices_tuple = []
+    #do your stuff
+    return choices_tuple
+
+class sub(models.Model):
+    name = models.CharField("name", max_length=100,default=" ")  
+    def __str__(self):
+        return self.name
+
+class stoffice(models.Model):
+    Location = models.CharField("location", max_length=100,default=" ")  
+    def __str__(self):
+        return self.Location
+
 
 
 
 class Sites(models.Model):
-    FIELDTYPE = ( ('checkbox','CheckBox'),
-    ('text','Textfield'),('number','NumberField'),('date','DateField'))
+    
+   
     site_no = models.IntegerField("Site Number")
     name = models.CharField("Site name", max_length=100)
     latitude = models.FloatField("Latitude")
@@ -61,11 +76,12 @@ class Sites(models.Model):
     state =  models.CharField("State", max_length=50)
     postcode = models.CharField("Postcode", max_length=20)
     address = models.CharField("Address", max_length=300)
-    subsdiary = models.CharField("Subsdiary",max_length=300,choices=FIELDTYPE)
+    #subsdiary=models.CharField("subsdiary",max_length=300,default=' ',choices=FIELDTYPE)
+    Subsdairy = models.ForeignKey("sub", on_delete=models.CASCADE,  default=3)
     capacity=models.CharField("Capacity",max_length=300,default=' ')
     incomer=models.CharField("Incomer",max_length=300,default=' ')
     msbyear=models.CharField("Msb Year",max_length=300,default=' ')
-    stoffice=models.CharField("ST Office",max_length=300,default=' ')
+    Subsdairy = models.ForeignKey("stoffice", on_delete=models.CASCADE,  default=3)
 
     
 
@@ -99,7 +115,7 @@ class Inspected_Item(models.Model):
     #Cat= models.ForeignKey("InspectionCategory", on_delete=models.CASCADE, default=0)
     S_id=models.IntegerField("Site Id",default='0')
     Ins_id=models.IntegerField("Inspector Id",default='0')
-    #c_id=models.IntegerField("Category Id",default='0')
+    c_id=models.IntegerField("Category Id",default='0')
     item_id=models.IntegerField("Item Id",default='0')
 
     field_value = models.CharField("value", max_length=100,default=" ")
@@ -116,6 +132,11 @@ class Inspected_Item(models.Model):
     def __str__(self):
         template = '{0.S_id} {0.Ins_id} {0.item_id}'
         return template.format(self)
+
+
+
+
+
 
 
 

@@ -1,10 +1,28 @@
 {% extends 'inspectv1/base.html' %}
 {%load static%}
 {% block content %}
+<script>
+  function myfunction(id){
+    
+
+console.log("Hii")
+  var checkBox = document.getElementById("mycheck_"+id);
+  var text = document.getElementById("image_"+id);
+ console.log("Hello")
+ if (checkBox.checked == true){
+    $('#image_'+id).show()
+  } else {
+    $('#image_'+id).hide()
+  }
+ console.log("out")    
+  
+}
+  </script>
+
 <div class="inspection">
 <div class="row">
   <div class="col-sm-3">
-    <div class="card mt-3" style="">
+    <div class="card mt-3" >
         <div class="card-header locationheader">Select Location</div>
         <div class="card-body">
           <h3 class="card-title"></h3>
@@ -34,8 +52,9 @@
     <form class="" action="{% url 'inspectv1:add' %}" method="post">
       {% csrf_token %}
      
-    
+  <var>  count=0 </var> 
   {% for cat in category|dictsort:"sequence" %}
+  count=count+1
   
     <div class="row mt-3">
       
@@ -77,11 +96,11 @@
                 <option value="allgood">All Good</option>
                 <option value="foundfoult">Fault Found</option>
                 <option value="notcomplete">Not Complete</option>
-                <option value="audi">Serious Issue</option>
+                <option value="aud">Serious Issue</option>
               </select></td>
-              <td><input type='Checkbox'  name="status"class="cboxes"></input></td>
-  
-              <!--<td><div><i class="fa fa-camera" aria-hidden="true"></i></div> </td-->
+              <td><input type='Checkbox' id="mycheck_{{list.sequence}}" name="status" class="cboxes" onclick="myfunction({{list.sequence}});"></input></td>
+
+              <td><div><i id="image_{{list.sequence}}" class="fa fa-camera" style="display:none"></i></div> </td>
           
               </tr>
              {%endfor%}

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView
 from .models import *
 from django.http import HttpResponse
@@ -21,6 +21,7 @@ def Add(request):
     print("In Add")
     if request.method == 'POST':
         print("In Add")
+    
         
         field_name1 = 'sequence'
         field_name2='id'
@@ -56,19 +57,21 @@ def Add(request):
 
         if  request.POST.get('option') or request.POST.get('status'):
             print("Come Inside")
-            shyam=Inspected_Item()
+            shyam=Inspect_Item()
             
             #shyam.field_value=request.POST.get('status')
             shyam.S_id=field_value1
             shyam.Ins_id=field_value2
             shyam.Cat_id=field_value4
             shyam.item_id=field_value3
+            print(request.POST.get('my_image'))
 
             shyam.items= request.POST.get('field')
             shyam.field_value=request.POST.get('status')
             shyam.status= request.POST.get('option')
+            shyam.image= request.POST.get('my_image')
             shyam.save()
-            return HttpResponse("Done")
+            return redirect('inspectv1:updateinspection.html')
 
         else:
             return HttpResponse("NotDone")

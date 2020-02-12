@@ -100,8 +100,8 @@ console.log("Hii")
               </select></td>
               <td><input type='Checkbox' id="mycheck_{{list.sequence}}" name="status" class="cboxes" onclick="myfunction({{list.sequence}});"></input></td>
 
-              <td><div><i id="image_{{list.sequence}}" class="fa fa-camera" style="display:none"></i></div> </td>
-          
+              
+              <td><div><input type="file" name="my_image" id="image_{{list.sequence}}"  style="display:none"></input></div> </td>
               </tr>
              {%endfor%}
             

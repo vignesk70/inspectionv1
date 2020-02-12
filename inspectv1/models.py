@@ -110,28 +110,31 @@ class InspectionDetails(models.Model):
     def __str__(self):
         return self.com_lev
 
-class Inspected_Item(models.Model):
+class Inspect_Item(models.Model):
 
-    #Cat= models.ForeignKey("InspectionCategory", on_delete=models.CASCADE, default=0)
-    S_id=models.IntegerField("Site Id",default='0')
-    Ins_id=models.IntegerField("Inspector Id",default='0')
-    c_id=models.IntegerField("Category Id",default='0')
-    item_id=models.IntegerField("Item Id",default='0')
+    
+    Site_id=models.IntegerField("Site Id",default='0')
+    Inspect_id=models.IntegerField("Inspector Id",default='0')
+    Cat_id=models.IntegerField("Category Id",default='0')
+    Item_id=models.IntegerField("Item Id",default='0')
 
-    field_value = models.CharField("value", max_length=100,default=" ")
-    items = models.CharField("items", max_length=100,default=" ")
-    status=models.CharField("checked", max_length=100,default=" ")
+    fieldname = models.CharField("value", max_length=100,default=" ")
+    Items = models.CharField("items", max_length=100,default=" ")
+    sign=models.CharField("checked", max_length=100,default=" ")
+    image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
 
-    '''class Meta:
-        verbose_name = "Inspeced_Item"
-        verbose_name_plural = "Inspected_Items"'''
+    class Meta:
+        verbose_name = "Inspect_Item"
+        verbose_name_plural = "Inspects_Items"
 
     '''def __str__(self):
         return self.S_id,self.Ins_id,self.item_id,self.field_value'''
 
     def __str__(self):
-        template = '{0.S_id} {0.Ins_id} {0.item_id}'
+        template = '{0.Site_id} {0.Inspect_id} {0.Cat_id}'
         return template.format(self)
+
+
 
 
 

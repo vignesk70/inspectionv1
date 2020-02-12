@@ -10,3 +10,9 @@ class CategoryForm(forms.ModelForm):
         fields = ("category",)
 
 CategoryItemsFormSet = inlineformset_factory(InspectionCategory,ItemInCategory, fields=("items",))
+
+
+'''class ImageForm(forms.ModelForm):
+    class Meta:
+        model= Image
+        fields= ["name", "imagefile"]'''

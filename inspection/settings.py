@@ -96,10 +96,10 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':  'inspection',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':  'my_post_database',
         'USER' : 'postgres',
-        'PASSWORD' : 'comp197',
+        'PASSWORD' : '17ecics046',
         'HOST' : 'localhost',
         'PORT' : '5432',
     }

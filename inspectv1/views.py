@@ -17,11 +17,61 @@ class ShowInspectionData(ListView):
     context_object_name = 'category'
     queryset = InspectionCategory.objects.all()
     
-def Add(req):
-    print("IN ADD")
-    form=Test()
-    if req.method=='POST':
-        form=Test(req.POST)
-        if form.is_valid():
-            form.save(commit=true)
-    return HttpResponse("Do something")
+def Add(request):
+    print("In Add")
+    if request.method == 'POST':
+        print("In Add")
+        field_name1 = 'sequence'
+        field_name2='id'
+        
+
+
+
+
+        
+        obj =InspectionCategory.objects.first()
+        field_object = InspectionCategory._meta.get_field(field_name1)
+        field_value1 = field_object.value_from_object(obj)
+
+        obj2 =InspectionDetails.objects.first()
+        field_object = InspectionDetails._meta.get_field(field_name2)
+        field_value2 = field_object.value_from_object(obj2)
+
+        obj2 =InspectionCategory.objects.first()
+        field_object = InspectionCategory._meta.get_field(field_name2)
+        field_value3 = field_object.value_from_object(obj2)
+
+        obj2 =ItemInCategory.objects.first()
+        field_object = ItemInCategory._meta.get_field(field_name2)
+        field_value4 = field_object.value_from_object(obj2)
+
+
+
+
+        
+        
+        
+       
+
+        if  request.POST.get('option') or request.POST.get('status'):
+            print("Come Inside")
+            shyam=Inspected_Item()
+            
+            #shyam.field_value=request.POST.get('status')
+            shyam.S_id=field_value1
+            shyam.Ins_id=field_value2
+            shyam.Cat_id=field_value4
+            shyam.item_id=field_value3
+
+            shyam.items= request.POST.get('field')
+            shyam.field_value=request.POST.get('status')
+            shyam.status= request.POST.get('option')
+            shyam.save()
+            return HttpResponse("Done")
+
+        else:
+            return HttpResponse("NotDone")
+
+            
+
+        

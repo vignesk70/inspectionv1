@@ -5,6 +5,7 @@ from django.conf import settings
 
 # Create your models here.
 class InspectionCategory(models.Model):
+
     category = models.CharField("Category", max_length=200)
     sequence = models.IntegerField("Sequence")
     
@@ -48,7 +49,11 @@ class ItemInCategory(models.Model):
         return reverse("item_detail", kwargs={"pk": self.pk})
 
 
+
+
 class Sites(models.Model):
+    FIELDTYPE = ( ('checkbox','CheckBox'),
+    ('text','Textfield'),('number','NumberField'),('date','DateField'))
     site_no = models.IntegerField("Site Number")
     name = models.CharField("Site name", max_length=100)
     latitude = models.FloatField("Latitude")
@@ -56,7 +61,7 @@ class Sites(models.Model):
     state =  models.CharField("State", max_length=50)
     postcode = models.CharField("Postcode", max_length=20)
     address = models.CharField("Address", max_length=300)
-    subsdiary = models.CharField("Subsdiary",max_length=300,default=' ')
+    subsdiary = models.CharField("Subsdiary",max_length=300,choices=FIELDTYPE)
     capacity=models.CharField("Capacity",max_length=300,default=' ')
     incomer=models.CharField("Incomer",max_length=300,default=' ')
     msbyear=models.CharField("Msb Year",max_length=300,default=' ')
@@ -74,13 +79,6 @@ class Sites(models.Model):
     def get_absolute_url(self):
         return reverse("site_detail", kwargs={"pk": self.pk})
 
-class Shyam(models.Model):
-    
-    sno = models.CharField("Site no", max_length=100,default=" ")
-    items = models.CharField("items", max_length=100,default=" ")
-    field_value = models.CharField("value", max_length=100,default=" ")
-    items = models.CharField("items", max_length=100,default=" ")
-    status=models.CharField("checked", max_length=100,default=" ")
 
 class InspectionDetails(models.Model):
     users = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -95,6 +93,33 @@ class InspectionDetails(models.Model):
 
     def __str__(self):
         return self.com_lev
+
+class Inspected_Item(models.Model):
+
+    #Cat= models.ForeignKey("InspectionCategory", on_delete=models.CASCADE, default=0)
+    S_id=models.IntegerField("Site Id",default='0')
+    Ins_id=models.IntegerField("Inspector Id",default='0')
+    #c_id=models.IntegerField("Category Id",default='0')
+    item_id=models.IntegerField("Item Id",default='0')
+
+    field_value = models.CharField("value", max_length=100,default=" ")
+    items = models.CharField("items", max_length=100,default=" ")
+    status=models.CharField("checked", max_length=100,default=" ")
+
+    '''class Meta:
+        verbose_name = "Inspeced_Item"
+        verbose_name_plural = "Inspected_Items"'''
+
+    '''def __str__(self):
+        return self.S_id,self.Ins_id,self.item_id,self.field_value'''
+
+    def __str__(self):
+        template = '{0.S_id} {0.Ins_id} {0.item_id}'
+        return template.format(self)
+
+
+
+    
 
 
 

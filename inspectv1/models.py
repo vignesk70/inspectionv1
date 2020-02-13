@@ -71,7 +71,7 @@ class stoffice(models.Model):
         verbose_name = "ST Office"
         verbose_name_plural = "ST Office Locations"
 
-class SiteInfo(models.Model):
+class Sites(models.Model):
     
    
     site_no = models.IntegerField("Site Number")

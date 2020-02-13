@@ -55,6 +55,10 @@ def get_menu_choices():
 
 class sub(models.Model):
     name = models.CharField("name", max_length=100,default=" ")  
+    class Meta:
+        verbose_name = "Subsdiary"
+        verbose_name_plural = "Subsdiary"
+        
     def __str__(self):
         return self.name
 
@@ -62,6 +66,10 @@ class stoffice(models.Model):
     Location = models.CharField("location", max_length=100,default=" ")  
     def __str__(self):
         return self.Location
+
+    class Meta:
+        verbose_name = "ST Office"
+        verbose_name_plural = "ST Office Locations"
 
 class SiteInfo(models.Model):
     
@@ -83,7 +91,7 @@ class SiteInfo(models.Model):
 
     class Meta:
         verbose_name = "Site"
-        verbose_name_plural = "Sites"
+        verbose_name_plural = "Site Details"
 
     def __str__(self):
         return self.name
@@ -105,7 +113,7 @@ class InspectionDetails(models.Model):
     
     class Meta:
         verbose_name = "Inspectordetail"
-        verbose_name_plural = "Inspectordetails"
+        verbose_name_plural = "Inspector Details"
         
 
     def __str__(self):
@@ -126,7 +134,7 @@ class Inspect_Item(models.Model):
 
     class Meta:
         verbose_name = "Inspect_Item"
-        verbose_name_plural = "Inspects_Items"
+        verbose_name_plural = "Inspected Items"
 
     '''def __str__(self):
         return self.S_id,self.Ins_id,self.item_id,self.field_value'''

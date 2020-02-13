@@ -1,6 +1,15 @@
 {% extends 'inspectv1/base.html' %}
 {%load static%}
 {% block content %}
+<head>
+<style>
+  p {
+    background-color: white;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+  </style>
+  </head>
 
 <script>
   $(document).ready(function() {
@@ -27,6 +36,7 @@ console.log("Hii")
 
 
 <div class="inspection">
+ 
 <div class="row">
   <div class="col-sm-3">
     <div class="card mt-3" >
@@ -57,11 +67,17 @@ console.log("Hii")
   </div>
   <div class="col-sm-9">
     <form class="" action="{% url 'inspectv1:add' %}" method="post">
+      {% if messages %}
+        {% for message in messages %}
+        <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+        {% endfor %}
+    </ul>
+    {% endif %}
       {% csrf_token %}
      
-  <var>  count=0 </var> 
+   
   {% for cat in category|dictsort:"sequence" %}
-  count=count+1
+ 
   
     <div class="row mt-3">
       
@@ -97,7 +113,7 @@ console.log("Hii")
               <td><p>{{list.sequence}}.</p>    </td> 
               <td><p class="para">{{list.items}}</p></td>
               
-              <td><input type={{list.fieldtype}} name="field"></input></td>
+              <td><input type={{list.fieldtype}} id="myvalue_{{list.sequence}}" name="field" ></input></td>
               
               <td><input type='Checkbox' id="mycheck_{{list.sequence}}" name="status" class="cboxes" onclick="myfunction({{list.sequence}});"></input></td>
 

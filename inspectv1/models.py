@@ -32,6 +32,7 @@ class ItemInCategory(models.Model):
     ('TEXTFIELD','Safety'),('NUMBER','Engineering'),('DATEFIELD','Operations')]
     category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items', default=3)
     items = models.CharField("Item", max_length=200)
+    Show_In_Section=models.IntegerField("Show in Section",default=0)
     throw_error = models.BooleanField("Throw error if True")
     sequence = models.IntegerField("Sequence")
     fieldtype = models.CharField(max_length=20, choices=FIELDTYPE) 
@@ -120,8 +121,9 @@ class InspectionDetails(models.Model):
         return self.com_lev
 
 class Inspect_Item(models.Model):
-
-    
+    Inspector_Name=models.CharField("Inspector Name",max_length=100,default=' ')
+    category_name=models.CharField("Category Name",max_length=100,default=' ')
+    site_name=models.CharField("Site nName",max_length=100,default=' ')
     Site_id=models.IntegerField("Site Id",default='0')
     Inspect_id=models.IntegerField("Inspector Id",default='0')
     Cat_id=models.IntegerField("Category Id",default='0')
@@ -137,12 +139,13 @@ class Inspect_Item(models.Model):
         verbose_name_plural = "Inspected Items"
 
     '''def __str__(self):
-        return self.S_id,self.Ins_id,self.item_id,self.field_value'''
+        return self.site_name,self.Inspect_id,self.Item_id,self.fieldname'''
 
     def __str__(self):
-        template = '{0.Site_id} {0.Inspect_id} {0.Cat_id}'
+        template = '{0.category_name} {0.site_name} {0.Inspector_Name}  {0.Items} {0.image}'
         return template.format(self)
 
+        
 
 
 

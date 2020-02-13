@@ -18,17 +18,17 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class Inspect_ItemAdmin(admin.ModelAdmin):
     #list_display = ('Cat',)
-    list_display=('Site_id','Inspect_id','Item_id','fieldname')
+    list_display=('category_name','site_name','Inspector_Name','Items','image')
     #inlines = [InspectedInline]
     save_as = True
     def has_add_permission(self, request, obj=None):
         return False
 
-    def has_change_permission(self, request, obj=None):
+    '''def has_change_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return False'''
 
 
 admin.site.register(Inspect_Item, Inspect_ItemAdmin)

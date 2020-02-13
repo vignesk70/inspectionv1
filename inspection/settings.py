@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':  'my_post_database',
+        'NAME':  'shyamdatabase',
         'USER' : 'postgres',
         'PASSWORD' : '17ecics046',
         'HOST' : 'localhost',

@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView
 from .models import *
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseRedirect
 from .forms import *
 
 # Create your views here.
@@ -71,7 +71,8 @@ def Add(request):
             shyam.status= request.POST.get('option')
             shyam.image= request.POST.get('my_image')
             shyam.save()
-            return redirect('inspectv1:updateinspection.html')
+            #return redirect(reverse('updateinspection.html'))
+            return HttpResponseRedirect("")
 
         else:
             return HttpResponse("NotDone")

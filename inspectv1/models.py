@@ -35,7 +35,7 @@ class ItemInCategory(models.Model):
     throw_error = models.BooleanField("Throw error if True")
     sequence = models.IntegerField("Sequence")
     fieldtype = models.CharField(max_length=20, choices=FIELDTYPE) 
-    #errortype= models.CharField(max_length=20,choices=ERRORTYPE)
+    errortype= models.CharField(max_length=20,choices=ERRORTYPE,default=' ')
     
     class Meta:
         verbose_name = "Item"
@@ -63,10 +63,7 @@ class stoffice(models.Model):
     def __str__(self):
         return self.Location
 
-
-
-
-class Sites(models.Model):
+class SiteInfo(models.Model):
     
    
     site_no = models.IntegerField("Site Number")
@@ -76,12 +73,11 @@ class Sites(models.Model):
     state =  models.CharField("State", max_length=50)
     postcode = models.CharField("Postcode", max_length=20)
     address = models.CharField("Address", max_length=300)
-    #subsdiary=models.CharField("subsdiary",max_length=300,default=' ',choices=FIELDTYPE)
     Subsdairy = models.ForeignKey("sub", on_delete=models.CASCADE,  default=3)
     capacity=models.CharField("Capacity",max_length=300,default=' ')
     incomer=models.CharField("Incomer",max_length=300,default=' ')
     msbyear=models.CharField("Msb Year",max_length=300,default=' ')
-    Subsdairy = models.ForeignKey("stoffice", on_delete=models.CASCADE,  default=3)
+    Stoffice = models.ForeignKey("stoffice", on_delete=models.CASCADE,  default=3)
 
     
 
@@ -94,6 +90,11 @@ class Sites(models.Model):
 
     def get_absolute_url(self):
         return reverse("site_detail", kwargs={"pk": self.pk})
+
+
+
+
+
 
 
 class InspectionDetails(models.Model):

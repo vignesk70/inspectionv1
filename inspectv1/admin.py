@@ -37,7 +37,7 @@ admin.site.register(Inspect_Item, Inspect_ItemAdmin)
 
 #admin.site.register(InspectionCategory)
 #admin.site.register(ItemInCategory)
-admin.site.register(Sites)
+admin.site.register(SiteInfo)
 admin.site.register(InspectionCategory,CategoryAdmin)
 #admin.site.register(Inspected_Item)
 admin.site.register(InspectionDetails)

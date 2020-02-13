@@ -60,19 +60,18 @@ def Add(request):
             shyam=Inspect_Item()
             
             #shyam.field_value=request.POST.get('status')
-            shyam.S_id=field_value1
-            shyam.Ins_id=field_value2
+            shyam.Site_id=field_value1
+            shyam.Inspect_id=field_value2
             shyam.Cat_id=field_value4
-            shyam.item_id=field_value3
-            print(request.POST.get('my_image'))
+            shyam.Item_id=field_value3
+            
 
-            shyam.items= request.POST.get('field')
-            shyam.field_value=request.POST.get('status')
-            shyam.status= request.POST.get('option')
+            shyam.Items= request.POST.get('field')
+            shyam.fieldname=request.POST.get('status')
+            #shyam.status= request.POST.get('option')
             shyam.image= request.POST.get('my_image')
             shyam.save()
-            #return redirect(reverse('updateinspection.html'))
-            return HttpResponseRedirect("")
+            return HttpResponseRedirect('/inspect')
 
         else:
             return HttpResponse("NotDone")

@@ -121,7 +121,7 @@ class Inspect_Item(models.Model):
 
     fieldname = models.CharField("value", max_length=100,default=" ")
     Items = models.CharField("items", max_length=100,default=" ")
-    sign=models.CharField("checked", max_length=100,default=" ")
+    #sign=models.CharField("checked", max_length=100,default=" ")
     image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
 
     class Meta:

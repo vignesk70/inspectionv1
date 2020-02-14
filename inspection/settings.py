@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inspectv1.apps.Inspectv1Config',
     'bootstrap4',
+    
 ]
 
 MIDDLEWARE = [
@@ -64,6 +65,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
+                'django.contrib.messages.storage.session.SessionStorage'
             ],
         },
     },
@@ -82,13 +85,24 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 #    }
 #}
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME':  'inspection',
+#        'USER' : 'inspection',
+#        'PASSWORD' : 'inspectionadmin',
+#        'HOST' : 'inspection.grafnet.work',
+#        'PORT' : '5432',
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':  'inspection',
-        'USER' : 'inspection',
-        'PASSWORD' : 'inspectionadmin',
-        'HOST' : 'inspection.grafnet.work',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':  'shyamdatabase',
+        'USER' : 'postgres',
+        'PASSWORD' : '17ecics046',
+        'HOST' : 'localhost',
         'PORT' : '5432',
     }
 }
@@ -136,3 +150,5 @@ STATIC_URL = '/static/'
 STATIC_ROOT =  os.path.join(BASE_DIR, 'static/')
 
 LOGIN_REDIRECT_URL = '/inspect'
+MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
+MEDIA_URL= "/media/"

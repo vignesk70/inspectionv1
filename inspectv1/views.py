@@ -100,7 +100,7 @@ def Add(request):
         if  request.POST.get('field') or request.POST.get('status'):
             print("Come Inside")
             #print(request.POST.get('my_image'))
-            shyam=Inspect_Item()
+            shyam=InspectItem()
             
             #shyam.field_value=request.POST.get('status')
             shyam.site_name=field_value3

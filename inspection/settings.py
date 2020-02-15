@@ -85,27 +85,27 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 #    }
 #}
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME':  'inspection',
-#        'USER' : 'inspection',
-#        'PASSWORD' : 'inspectionadmin',
-#        'HOST' : 'inspection.grafnet.work',
-#        'PORT' : '5432',
-#    }
-#}
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME':  'shyamdatabase',
-        'USER' : 'postgres',
-        'PASSWORD' : '17ecics046',
-        'HOST' : 'localhost',
-        'PORT' : '5432',
-    }
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+       'NAME':  'inspection',
+       'USER' : 'inspection',
+       'PASSWORD' : 'inspectionadmin',
+       'HOST' : 'inspection.grafnet.work',
+       'PORT' : '5432',
+   }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME':  'shyamdatabase',
+#         'USER' : 'postgres',
+#         'PASSWORD' : '17ecics046',
+#         'HOST' : 'localhost',
+#         'PORT' : '5432',
+#     }
+# }
 
 
 

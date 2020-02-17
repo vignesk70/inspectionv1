@@ -31,7 +31,7 @@ class Inspect_ItemAdmin(admin.ModelAdmin):
         return False'''
 
 
-admin.site.register(Inspect_Item, Inspect_ItemAdmin)
+admin.site.register(InspectItem, Inspect_ItemAdmin)
 
 
 
@@ -42,5 +42,5 @@ admin.site.register(InspectionCategory,CategoryAdmin)
 #admin.site.register(Inspected_Item)
 admin.site.register(InspectionDetails)
 #admin.site.register(ItemInCategory)
-admin.site.register(sub)
-admin.site.register(stoffice)
+admin.site.register(Subsidiary)
+admin.site.register(SToffice)

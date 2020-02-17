@@ -25,14 +25,11 @@ class ItemInCategory(models.Model):
     FIELDTYPE = ( ('checkbox','CheckBox'),
     ('text','Textfield'),('number','NumberField'),('date','DateField'))
 
-    '''ERRORTYPE = [ ('Statutory','Statutory'),
-    ('Safety','Safety'),('Engineering','Engineering'),('Operations','Operations')]'''
-
-    ERRORTYPE = [ ('CHECKBOX','Statutory'),
-    ('TEXTFIELD','Safety'),('NUMBER','Engineering'),('DATEFIELD','Operations')]
+    ERRORTYPE = [ ('NONE','None'),('STATUTORY','Statutory'),
+    ('SAFETY','Safety'),('ENGINEERING','Engineering'),('OPERATIONS','Operations')]
     category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items', default=3)
     items = models.CharField("Item", max_length=200)
-    Show_In_Section=models.IntegerField("Show in Section",default=0)
+    show_in_section=models.IntegerField("Show in Section",default=0)
     throw_error = models.BooleanField("Throw error if True")
     sequence = models.IntegerField("Sequence")
     fieldtype = models.CharField(max_length=20, choices=FIELDTYPE) 
@@ -54,7 +51,7 @@ def get_menu_choices():
     #do your stuff
     return choices_tuple
 
-class sub(models.Model):
+class Subsidiary(models.Model):
     name = models.CharField("name", max_length=100,default=" ")  
     class Meta:
         verbose_name = "Subsdiary"
@@ -63,7 +60,7 @@ class sub(models.Model):
     def __str__(self):
         return self.name
 
-class stoffice(models.Model):
+class SToffice(models.Model):
     Location = models.CharField("location", max_length=100,default=" ")  
     def __str__(self):
         return self.Location
@@ -82,11 +79,11 @@ class Sites(models.Model):
     state =  models.CharField("State", max_length=50)
     postcode = models.CharField("Postcode", max_length=20)
     address = models.CharField("Address", max_length=300)
-    Subsdairy = models.ForeignKey("sub", on_delete=models.CASCADE,  default=3)
+    subsidiary = models.ForeignKey("Subsidiary", on_delete=models.CASCADE,  default=3)
     capacity=models.CharField("Capacity",max_length=300,default=' ')
     incomer=models.CharField("Incomer",max_length=300,default=' ')
-    msbyear=models.CharField("Msb Year",max_length=300,default=' ')
-    Stoffice = models.ForeignKey("stoffice", on_delete=models.CASCADE,  default=3)
+    msbyear=models.CharField("MSB Year",max_length=300,default=' ')
+    stoffice = models.ForeignKey("SToffice", on_delete=models.CASCADE,  default=3)
 
     
 
@@ -108,22 +105,22 @@ class Sites(models.Model):
 
 class InspectionDetails(models.Model):
     users = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    com_lev = models.CharField("Competancy Level", max_length=200)
-    com_cert = models.CharField("Competancy Certificate", max_length=200)
+    com_lev = models.CharField("Competency Level", max_length=200)
+    com_cert = models.CharField("Competency Certificate", max_length=200)
     signature= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
     
     class Meta:
-        verbose_name = "Inspectordetail"
+        verbose_name = "Inspector Detail"
         verbose_name_plural = "Inspector Details"
         
 
     def __str__(self):
         return self.com_lev
 
-class Inspect_Item(models.Model):
+class InspectItem(models.Model):
     Inspector_Name=models.CharField("Inspector Name",max_length=100,default=' ')
     category_name=models.CharField("Category Name",max_length=100,default=' ')
-    site_name=models.CharField("Site nName",max_length=100,default=' ')
+    site_name=models.CharField("Site Name",max_length=100,default=' ')
     Site_id=models.IntegerField("Site Id",default='0')
     Inspect_id=models.IntegerField("Inspector Id",default='0')
     Cat_id=models.IntegerField("Category Id",default='0')

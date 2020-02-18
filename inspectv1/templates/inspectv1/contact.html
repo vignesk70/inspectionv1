@@ -1,0 +1,21 @@
+{% extends 'inspectv1/base.html' %}
+{%load static%}
+{% block content %}
+{% load bootstrap4 %}
+<head>
+<style>
+  p {
+    background-color: white;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+  </style>
+  </head>
+
+ <form action="" method="post">
+		{% csrf_token %}
+		<div class="form-group">
+        {{ form.as_p }}
+   	   </div>
+	  </form>
+  {% endblock content %}	  

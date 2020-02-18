@@ -1,7 +1,7 @@
 {% extends 'inspectv1/base.html' %}
 {%load static%}
-{% block content %}
 {% load bootstrap4 %}
+{% block content %}
 <head>
 <style>
   p {
@@ -11,29 +11,6 @@
 }
   </style>
   </head>
-
-<script>
-  $(document).ready(function() {
-            console.log("Hello, world!");
-          });
-</script>
-<script>
-  function myfunction(id){
-    
-
-console.log("Hii")
-  var checkBox = document.getElementById("mycheck_"+id);
-  var text = document.getElementById("image_"+id);
- console.log("Hello")
- if (checkBox.checked == true){
-    $('#image_'+id).show()
-  } else {
-    $('#image_'+id).hide()
-  }
- console.log("out")    
-  
-}
-  </script>
 
 
 <div class="inspection">
@@ -67,6 +44,19 @@ console.log("Hii")
       </div>
   </div>
   <div class="col-sm-9">
+	  
+	  
+	    <form action="" method="post">
+		{% csrf_token %}
+		<div class="form-group">
+        {{ form.as_p }}
+   	   </div>
+	  </form>
+	  
+	  
+	  
+	  
+	  
     <form class="" action="{% url 'inspectv1:add' %}" method="post">
       {% if messages %}
         {% for message in messages %}
@@ -76,7 +66,7 @@ console.log("Hii")
     {% endif %}
       {% csrf_token %}
      
-    
+   
   {% for cat in category|dictsort:"sequence" %}
  
   
@@ -115,7 +105,7 @@ console.log("Hii")
               
               <td><input type={{list.fieldtype}} id="myvalue_{{list.sequence}}" name="field" ></td>
               
-              <td><input type='Checkbox' id="mycheck_{{list.sequence}}" name="status" class="cboxes" onclick="myfunction({{list.sequence}});"> <div><input type="file" name="my_image" id="image_{{list.sequence}}"  style="display:none"></div></td>
+              <td> <div><input type="file" name="my_image" id="image_{{list.sequence}}"  style="display:none"></div></td>
 
               
             

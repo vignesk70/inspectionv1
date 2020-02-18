@@ -120,7 +120,8 @@ class InspectorDetails(models.Model):
         
 
     def __str__(self):
-        return self.com_lev
+        return str(self.users)
+
 
 class InspectItem(models.Model):
     inspector_name=models.CharField("Inspector Name",max_length=100,default=' ')
@@ -137,8 +138,8 @@ class InspectItem(models.Model):
     image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
 
     class Meta:
-        verbose_name = "InspectItem"
-        verbose_name_plural = "InspectItems"
+        verbose_name = "Inspected Item"
+        verbose_name_plural = "Inspected Items"
 
    
 

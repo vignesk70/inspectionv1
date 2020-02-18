@@ -120,7 +120,8 @@ class InspectorDetails(models.Model):
         
 
     def __str__(self):
-        return self.com_lev
+        return str(self.users)
+
 
 class InspectItem(models.Model):
     inspector_name=models.CharField("Inspector Name",max_length=100,default=' ')

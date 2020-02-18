@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 #        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
 #}
-"""
+
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -95,18 +95,17 @@ DATABASES = {
        'PORT' : '5432',
    }
 }
-"""
 
-DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME':  'inspection',
-       'USER' : 'postgres',
-       'PASSWORD' : 'comp197',
-       'HOST' : 'localhost',
-       'PORT' : '5432',
-   }
-}
+# DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME':  'inspection',
+#        'USER' : 'postgres',
+#        'PASSWORD' : 'comp197',
+#        'HOST' : 'localhost',
+#        'PORT' : '5432',
+#    }
+# }
 
 # DATABASES = {
 #     'default': {

@@ -1,69 +1,47 @@
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView
+from django import forms
 from .models import *
 from django.http import HttpResponse,HttpResponseRedirect
 from .forms import *
 from django.contrib import messages
+from django.views.generic.edit import FormView
+
+
 
 
 # Create your views here.
 class IndexView(TemplateView):
     template_name = "inspectv1/index.html"
 
-    
 class ShowInspectionData(ListView):
     template_name = "inspectv1/updateinspection.html"
-   # model=ItemInCategory
+    form_class = InspectionData
 
-    #fields = ['category','items']
     context_object_name = 'category'
     queryset = InspectionCategory.objects.all()
+
     
-'''def Add(request):
-    print("In Add")
-    if request.method == 'POST':
-        print("In Add")
+"""class ShowInspectionDataText(ListView):
+    template_name = "inspectv1/updateinspectiontest.html"
+    model = Profile
+    form_class=ProfileForm
+    context_object_name = 'category'
+    queryset = InspectionCategory.objects.all()
+
+    def get_object(self):
+        return InspectionCategory.objects.all() 
+
+    def get(self, request, *args, **kwargs):
+        #self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        #car_form = CarRegistrationFormSet()
+        #receipt_form = PaymentFormSet()
+        return self.render_to_response(
+            self.get_context_data(form=form)) """
+
     
-        
-        field_name1 = 'sequence'
-        field_name2='id'
-        obj =InspectionCategory.objects.first()
-        field_object = InspectionCategory._meta.get_field(field_name1)
-        field_value1 = field_object.value_from_object(obj)
-
-        obj2 =InspectionDetails.objects.first()
-        field_object = InspectionDetails._meta.get_field(field_name2)
-        field_value2 = field_object.value_from_object(obj2)
-
-        obj2 =InspectionCategory.objects.first()
-        field_object = InspectionCategory._meta.get_field(field_name2)
-        field_value3 = field_object.value_from_object(obj2)
-
-        obj2 =ItemInCategory.objects.first()
-        field_object = ItemInCategory._meta.get_field(field_name2)
-        field_value4 = field_object.value_from_object(obj2)
-        if  request.POST.get('option') or request.POST.get('status'):
-            print("Come Inside")
-            shyam=Inspect_Item()
-            
-            #shyam.field_value=request.POST.get('status')
-            shyam.Site_id=field_value1
-            shyam.Inspect_id=field_value2
-            shyam.Cat_id=field_value4
-            shyam.Item_id=field_value3
-            
-
-            shyam.Items= request.POST.get('field')
-            shyam.fieldname=request.POST.get('status')
-            #shyam.status= request.POST.get('option')
-            shyam.image= request.POST.get('my_image')
-            shyam.save()
-            messages.success(request, 'Changes successfully saved.')
-            return HttpResponseRedirect('/inspect/inspection')
-
-        else:
-            return HttpResponse("NotDone")
-'''            
 
 def Add(request):
     print("In Add")

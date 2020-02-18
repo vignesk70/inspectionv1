@@ -5,7 +5,9 @@ admin.AdminSite.site_header='Inspect'
 
 class CategoryItemInline(admin.TabularInline):
     model = ItemInCategory
-    extras = 1
+    extra = 1
+
+
 
 '''class InspectedInline(admin.TabularInline):
     model = Inspected_Item
@@ -16,9 +18,9 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = [CategoryItemInline]
     save_as = True
 
-class Inspect_ItemAdmin(admin.ModelAdmin):
+class InspectItemAdmin(admin.ModelAdmin):
     #list_display = ('Cat',)
-    list_display=('category_name','site_name','Inspector_Name','Items','image')
+    list_display=('category_name','site_name','inspector_name','Items','image')
     #inlines = [InspectedInline]
     save_as = True
     def has_add_permission(self, request, obj=None):
@@ -31,7 +33,7 @@ class Inspect_ItemAdmin(admin.ModelAdmin):
         return False'''
 
 
-admin.site.register(Inspect_Item, Inspect_ItemAdmin)
+admin.site.register(InspectItem, InspectItemAdmin)
 
 
 
@@ -40,7 +42,7 @@ admin.site.register(Inspect_Item, Inspect_ItemAdmin)
 admin.site.register(Sites)
 admin.site.register(InspectionCategory,CategoryAdmin)
 #admin.site.register(Inspected_Item)
-admin.site.register(InspectionDetails)
+admin.site.register(InspectorDetails)
 #admin.site.register(ItemInCategory)
-admin.site.register(sub)
-admin.site.register(stoffice)
+admin.site.register(Subsidiary)
+admin.site.register(Stoffice)

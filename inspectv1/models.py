@@ -29,8 +29,8 @@ class InspectionCategory(models.Model):
 class ItemInCategory(models.Model):
     FIELDTYPE = ( ('checkbox','CheckBox'),
     ('text','Textfield'),('number','NumberField'),('date','DateField'))
-    ERRORTYPE = [ ('','None'),('statutory','Statutory'),
-    ('safety','Safety'),('engineering','Engineering'),('operations','Operations')]
+    ERRORTYPE = [ ('NONE','None'),('STATUTORY','Statutory'),
+    ('SAFETY','Safety'),('ENGINEERING','Engineering'),('OPERATIONS','Operations')]
 
     category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items', default=3)
     items = models.CharField("Item", max_length=200)
@@ -65,6 +65,7 @@ class Subsidiary(models.Model):
     def __str__(self):
         return self.name
 
+
 class Stoffice(models.Model):
     location = models.CharField("location", max_length=100,default=" ")  
     def __str__(self):
@@ -89,7 +90,7 @@ class Sites(models.Model):
     msbyear=models.CharField("Msb Year",max_length=300,default=' ')
     stoffice = models.ForeignKey("stoffice", on_delete=models.CASCADE,  default=3)
 
-    
+
 
     class Meta:
         verbose_name = "Site"
@@ -109,8 +110,8 @@ class Sites(models.Model):
 
 class InspectorDetails(models.Model):
     users = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    com_lev = models.CharField("Competancy Level", max_length=200)
-    com_cert = models.CharField("Competancy Certificate", max_length=200)
+    com_lev = models.CharField("Competency Level", max_length=200)
+    com_cert = models.CharField("Competency Certificate", max_length=200)
     signature= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
     
     class Meta:
@@ -124,7 +125,7 @@ class InspectorDetails(models.Model):
 class InspectItem(models.Model):
     inspector_name=models.CharField("Inspector Name",max_length=100,default=' ')
     category_name=models.CharField("Category Name",max_length=100,default=' ')
-    site_name=models.CharField("Site nName",max_length=100,default=' ')
+    site_name=models.CharField("Site Name",max_length=100,default=' ')
     Site_id=models.IntegerField("Site Id",default='0')
     Inspect_id=models.IntegerField("Inspector Id",default='0')
     Cat_id=models.IntegerField("Category Id",default='0')

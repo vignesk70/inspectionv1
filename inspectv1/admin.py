@@ -5,7 +5,7 @@ admin.AdminSite.site_header='Inspect'
 
 class CategoryItemInline(admin.TabularInline):
     model = ItemInCategory
-    extra = 1
+    extra = 0
 
 
 

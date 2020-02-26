@@ -31,6 +31,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+	'django_adminlte',
+	'django_adminlte_theme',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -100,7 +102,7 @@ DATABASES = {
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME':  'inspection',
+       'NAME':  'vignesh_proj',
        'USER' : 'postgres',
        'PASSWORD' : 'comp197',
        'HOST' : 'localhost',

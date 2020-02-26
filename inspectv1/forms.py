@@ -11,6 +11,13 @@ class CategoryForm(forms.ModelForm):
 
 CategoryItemsFormSet = inlineformset_factory(InspectionCategory,ItemInCategory, fields=("items",))
 
+
+class RunInspection(forms.ModelForm):
+
+    class Meta:
+      model = InspectedItem
+      fields = [ 'category_id', 'site_id', 'user_id', 'item_id', 'item_value', 'item_image' ]
+
 class InspectionData(forms.ModelForm):
 
 		class Meta:

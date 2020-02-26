@@ -1,0 +1,144 @@
+{% extends 'inspectv1/base.html' %}
+{%load static%}
+{% block content %}
+{% load bootstrap4 %}
+<head>
+<style>
+  p {
+    background-color: white;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+  </style>
+  </head>
+
+<script>
+  $(document).ready(function() {
+            console.log("Hello, world!");
+          });
+</script>
+<script>
+  function myfunction(id){
+    
+
+console.log("Hii")
+  var checkBox = document.getElementById("mycheck_"+id);
+  var text = document.getElementById("image_"+id);
+ console.log("Hello")
+ if (checkBox.checked == true){
+    $('#image_'+id).show()
+  } else {
+    $('#image_'+id).hide()
+  }
+ console.log("out")    
+  
+}
+  </script>
+
+
+<div class="inspection">
+ 
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card mt-3" >
+        <div class="card-header locationheader">Select Location</div>
+        <div class="card-body">
+          <h3 class="card-title"></h3>
+          
+          <div class="form-group">
+            <label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+              <label for="">Site Name</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+               <label for="">Site Address</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+               <label for="">Site Lat</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+               <label for="">Site Long</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+          </div>
+          <button type="button" class="btn btn-primary"> Get Checklist</button>
+        </div>
+      </div>
+  </div>
+  <div class="col-sm-9">
+    <form class="" action="{% url 'inspectv1:add' %}" method="post">
+      {% if messages %}
+        {% for message in messages %}
+        <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+        {% endfor %}
+    </ul>
+    {% endif %}
+      {% csrf_token %}
+     
+    
+  {% for cat in category|dictsort:"sequence" %}
+ 
+  
+    <div class="row mt-3">
+      
+      
+      <div class="col-sm-12 mx-auto" >
+        <div class="card" >
+          
+          
+          <div class="card-header">{{cat}}</div>
+          
+            
+          <table cellspacing="2" cellpadding="2">
+          <div class="card-body">
+            <h3 class="card-title">{{cat.items.category}}</h3>
+  
+           
+                <tr>
+                  <th style="width:25%; padding: 0 0 0 10px;">S.NO</th>
+                  <th style="width:25%;">Items</th>
+                  <th style="width:25%;">Field</th>
+                  <th style="width:25%;">Add Image</th>
+                  </tr>
+            
+            
+               {%for list in cat.items.all %}
+               <tr>
+               
+  
+               
+  
+            
+              <td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
+              <td><p class="para">{{list.items}}</p></td>
+              
+              <td><input type={{list.fieldtype}} id="myvalue_{{list.sequence}}" name="field" ></td>
+              
+              <td><input type='Checkbox' id="mycheck_{{list.sequence}}" name="status" class="cboxes" onclick="myfunction({{list.sequence}});"> <div><input type="file" name="my_image" id="image_{{list.sequence}}"  style="display:none"></div></td>
+
+              
+            
+              </tr>
+             {%endfor%}
+            
+          </div>
+        </table>
+        
+        
+          {% bootstrap_button "Save" button_type="submit" button_class="btn special" %}
+        
+        </div>
+      </div>
+    </form>
+    </div>
+    {%endfor%}
+    </div>
+  </div>
+  
+    
+  </div>
+  
+  {% endblock content %}
+  
+      

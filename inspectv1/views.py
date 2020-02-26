@@ -14,6 +14,12 @@ from django.views.generic.edit import FormView
 class IndexView(TemplateView):
     template_name = "inspectv1/index.html"
 
+
+class CreateInspectionForm(CreateView):
+    template_name = "inspectv1/inspection.html"
+    form_class =  RunInspection
+
+
 class ShowInspectionData(ListView):
     template_name = "inspectv1/updateinspection.html"
     form_class = InspectionData
@@ -45,6 +51,7 @@ class ShowInspectionData(ListView):
 
 def Add(request):
     print("In Add")
+    return HttpResponse(request.POST.items())
     if request.method == 'POST':
         print("In Add") 
 

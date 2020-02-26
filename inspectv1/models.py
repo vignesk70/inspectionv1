@@ -123,6 +123,19 @@ class InspectorDetails(models.Model):
         return str(self.users)
 
 
+class InspectedItem(models.Model):
+    category_id = models.ForeignKey("InspectionCategory",  on_delete=models.CASCADE)
+    site_id = models.ForeignKey("Sites",  on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    item_id = models.CharField("Item Id", max_length = 200)
+    item_value = models.CharField("Item value", max_length = 500)
+    item_image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
+
+    class Meta:
+        verbose_name = "Inspection Result"
+        verbose_name_plural = "Inspections Result"
+
+
 class InspectItem(models.Model):
     inspector_name=models.CharField("Inspector Name",max_length=100,default=' ')
     category_name=models.CharField("Category Name",max_length=100,default=' ')

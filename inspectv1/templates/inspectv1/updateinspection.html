@@ -2,39 +2,113 @@
 {%load static%}
 {% block content %}
 {% load bootstrap4 %}
-<head>
-<style>
-  p {
-    background-color: white;
-    margin-top: 0;
-    margin-bottom: 1rem;
-}
-  </style>
-  </head>
+{% block js %}
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+{% endblock %}
 
-<script>
-  $(document).ready(function() {
-            console.log("Hello, world!");
-          });
-</script>
+<style>
+ p { background-color: white; margin-top: 0; margin-bottom: 1rem; }
+ .base_error{ background-color:#ff0000;}	
+ .error{ color:#ff0000;}
+ .success{ color : green; padding:10px; }
+ .invisible { display:none; }	
+ .visible { display:block; }	
+</style>
+
+
+
 <script>
   function myfunction(id){
-    
-
-console.log("Hii")
-  var checkBox = document.getElementById("mycheck_"+id);
-  var text = document.getElementById("image_"+id);
- console.log("Hello")
- if (checkBox.checked == true){
-    $('#image_'+id).show()
-  } else {
-    $('#image_'+id).hide()
-  }
- console.log("out")    
-  
-}
+	  var type = $("#field_"+id)[0].type;
+	  
+	  if(type == "checkbox"){
+	  	if ($("#field_"+id).is(":checked")) { 
+             $("#image_"+id).show(); 
+         }
+		 else{
+		 	$("#image_"+id).hide();
+		 }
+	  }
+	}
   </script>
+<script type="text/javascript">
+	$("document").ready(function(){
+		//alert("test te");	
+		
+		
+		$(".submitbutton").click(function(event){
+		  event.preventDefault();
+			//alert();
+			
+			var category_id = $(this).prop('id');
+			
+			$("#category_"+category_id).find("input[type=hidden]").each(function(){
+				
+				if( $(this).prop('name') == "item_id" ) {
+				//alert($(this).html());
+				var itemid =  $(this).val();
+				
+				var itemvalue = $("#field_"+itemid).val();
+				var itemimage = $("#image_"+itemid).val();
+				
+				
+				if(itemvalue != ''){
+				
+				let formData = {};
+				formData.category_id = category_id;
+				formData.item_id = itemid;
+				formData.site_id = '1';
+				formData.item_value = itemvalue;
+				formData.item_image = itemimage;
+				formData.csrfmiddlewaretoken = '{{ csrf_token }}';	
 
+				
+				$.ajax({
+					url:  '/inspect/add/',
+					type:  'post',
+					data : formData,
+					success:  function (data) {
+						if( $("#throw_error_"+itemid).val()  ){
+							$( "#card_header_"+category_id ).addClass( "base_error" );
+						}
+						//$(el).parents()[1].remove()
+						//alert("Data Saved Successfully");
+					   $(".showmessage").addClass("success");	
+					   $(".showmessage").html("Data Saved Successfully");	
+					   $(".showmessage").show();	
+					}
+				});
+				
+			}	}
+				
+				
+			});
+			
+		});
+		
+	})
+	
+	
+	
+	function ajaxsubmit(){
+		return false;
+		
+	}
+	
+	function showcard(id){
+		if( $( "#category_"+id ).hasClass('visible') ){
+			$( "#category_"+id ).removeClass('visible');
+			$( "#category_"+id ).addClass('invisible');
+		}else{
+			$( "#category_"+id ).removeClass('invisible');
+			$( "#category_"+id ).addClass('visible');
+		}
+	}
+	
+</script>
 
 <div class="inspection">
  
@@ -67,12 +141,17 @@ console.log("Hii")
       </div>
   </div>
   <div class="col-sm-9">
-    <form class="" action="{% url 'inspectv1:add' %}" method="post">
+	
+	  
+	  
+	  
+    <form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}" method="post">
+	  <p   class="showmessage" style="display:none;" > Data Saved Successfully. </p>	
       {% if messages %}
         {% for message in messages %}
         <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
         {% endfor %}
-    </ul>
+   
     {% endif %}
       {% csrf_token %}
      
@@ -87,52 +166,52 @@ console.log("Hii")
         <div class="card" >
           
           
-          <div class="card-header">{{cat}}</div>
+          <div class="card-header" id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
           
             
-          <table cellspacing="2" cellpadding="2">
-          <div class="card-body">
-            <h3 class="card-title">{{cat.items.category}}</h3>
-  
+          <table cellspacing="2" cellpadding="2" class="singlecategory invisible" id="category_{{cat.id}}" >
+          
+            <!-- <h3 class="card-title">{{cat.items.category}}</h3> -->
+  			 <input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 	
            
                 <tr>
                   <th style="width:25%; padding: 0 0 0 10px;">S.NO</th>
                   <th style="width:25%;">Items</th>
-                  <th style="width:25%;">Field</th>
-                  <th style="width:25%;">Add Image</th>
+                  <th style="width:25%;">Remarks</th>
+                  <th style="width:25%;"></th>
                   </tr>
             
             
                {%for list in cat.items.all %}
-               <tr>
-               
-  
-               
-  
-            
+               <tr class="singleitem" id="item_{{list.id}}">
+               <input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}" >
+               <input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
               <td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
               <td><p class="para">{{list.items}}</p></td>
+              <td><input type={{list.fieldtype}}  name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')" ></td>
               
-              <td><input type={{list.fieldtype}} id="myvalue_{{list.sequence}}" name="field[]" ></td>
-              
-              <td><input type='Checkbox' id="mycheck_{{list.sequence}}" name="status[]" class="cboxes" onclick="myfunction({{list.sequence}});"> <div><input type="file" name="my_image" id="image_{{list.sequence}}"  style="display:none"></div></td>
+              <td><!--<input type='Checkbox' id="mycheck_{{list.sequence}}" name="status[]" class="cboxes" onclick="myfunction({{list.sequence}});">--> <div><input type="file" name="my_image" id="image_{{list.id}}"  style="display:none"></div></td>
 
               
             
               </tr>
              {%endfor%}
             
-          </div>
+         
+		 <tr><td colspan="4">	  
+			  <button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="width:100%;">Save</button>
+          <!--{% bootstrap_button "Save" button_type="submit" id="{{cat.id}}" button_class="btn special" %} -->
+			 </td></tr>
         </table>
         
         
-          {% bootstrap_button "Save" button_type="submit" button_class="btn special" %}
-        
         </div>
       </div>
-    </form>
+   
     </div>
     {%endfor%}
+	 </form>  
+	  
     </div>
   </div>
   
@@ -140,5 +219,5 @@ console.log("Hii")
   </div>
   
   {% endblock content %}
-  
+	
       

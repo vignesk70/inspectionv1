@@ -2,6 +2,8 @@ from django import forms
 from django.forms import ModelForm
 from .models import *
 from django.forms.models import inlineformset_factory
+from django.http import HttpResponse,HttpResponseRedirect
+from django.forms import formset_factory
 
 class CategoryForm(forms.ModelForm):
     
@@ -18,16 +20,31 @@ class RunInspection(forms.ModelForm):
       model = InspectedItem
       fields = [ 'category_id', 'site_id', 'user_id', 'item_id', 'item_value', 'item_image' ]
 
+
+class ItemForm(forms.Form):
+    name = forms.CharField(
+        label='Item Name',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter Item Name here'
+        })
+    )
+ItemFormset = formset_factory(ItemForm, extra=1)
+
+
 class InspectionData(forms.ModelForm):
 
-		class Meta:
-			model = InspectItem
-			fields = ['inspector_name','category_name','site_name']
-			widgets = {
-				'inspector_name' : forms.TextInput(attrs={'size':50}),
-				'category_name' : forms.TextInput(attrs={'size':50}),
-				'site_name' : forms.TextInput(attrs={'size':5})
-			}
+    inspector_name = forms.CharField(required=True)
+    site_name = forms.CharField(required=True)
+
+    class Meta:
+      model = InspectedItem
+      fields = []
+      widgets = {
+      }
+
+   
+
 
 """class ProfileForm(forms.Form):
     first_name = forms.CharField(required=True)

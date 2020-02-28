@@ -6,6 +6,11 @@ from django.http import HttpResponse,HttpResponseRedirect
 from .forms import *
 from django.contrib import messages
 from django.views.generic.edit import FormView
+from django.views.generic.edit import FormMixin
+from .forms import InspectionData
+
+
+from .models import ItemInCategory
 
 
 
@@ -20,7 +25,7 @@ class CreateInspectionForm(CreateView):
     form_class =  RunInspection
 
 
-class ShowInspectionData(ListView):
+class ShowInspectionData(FormMixin, ListView):
     template_name = "inspectv1/updateinspection.html"
     form_class = InspectionData
 
@@ -47,12 +52,34 @@ class ShowInspectionData(ListView):
         return self.render_to_response(
             self.get_context_data(form=form)) """
 
-    
+
+
+
 
 def Add(request):
     print("In Add")
-    return HttpResponse(request.POST.items())
+    #return HttpResponse(request.POST['category_id']) 
+
     if request.method == 'POST':
+        current_user = request.user
+        #print current_user.id
+        #return HttpResponse(current_user.id)
+        inspectObj = InspectedItem()
+
+        inspectObj.category_id_id = request.POST['category_id']
+        inspectObj.site_id_id = request.POST['site_id']
+        inspectObj.user_id_id = current_user.id
+        inspectObj.item_id_id = request.POST['item_id']
+        inspectObj.item_value = request.POST['item_value']
+        #inspectObj.item_image = 1
+        inspectObj.save()
+
+        return HttpResponse(request.POST.items())
+
+    else:
+        return HttpResponse("0")  
+
+    """if request.method == 'POST':
         print("In Add") 
 
         field_name1 = 'category'
@@ -105,4 +132,4 @@ def Add(request):
             return HttpResponseRedirect('/inspect/inspection')
 
         else:
-            return HttpResponse("NotDone")   
+            return HttpResponse("NotDone")  """ 

@@ -127,13 +127,16 @@ class InspectedItem(models.Model):
     category_id = models.ForeignKey("InspectionCategory",  on_delete=models.CASCADE)
     site_id = models.ForeignKey("Sites",  on_delete=models.CASCADE)
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    item_id = models.CharField("Item Id", max_length = 200)
+    item_id = models.ForeignKey("ItemInCategory",  on_delete=models.CASCADE) #models.CharField("Item Id", max_length = 200)
     item_value = models.CharField("Item value", max_length = 500)
     item_image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
 
     class Meta:
         verbose_name = "Inspection Result"
         verbose_name_plural = "Inspections Result"
+
+    def __str__(self):
+        return self.item_value    
 
 
 class InspectItem(models.Model):

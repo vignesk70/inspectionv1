@@ -169,25 +169,18 @@
           <div class="card-header" id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
           
             
-          <table cellspacing="2" cellpadding="2" class="singlecategory invisible" id="category_{{cat.id}}" >
+          <table cellspacing="2" cellpadding="2" class="table singlecategory invisible" id="category_{{cat.id}}" >
           
             <!-- <h3 class="card-title">{{cat.items.category}}</h3> -->
   			 <input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 	
-           
+           <thead class="thead-dark">
                 <tr>
-<<<<<<< HEAD
-                  <th style="width:25%; padding: 0 0 0 10px;">S.NO</th>
-                  <th style="width:25%;">Items</th>
-                  <th style="width:25%;">Remarks</th>
-                  <th style="width:25%;"></th>
-=======
-                  <th style="width:10%; padding: 0 0 0 10px;">S.No.</th>
+                  <th style="">S.NO</th>
                   <th style="">Items</th>
-                  <th style="width:25%;"></th>
-                  <th style="width:25%;">Add Image</th>
->>>>>>> 333afe4cea786bf221b9dbaa2a8ca06746d6f231
+                  <th style="">Remarks</th>
+                  <th style=""></th>
                   </tr>
-            
+                </thead>
             
                {%for list in cat.items.all %}
                <tr class="singleitem" id="item_{{list.id}}">
@@ -212,11 +205,6 @@
         </table>
         
         
-<<<<<<< HEAD
-=======
-          {% bootstrap_button "Save" button_type="submit" button_class="btn btn-primary" %}
-        
->>>>>>> 333afe4cea786bf221b9dbaa2a8ca06746d6f231
         </div>
       </div>
    

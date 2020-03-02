@@ -180,20 +180,21 @@
           <div class="card-header" id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
           
             
-          <table cellspacing="2" cellpadding="2" class="singlecategory invisible" id="category_{{cat.id}}" >
+          <table cellspacing="2" cellpadding="2" class="table singlecategory invisible" id="category_{{cat.id}}" >
           
             <!-- <h3 class="card-title">{{cat.items.category}}</h3> -->
   			 <input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 	
-           
+           <thead class="thead-dark">
                 <tr>
                   <th style="width:25%; padding: 0 0 0 10px;">S.NO</th>
                   <th style="width:25%;">Items</th>
                   <th style="width:25%;">Remarks</th>
                   <th style="width:25%;"></th>
                   </tr>
-            
+                </thead>
             
                {%for list in cat.items.all %}
+               <tbody class="table-striped">
                <tr class="singleitem" id="item_{{list.id}}">
                <input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}" >
                <input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
@@ -206,6 +207,7 @@
               
             
               </tr>
+            </tbody>
              {%endfor%}
             
          

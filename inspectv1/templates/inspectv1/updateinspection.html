@@ -15,7 +15,10 @@
  .error{ color:#ff0000;}
  .success{ color : green; padding:10px; }
  .invisible { display:none; }	
- .visible { display:block; }	
+	.singlecategory.visible { display:table;width:100%;}
+	.singlecategory.visible th{background-color:#fbf7f7;padding: 10px;}
+	.singlecategory button.special{background-color:#2fa8d7;width: auto;padding: 7px 40px;color:#fefefe;float: right;margin-right: 27px;margin-bottom: 15px;margin-top: 29px;}
+	
 </style>
 
 
@@ -38,6 +41,8 @@
 	$("document").ready(function(){
 		//alert("test te");	
 		
+	
+		
 		
 		$(".submitbutton").click(function(event){
 		  event.preventDefault();
@@ -54,6 +59,12 @@
 				var itemvalue = $("#field_"+itemid).val();
 				var itemimage = $("#image_"+itemid).val();
 				
+				//alert(itemvalue);
+				
+				if($("#field_"+itemid).prop('type') == 'checkbox'){
+					itemvalue = $("#field_"+itemid).prop('checked');
+				
+				}
 				
 				if(itemvalue != ''){
 				
@@ -175,17 +186,10 @@
   			 <input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 	
            
                 <tr>
-<<<<<<< HEAD
                   <th style="width:25%; padding: 0 0 0 10px;">S.NO</th>
                   <th style="width:25%;">Items</th>
                   <th style="width:25%;">Remarks</th>
                   <th style="width:25%;"></th>
-=======
-                  <th style="width:10%; padding: 0 0 0 10px;">S.No.</th>
-                  <th style="">Items</th>
-                  <th style="width:25%;"></th>
-                  <th style="width:25%;">Add Image</th>
->>>>>>> 333afe4cea786bf221b9dbaa2a8ca06746d6f231
                   </tr>
             
             
@@ -195,7 +199,7 @@
                <input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
               <td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
               <td><p class="para">{{list.items}}</p></td>
-              <td><input type={{list.fieldtype}}  name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')" ></td>
+              <td><input type={{list.fieldtype}}  name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  ></td>
               
               <td><!--<input type='Checkbox' id="mycheck_{{list.sequence}}" name="status[]" class="cboxes" onclick="myfunction({{list.sequence}});">--> <div><input type="file" name="my_image" id="image_{{list.id}}"  style="display:none"></div></td>
 
@@ -206,17 +210,13 @@
             
          
 		 <tr><td colspan="4">	  
-			  <button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="width:100%;">Save</button>
+			  <button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="">Save</button>
           <!--{% bootstrap_button "Save" button_type="submit" id="{{cat.id}}" button_class="btn special" %} -->
 			 </td></tr>
         </table>
         
         
-<<<<<<< HEAD
-=======
-          {% bootstrap_button "Save" button_type="submit" button_class="btn btn-primary" %}
-        
->>>>>>> 333afe4cea786bf221b9dbaa2a8ca06746d6f231
+
         </div>
       </div>
    

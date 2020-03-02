@@ -130,6 +130,10 @@ class InspectedItem(models.Model):
     item_id = models.ForeignKey("ItemInCategory",  on_delete=models.CASCADE) #models.CharField("Item Id", max_length = 200)
     item_value = models.CharField("Item value", max_length = 500)
     item_image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
+    add_date = models.DateField("Add Date", auto_now_add=True)
+    update_date = models.DateField("Update Date",  auto_now_add=True)
+
+    list_display = ('item_value', 'add_date', 'update_date')
 
     class Meta:
         verbose_name = "Inspection Result"

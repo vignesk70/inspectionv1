@@ -183,6 +183,7 @@
                 </thead>
             
                {%for list in cat.items.all %}
+               <tbody class="table-striped">
                <tr class="singleitem" id="item_{{list.id}}">
                <input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}" >
                <input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
@@ -195,6 +196,7 @@
               
             
               </tr>
+            </tbody>
              {%endfor%}
             
          

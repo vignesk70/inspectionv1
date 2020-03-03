@@ -33,6 +33,12 @@ class InspectItemAdmin(admin.ModelAdmin):
         return False'''
 
 
+class InspectedItemAdmin(admin.ModelAdmin):
+    list_display = ('site_id', 'item_value', 'add_date', 'update_date', 'category_id', 'user_id')
+    list_filter = ('category_id', 'user_id')
+    #fields = ['category_id', 'site_id', 'user_id', ('date_of_birth', 'date_of_death')]
+
+
 
 #admin.site.register(InspectItem, InspectItemAdmin)
 
@@ -43,7 +49,7 @@ class InspectItemAdmin(admin.ModelAdmin):
 #admin.site.register(ItemInCategory)
 admin.site.register(Sites)
 admin.site.register(InspectionCategory,CategoryAdmin)
-admin.site.register(InspectedItem)
+admin.site.register(InspectedItem, InspectedItemAdmin)
 #admin.site.register(Inspected_Item)
 admin.site.register(InspectorDetails)
 #admin.site.register(ItemInCategory)

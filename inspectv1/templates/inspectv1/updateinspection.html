@@ -16,7 +16,8 @@
  .success{ color : green; padding:10px; }
  .invisible { display:none; }	
 	.singlecategory.visible { display:table;width:100%;}
-	.singlecategory.visible th{background-color:#fbf7f7;padding: 10px;}
+	.singlecategory.visible th{background-color:#fbf7f7;padding: 10px; color:#000; vertical-align:middle; text-align:center; }
+	.singlecategory.visible td{text-align:center; }
 	.singlecategory button.special{background-color:#2fa8d7;width: auto;padding: 7px 40px;color:#fefefe;float: right;margin-right: 27px;margin-bottom: 15px;margin-top: 29px;}
 	
 </style>
@@ -186,29 +187,30 @@
   			 <input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 	
            <thead class="thead-dark">
                 <tr>
-                  <th style="width:25%; padding: 0 0 0 10px;">S.NO</th>
-                  <th style="width:25%;">Items</th>
-                  <th style="width:25%;">Remarks</th>
-                  <th style="width:25%;"></th>
+                  <th style="width:10%; padding: 0 0 0 10px;">S.NO</th>
+                  <th style="width:40%;">Items</th>
+                  <th style="width:20%; text-align:left;">Remarks</th>
+                  <th style="width:30%;"></th>
                   </tr>
                 </thead>
-            
+            	<tbody class="table-striped">
                {%for list in cat.items.all %}
-               <tbody class="table-striped">
+               
                <tr class="singleitem" id="item_{{list.id}}">
                <input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}" >
                <input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
               <td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
-              <td><p class="para">{{list.items}}</p></td>
-              <td><input type={{list.fieldtype}}  name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  ></td>
+              <td ><p class="para">{{list.items}}</p></td>
+              <td style="text-align:left;"><input type={{list.fieldtype}}  name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  ></td>
               
               <td><!--<input type='Checkbox' id="mycheck_{{list.sequence}}" name="status[]" class="cboxes" onclick="myfunction({{list.sequence}});">--> <div><input type="file" name="my_image" id="image_{{list.id}}"  style="display:none"></div></td>
 
               
             
               </tr>
-            </tbody>
+           
              {%endfor%}
+					 </tbody>
             
          
 		 <tr><td colspan="4">	  

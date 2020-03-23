@@ -34,16 +34,13 @@ ItemFormset = formset_factory(ItemForm, extra=1)
 
 class InspectionData(forms.ModelForm):
 
-    inspector_name = forms.CharField(required=True)
-    site_name = forms.CharField(required=True)
+    #inspector_name = forms.CharField(required=True)
+    #site_name = forms.CharField(required=True)
 
     class Meta:
       model = InspectedItem
-      fields = []
-      widgets = {
-      }
-
-   
+      fields = ['category_id', 'item_id', 'site_id', 'item_value','item_image']
+       
 
 
 """class ProfileForm(forms.Form):

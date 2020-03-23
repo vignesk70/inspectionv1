@@ -1,5 +1,5 @@
 body {
-    background-color: rgba(0, 0, 0, 0.76);
+    background-color: rgba(0, 0, 0, 0.76) !important;
     font-family: 'Open Sans', sans-serif;
 
 }
@@ -46,11 +46,11 @@ li .nocircle{
 }
 
 .card-header  {
-    background-color: rgba(84, 175, 211, 0.514);
+    background-color: rgba(84, 175, 211, 0.514) !important;
 }
 
 .card-heaader.locationheader {
-    background-color: rgba(86, 91, 94, 0.514);
+    background-color: rgba(86, 91, 94, 0.514) !important;
 
 }
 

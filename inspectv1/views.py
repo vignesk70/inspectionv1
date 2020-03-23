@@ -1,3 +1,6 @@
+import os
+import json
+
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView
 from django import forms
@@ -8,6 +11,8 @@ from django.contrib import messages
 from django.views.generic.edit import FormView
 from django.views.generic.edit import FormMixin
 from .forms import InspectionData
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 
 from .models import ItemInCategory
@@ -62,8 +67,27 @@ def Add(request):
 
     if request.method == 'POST':
         current_user = request.user
+
+        image = request.FILES['item_image']
+        image_types = [
+            'image/png', 'image/jpg',
+            'image/jpeg', 'image/pjpeg', 'image/gif'
+        ]
+        if image.content_type not in image_types:
+            data = json.dumps({
+                'status': 405,
+                'error': _('Bad image format.')
+            })
+            return HttpResponse(
+                data, content_type="application/json", status=405)
+
+        tmp_file = os.path.join(settings.MEDIA_ROOT, image.name)
+        path = default_storage.save(tmp_file, ContentFile(image.read()))
+        img_url = os.path.join(settings.MEDIA_URL, path)
+
+        return HttpResponse(request.POST.items())
         #print current_user.id
-        #return HttpResponse(current_user.id)
+        #return HttpResponse(request.FILES)
         inspectObj = InspectedItem()
 
         inspectObj.category_id_id = request.POST['category_id']

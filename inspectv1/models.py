@@ -123,6 +123,11 @@ class InspectorDetails(models.Model):
         return str(self.users)
 
 
+class CategoryFilterManager(models.Manager):
+    def get_queryset(self):
+    	return super().get_queryset() #.filter(category_id__id__exact = '6')
+
+
 class InspectedItem(models.Model):
     category_id = models.ForeignKey("InspectionCategory",  on_delete=models.CASCADE)
     site_id = models.ForeignKey("Sites",  on_delete=models.CASCADE)
@@ -133,7 +138,8 @@ class InspectedItem(models.Model):
     add_date = models.DateField("Add Date", auto_now_add=True)
     update_date = models.DateField("Update Date",  auto_now_add=True)
 
-    list_display = ('item_value', 'add_date', 'update_date')
+    objects = CategoryFilterManager()
+    filter_objects = CategoryFilterManager() # The Dahl-specific manager.
 
     class Meta:
         verbose_name = "Inspection Result"

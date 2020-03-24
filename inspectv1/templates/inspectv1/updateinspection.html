@@ -5,8 +5,21 @@
 {% block js %}
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
+
+  
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
+  <script>
+    console.log("Hello")
+    $('.close').ready(function() {
+   $('.alertbox').hide();
+})
+  </script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 {% endblock %}
 
 <style>
@@ -60,7 +73,6 @@
 				var itemvalue = $("#field_"+itemid).val();
 				var itemimage = $("#image_"+itemid).val();
 				
-				//alert(itemvalue);
 				
 				if($("#field_"+itemid).prop('type') == 'checkbox'){
 					itemvalue = $("#field_"+itemid).prop('checked');
@@ -68,29 +80,37 @@
 				}
 				
 				if(itemvalue != ''){
-				
-				let formData = {};
-				formData.category_id = category_id;
-				formData.item_id = itemid;
-				formData.site_id = '1';
-				formData.item_value = itemvalue;
-				formData.item_image = itemimage;
-				formData.csrfmiddlewaretoken = '{{ csrf_token }}';	
 
+				var file = $("#image_"+itemid)[0].files[0];	
+				var form_data = new FormData();	
+				form_data.append("category_id", category_id);	
+				form_data.append("item_id", itemid);	
+				form_data.append("site_id", '1');	
+				form_data.append("item_value", itemvalue);	
+				form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+				form_data.append("item_image", file); 
+					
+				console.log(form_data); 	
+				//console.log('{{ csrf_token }}'); return;	
 				
 				$.ajax({
 					url:  '/inspect/add/',
 					type:  'post',
-					data : formData,
+					data : form_data,
+          			contentType: false,
+        			processData: false,
 					success:  function (data) {
 						if( $("#throw_error_"+itemid).val()  ){
 							$( "#card_header_"+category_id ).addClass( "base_error" );
 						}
 						//$(el).parents()[1].remove()
 						//alert("Data Saved Successfully");
-					   $(".showmessage").addClass("success");	
-					   $(".showmessage").html("Data Saved Successfully");	
-					   $(".showmessage").show();	
+					  //  $(".showmessage").addClass("success");	
+					   // $(".showmessage").html("Data Saved Successfully");	
+					   $(".alert").show();	
+
+            //$('.alert alert-success').toast('show');
+
 					}
 				});
 				
@@ -138,7 +158,7 @@
               <label for="">Site Name</label>
             <input type="text"
               class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
-               <label for="">Site Address</label>
+            <!--  <label for="">Site Address</label>
             <input type="text"
               class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
                <label for="">Site Lat</label>
@@ -146,7 +166,7 @@
               class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
                <label for="">Site Long</label>
             <input type="text"
-              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder=""> -->
           </div>
           <button type="button" class="btn btn-primary"> Get Checklist</button>
         </div>
@@ -216,7 +236,11 @@
 		 <tr><td colspan="4">	  
 			  <button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="">Save</button>
           <!--{% bootstrap_button "Save" button_type="submit" id="{{cat.id}}" button_class="btn special" %} -->
-			 </td></tr>
+       </td></tr>
+       
+        
+
+        
         </table>
         
         
@@ -227,7 +251,9 @@
     </div>
     {%endfor%}
 	 </form>  
-	  
+	  <div class="alert alert-success alertbox"  style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
+          <span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
+        </div>
     </div>
   </div>
   
@@ -236,4 +262,3 @@
   
   {% endblock content %}
 	
-      

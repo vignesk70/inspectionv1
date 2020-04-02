@@ -9,6 +9,7 @@ urlpatterns = [
     #display home page
     path('',views.IndexView.as_view(), name='index'),
     path('add/',views.Add,name='add'),
+    path('getcategories/',views.GetCategories,name='getcategories'),
     path('inspection/',views.ShowInspectionData.as_view(),name='inspectiondata'),
     path('runinspection/',views.CreateInspectionForm.as_view(),name='runinspectiondata'),
     #path('inspection_test/',views.ShowInspectionDataText.as_view(),name='inspectiondataText'),

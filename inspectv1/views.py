@@ -59,6 +59,8 @@ class ShowInspectionData(FormMixin, ListView):
 
 
 
+def GetCategories(request):
+    print("In Add")
 
 
 def Add(request):

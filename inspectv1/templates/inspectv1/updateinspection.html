@@ -123,7 +123,27 @@
 		
 	})
 	
-	
+	function updatedata(){
+		var siteid = $("#siteid").val();
+		var sitename = $("#sitename").val();
+		
+		var form_data = new FormData();	
+		form_data.append("sitename", sitename);	
+		form_data.append("siteid", siteid);	
+		
+		$.ajax({
+					url:  '/inspect/getcategories/',
+					type:  'post',
+					data : form_data,
+          			contentType: false,
+        			processData: false,
+					success:  function (data) {
+						
+					}
+				});
+		
+		
+	}
 	
 	function ajaxsubmit(){
 		return false;
@@ -154,10 +174,10 @@
           <div class="form-group">
             <label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
             <input type="text"
-              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+              class="form-control" name="siteid" id="siteid" aria-describedby="helpId" placeholder="">
               <label for="">Site Name</label>
             <input type="text"
-              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+              class="form-control" name="sitename" id="sitename" aria-describedby="helpId" placeholder="">
             <!--  <label for="">Site Address</label>
             <input type="text"
               class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
@@ -168,15 +188,15 @@
             <input type="text"
               class="form-control" name="" id="" aria-describedby="helpId" placeholder=""> -->
           </div>
-          <button type="button" class="btn btn-primary"> Get Checklist</button>
+          <button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
         </div>
       </div>
   </div>
   <div class="col-sm-9">
 	
 	  
-	  
-	  
+	{% if 'type' in request.GET %}  
+	 	{% ifequal request.GET.type 'list' %} 
     <form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}" method="post">
 	  <p   class="showmessage" style="display:none;" > Data Saved Successfully. </p>	
       {% if messages %}
@@ -254,6 +274,10 @@
 	  <div class="alert alert-success alertbox"  style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
           <span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
         </div>
+	  	{% endifequal %}
+	{% endif %}  
+	  
+	  
     </div>
   </div>
   

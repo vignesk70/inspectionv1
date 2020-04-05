@@ -1,0 +1,235 @@
+{% extends 'inspectv1/base.html' %}
+{%load static%}
+{% block content %}
+{% load bootstrap4 %}
+{% block js %}
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+
+  
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+  <script>
+    console.log("Hello")
+    $('.close').ready(function() {
+   $('.alertbox').hide();
+})
+  </script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+{% endblock %}
+
+<style>
+ p { background-color: white; margin-top: 0; margin-bottom: 1rem; }
+ .base_error{ background-color:#ff0000;}	
+ .error{ color:#ff0000;}
+ .success{ color : green; padding:10px; }
+ .invisible { display:none; }	
+	.singlecategory.visible { display:table;width:100%;}
+	.singlecategory.visible th{background-color:#fbf7f7;padding: 10px; color:#000; vertical-align:middle; text-align:center; }
+	.singlecategory.visible td{text-align:center; }
+	.singlecategory button.special{background-color:#2fa8d7;width: auto;padding: 7px 40px;color:#fefefe;float: right;margin-right: 27px;margin-bottom: 15px;margin-top: 29px;}
+	
+</style>
+
+
+
+<script>
+  function myfunction(id){
+	  var type = $("#field_"+id)[0].type;
+	  
+	  if(type == "checkbox"){
+	  	if ($("#field_"+id).is(":checked")) { 
+             $("#image_"+id).show(); 
+         }
+		 else{
+		 	$("#image_"+id).hide();
+		 }
+	  }
+	}
+  </script>
+<script type="text/javascript">
+	$("document").ready(function(){
+		//alert("test te");	
+		
+	
+		
+		
+		$(".submitbutton").click(function(event){
+		  event.preventDefault();
+			//alert();
+			
+			var category_id = $(this).prop('id');
+			
+			$("#category_"+category_id).find("input[type=hidden]").each(function(){
+				
+				if( $(this).prop('name') == "item_id" ) {
+				//alert($(this).html());
+				var itemid =  $(this).val();
+				
+				var itemvalue = $("#field_"+itemid).val();
+				var itemimage = $("#image_"+itemid).val();
+				
+				
+				if($("#field_"+itemid).prop('type') == 'checkbox'){
+					itemvalue = $("#field_"+itemid).prop('checked');
+				
+				}
+				
+				if(itemvalue != ''){
+
+				var file = $("#image_"+itemid)[0].files[0];	
+				var form_data = new FormData();	
+				form_data.append("category_id", category_id);	
+				form_data.append("item_id", itemid);	
+				form_data.append("site_id", '1');	
+				form_data.append("item_value", itemvalue);	
+				form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+				form_data.append("item_image", file); 
+					
+				console.log(form_data); 	
+				//console.log('{{ csrf_token }}'); return;	
+				
+				$.ajax({
+					url:  '/inspect/add/',
+					type:  'post',
+					data : form_data,
+          			contentType: false,
+        			processData: false,
+					success:  function (data) {
+						if( $("#throw_error_"+itemid).val()  ){
+							$( "#card_header_"+category_id ).addClass( "base_error" );
+						}
+						//$(el).parents()[1].remove()
+						//alert("Data Saved Successfully");
+					  //  $(".showmessage").addClass("success");	
+					   // $(".showmessage").html("Data Saved Successfully");	
+					   $(".alert").show();	
+
+            //$('.alert alert-success').toast('show');
+
+					}
+				});
+				
+			}	}
+				
+				
+			});
+			
+		});
+		
+	})
+	
+	function updatedata(){
+		var siteid = $("#siteid").val();
+		var sitename = $("#sitename").val();
+		
+		var form_data = new FormData();	
+		form_data.append("sitename", sitename);	
+		form_data.append("siteid", siteid);	
+		form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+		
+		$.ajax({
+					url:  '/inspect/getcategories/',
+					type:  'post',
+					data : form_data,
+          			contentType: false,
+        			processData: false,
+					success:  function (data) {
+						if(data == 0){
+							$("#choosesite").html("Entered Site Id doesn't Exist.");
+							$("#choosesite").addClass("error");
+							$("#errormessage").show();
+							$("#sitelist").hide();
+						}else{
+							$("html").html(data);
+						}	
+					}
+				});
+		
+		
+	}
+	
+	function ajaxsubmit(){
+		return false;
+		
+	}
+	
+	function showcard(id){
+		if( $( "#category_"+id ).hasClass('visible') ){
+			$( "#category_"+id ).removeClass('visible');
+			$( "#category_"+id ).addClass('invisible');
+		}else{
+			$( "#category_"+id ).removeClass('invisible');
+			$( "#category_"+id ).addClass('visible');
+		}
+	}
+	
+</script>
+
+<div class="inspection">
+ 
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card mt-3" >
+        <div class="card-header locationheader">Select Location</div>
+        <div class="card-body">
+          <h3 class="card-title"></h3>
+          
+          <div class="form-group">
+            <label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
+            <input type="text"
+              class="form-control" name="siteid" id="siteid" aria-describedby="helpId" placeholder="">
+              <label for="">Site Name</label>
+            <input type="text"
+              class="form-control" name="sitename" id="sitename" aria-describedby="helpId" placeholder="">
+            <!--  <label for="">Site Address</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+               <label for="">Site Lat</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+               <label for="">Site Long</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder=""> -->
+          </div>
+          <button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
+        </div>
+      </div>
+  </div>
+  <div class="col-sm-9">
+	  <div class="row sitelist" style="padding-top:10px;">
+        <div class="col-sm-12">
+		<div class="row">
+	  {% for site in sites %}
+	  
+	  <div class="col-sm-3">
+			<div class="card mt-3">
+        		<div class="card-header locationheader">{{site.name}}</div>
+        		<div class="card-body">
+          <h3 class="card-title"></h3>
+          
+          
+          <button type="button" class="btn btn-primary"><a href="/inspect/inspection/?type=site&site={{site.site_no}}">Choose Site</a></button>
+        </div>
+      		</div>
+			 </div> 
+	   {%endfor%}
+	 </div>
+			</div>
+		  </div>
+	  
+	  <div class="errormessage" style="display:none;">
+		  	<div id="choosesite" style="color:#000; background-color:#fff; width:100%; padding: 10px; border-radius:5px; margin: 20px 20px 0 0;">Choose Site First</div>
+	  </div>		  
+    </div>
+  </div>
+  
+    
+  </div>
+  
+  {% endblock content %}
+	

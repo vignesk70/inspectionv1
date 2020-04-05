@@ -13,6 +13,7 @@ from django.views.generic.edit import FormMixin
 from .forms import InspectionData
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.template.loader import render_to_string
 
 
 from .models import ItemInCategory
@@ -22,7 +23,7 @@ from .models import ItemInCategory
 
 # Create your views here.
 class IndexView(TemplateView):
-template_name = "inspectv1/index.html"
+    template_name = "inspectv1/index.html"
 
 
 class CreateInspectionForm(CreateView):
@@ -60,7 +61,17 @@ class ShowInspectionData(FormMixin, ListView):
 
 
 def GetCategories(request):
-    print("In Add")
+    if request.method == 'POST':
+        sites = Sites.objects.all().filter(site_no=request.POST['siteid'])
+        site_count = Sites.objects.all().filter(site_no=request.POST['siteid']).count()
+
+        if site_count ==0:
+            return HttpResponse(site_count)
+        else:
+            html = render_to_string('inspectv1/sites.html', {'sites': sites})
+            return HttpResponse(html)
+    else:
+        return HttpResponse(0)
 
 
 def Add(request):

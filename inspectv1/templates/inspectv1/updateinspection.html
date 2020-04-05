@@ -25,7 +25,7 @@
 <style>
  p { background-color: white; margin-top: 0; margin-bottom: 1rem; }
  .base_error{ background-color:#ff0000;}	
- .error{ color:#ff0000;}
+ .error{ color:#ff0000 !important;}
  .success{ color : green; padding:10px; }
  .invisible { display:none; }	
 	.singlecategory.visible { display:table;width:100%;}
@@ -72,6 +72,7 @@
 				
 				var itemvalue = $("#field_"+itemid).val();
 				var itemimage = $("#image_"+itemid).val();
+				var site_id = $("#site_id").val();
 				
 				
 				if($("#field_"+itemid).prop('type') == 'checkbox'){
@@ -85,7 +86,7 @@
 				var form_data = new FormData();	
 				form_data.append("category_id", category_id);	
 				form_data.append("item_id", itemid);	
-				form_data.append("site_id", '1');	
+				form_data.append("site_id", site_id);	
 				form_data.append("item_value", itemvalue);	
 				form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
 				form_data.append("item_image", file); 
@@ -130,6 +131,7 @@
 		var form_data = new FormData();	
 		form_data.append("sitename", sitename);	
 		form_data.append("siteid", siteid);	
+		form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
 		
 		$.ajax({
 					url:  '/inspect/getcategories/',
@@ -139,6 +141,12 @@
         			processData: false,
 					success:  function (data) {
 						
+						if(data == 0){
+							$("#choosesite").html("Entered Site Id doesn't Exist.");
+							$("#choosesite").addClass("error");
+						}else{
+							$("html").html(data);
+						}	
 					}
 				});
 		
@@ -275,6 +283,174 @@
           <span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
         </div>
 	  	{% endifequal %}
+	  
+	  {% ifequal request.GET.type 'site' %} 
+    <form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}" method="post">
+		<input type="hidden" value="{{request.GET.site}}" name="site_id" id="site_id" > 
+	  <p   class="showmessage" style="display:none;" > Data Saved Successfully. </p>	
+      {% if messages %}
+        {% for message in messages %}
+        <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+        {% endfor %}
+   
+    {% endif %}
+      {% csrf_token %}
+     
+    
+  {% for cat in category|dictsort:"sequence" %}
+ 
+  
+    <div class="row mt-3">
+      
+      
+      <div class="col-sm-12 mx-auto" >
+        <div class="card" >
+          
+          
+          <div class="card-header" id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
+          
+            
+          <table cellspacing="2" cellpadding="2" class="table singlecategory invisible" id="category_{{cat.id}}" >
+          
+            <!-- <h3 class="card-title">{{cat.items.category}}</h3> -->
+  			 <input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 
+			 
+			  
+           <thead class="thead-dark">
+                <tr>
+                  <th style="width:10%; padding: 0 0 0 10px;">S.NO</th>
+                  <th style="width:40%;">Items</th>
+                  <th style="width:20%; text-align:left;">Remarks</th>
+                  <th style="width:30%;"></th>
+                  </tr>
+                </thead>
+            	<tbody class="table-striped">
+               {%for list in cat.items.all %}
+               
+               <tr class="singleitem" id="item_{{list.id}}">
+               <input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}" >
+               <input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
+              <td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
+              <td ><p class="para">{{list.items}}</p></td>
+              <td style="text-align:left;"><input type={{list.fieldtype}}  name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  ></td>
+              
+              <td><!--<input type='Checkbox' id="mycheck_{{list.sequence}}" name="status[]" class="cboxes" onclick="myfunction({{list.sequence}});">--> <div><input type="file" name="my_image" id="image_{{list.id}}"  style="display:none"></div></td>
+
+              
+            
+              </tr>
+           
+             {%endfor%}
+					 </tbody>
+            
+         
+		 <tr><td colspan="4">	  
+			  <button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="">Save</button>
+          <!--{% bootstrap_button "Save" button_type="submit" id="{{cat.id}}" button_class="btn special" %} -->
+       </td></tr>
+       
+        
+
+        
+        </table>
+        
+        
+
+        </div>
+      </div>
+   
+    </div>
+    {%endfor%}
+	 </form>  
+	  <div class="alert alert-success alertbox"  style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
+          <span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
+        </div>
+	  	{% endifequal %}
+	  
+	    {% ifequal request.GET.type 'new' %} 
+	  		<div id="choosesite" style="color:#000; background-color:#fff; width:100%; padding: 10px; border-radius:5px; margin: 20px 20px 0 0;">Choose Site First</div>
+	   <div class="alert alert-success alertbox"  style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
+          <span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
+        </div>
+	    {% endifequal %}
+	{% else %}
+	  <form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}" method="post">
+	  <p   class="showmessage" style="display:none;" > Data Saved Successfully. </p>	
+      {% if messages %}
+        {% for message in messages %}
+        <p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+        {% endfor %}
+   
+    {% endif %}
+      {% csrf_token %}
+     
+    
+  {% for cat in category|dictsort:"sequence" %}
+ 
+  
+    <div class="row mt-3">
+      
+      
+      <div class="col-sm-12 mx-auto" >
+        <div class="card" >
+          
+          
+          <div class="card-header" id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
+          
+            
+          <table cellspacing="2" cellpadding="2" class="table singlecategory invisible" id="category_{{cat.id}}" >
+          
+            <!-- <h3 class="card-title">{{cat.items.category}}</h3> -->
+  			 <input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 	
+           <thead class="thead-dark">
+                <tr>
+                  <th style="width:10%; padding: 0 0 0 10px;">S.NO</th>
+                  <th style="width:40%;">Items</th>
+                  <th style="width:20%; text-align:left;">Remarks</th>
+                  <th style="width:30%;"></th>
+                  </tr>
+                </thead>
+            	<tbody class="table-striped">
+               {%for list in cat.items.all %}
+               
+               <tr class="singleitem" id="item_{{list.id}}">
+               <input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}" >
+               <input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
+              <td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
+              <td ><p class="para">{{list.items}}</p></td>
+              <td style="text-align:left;"><input type={{list.fieldtype}}  name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  ></td>
+              
+              <td><!--<input type='Checkbox' id="mycheck_{{list.sequence}}" name="status[]" class="cboxes" onclick="myfunction({{list.sequence}});">--> <div><input type="file" name="my_image" id="image_{{list.id}}"  style="display:none"></div></td>
+
+              
+            
+              </tr>
+           
+             {%endfor%}
+					 </tbody>
+            
+         
+		 <tr><td colspan="4">	  
+			  <button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="">Save</button>
+          <!--{% bootstrap_button "Save" button_type="submit" id="{{cat.id}}" button_class="btn special" %} -->
+       </td></tr>
+       
+        
+
+        
+        </table>
+        
+        
+
+        </div>
+      </div>
+   
+    </div>
+    {%endfor%}
+	 </form>  
+	  <div class="alert alert-success alertbox"  style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
+          <span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
+        </div>
 	{% endif %}  
 	  
 	  

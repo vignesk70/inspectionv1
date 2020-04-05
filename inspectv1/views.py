@@ -22,7 +22,7 @@ from .models import ItemInCategory
 
 # Create your views here.
 class IndexView(TemplateView):
-    template_name = "inspectv1/index.html"
+template_name = "inspectv1/index.html"
 
 
 class CreateInspectionForm(CreateView):
@@ -59,6 +59,8 @@ class ShowInspectionData(FormMixin, ListView):
 
 
 
+def GetCategories(request):
+    print("In Add")
 
 
 def Add(request):

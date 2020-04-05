@@ -115,8 +115,8 @@ class InspectorDetails(models.Model):
     signature= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
     
     class Meta:
-        verbose_name = "Inspector Detail"
-        verbose_name_plural = "Inspector Details"
+    verbose_name = "Inspector Detail"
+    verbose_name_plural = "Inspector Details"
         
 
     def __str__(self):
@@ -142,8 +142,8 @@ class InspectedItem(models.Model):
     filter_objects = CategoryFilterManager() # The Dahl-specific manager.
 
     class Meta:
-        verbose_name = "Inspection Result"
-        verbose_name_plural = "Inspections Result"
+    verbose_name = "Inspection Result"
+    verbose_name_plural = "Inspections Result"
 
     def __str__(self):
         return self.item_value    
@@ -164,8 +164,8 @@ class InspectItem(models.Model):
     image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
 
     class Meta:
-        verbose_name = "Inspected Item"
-        verbose_name_plural = "Inspected Items"
+    verbose_name = "Inspected Item"
+    verbose_name_plural = "Inspected Items"
 
    
 

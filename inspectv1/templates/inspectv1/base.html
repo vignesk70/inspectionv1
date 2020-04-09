@@ -22,7 +22,7 @@
 </head>
   <body>
       <nav class="navbar navbar-expand-sm navbar-light bg-light">
-          <a class="navbar-brand" href="#">Inspect</a>
+          <a class="navbar-brand" href="{%url 'inspectv1:index'%}">Inspect</a>
           <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
               aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
@@ -32,8 +32,16 @@
                   <li class="nav-item active">
                       <a class="nav-link" href="{%url 'inspectv1:index'%}">Home <span class="sr-only">(current)</span></a>
                   </li>
-                  <li class="nav-item active">
-                      <a class="nav-link" href="{%url 'inspectv1:inspectiondata'%}">Inspection</a>
+                  <li class="nav-item active dropdown">
+					  {%if not user.is_authenticated%}
+                      <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{%url 'inspectv1:login'%}">Inspection</a>
+					  {%else %}
+					  <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="/inspect/sites">Inspection</a>
+					  <div class="dropdown-menu" aria-labelledby="dropdownId">
+						  <a class="dropdown-item" href="/inspect/sites">Manage Site</a>
+						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}?type=new">Start New Site</a>
+					  </div>
+					  {% endif %}
                   </li>
                   <li class="nav-item dropdown ">
                     {%if not user.is_authenticated%}
@@ -47,7 +55,6 @@
                         {%else%}
                           <a class="dropdown-item" href="{% url 'inspectv1:logout' %}?next={{request.path}}">Logout</a>
                         {%endif%}
-                          <a class="dropdown-item" href="#">Action 2</a>
                       </div>
                   </li>
               </ul>

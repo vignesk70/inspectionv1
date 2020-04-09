@@ -58,7 +58,25 @@ class ShowInspectionData(FormMixin, ListView):
         return self.render_to_response(
             self.get_context_data(form=form)) """
 
+class ShowSiteData(ListView):
+    template_name = "inspectv1/sites.html"
+    #form_class = InspectionData
 
+    context_object_name = 'sites'
+    queryset = Sites.objects.all()
+
+    #def get_queryset(self):
+        #user_id = self.request.user.id
+        #return Sites.objects.all().filter(user_id_id=user_id).select_related()
+
+    #def get_context_data(self, **kwargs):
+        #context =  super(SCcheckDetailView, self).get_context_data(**kwargs)
+        #context['car'] = Car.objects.get(pk=self.kwargs.get('pk',None))
+        #context['member'] = Member.objects.get(id=context['car'].member_id.pk)
+        #context_object_name = 'sites'
+        #user_id = self.get_user();
+        #queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
+        #return context
 
 def GetCategories(request):
     if request.method == 'POST':

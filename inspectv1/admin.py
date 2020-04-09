@@ -42,7 +42,7 @@ class InspectedItemInline(admin.TabularInline):
 class InspectedItemAdmin(admin.ModelAdmin):
     view_on_site = True
    
-    list_display = (
+    """list_display = (
         # put all other fields you want to be shown in listing
         'category_name',
     )
@@ -62,12 +62,12 @@ class InspectedItemAdmin(admin.ModelAdmin):
         request = getattr(self, 'request', None)
         if request:
             return "/people/%i/" % self.id     
-           # use request.GET to construct the link   
+           # use request.GET to construct the link   """
    
 
 
-    #list_display = ('site_id', 'item_value', 'add_date', 'update_date', 'category_id', 'user_id')
-    #list_filter = ('category_id', 'user_id')
+    list_display = ('site_id', 'item_value', 'add_date', 'update_date', 'category_id', 'user_id')
+    list_filter = ('category_id', 'user_id')
 
     """def changelist_view(self, request, extra_context=None):
         # Add extra context data to pass to change list template
@@ -81,14 +81,14 @@ class InspectedItemAdmin(admin.ModelAdmin):
     #list_select_related = (
     #   'category_id', 'user_id',
     #)
-    change_list_template = 'admin/inspecteditemlist.html'
+    #change_list_template = 'admin/inspecteditemlist.html'
 
-    def get_queryset(self, request):
+    """def get_queryset(self, request):
         context_object_name = 'category'
         my_param = request.GET.get('q')
         #if request.GET.q == "":
         if my_param is None:
-            return InspectionCategory.objects.all()
+            return InspectionCategory.objects.all()"""
 
 
 

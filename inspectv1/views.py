@@ -14,8 +14,6 @@ from .forms import InspectionData
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
-from itertools import chain
-from operator import attrgetter
 
 
 from .models import ItemInCategory
@@ -39,6 +37,9 @@ class ShowInspectionData(ListView):
 
     context_object_name = 'category'
     queryset = InspectionCategory.objects.all()
+
+    def get_submit_status(self):
+        return "testtest"
 
     """def get_queryset(self):
         qs1 = InspectionCategory.objects.all() #your first qs
@@ -86,6 +87,22 @@ class ShowSiteData(ListView):
         #user_id = self.get_user();
         #queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
         #return context
+
+def ShowInspectionDataFun(request):
+
+    category = InspectionCategory.objects.all()
+    posts = InspectedItem.objects.all().filter(user_id_id=request.user.id).select_related()
+
+    for cat in category:
+        for post in posts:
+            if cat.id == post.category_id_id:
+                cat.filled = 1
+            else:
+                cat.filled = 0
+
+    return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts})
+
+
 
 def GetCategories(request):
     if request.method == 'POST':

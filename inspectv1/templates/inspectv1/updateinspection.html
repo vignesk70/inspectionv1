@@ -24,7 +24,8 @@
 
 <style>
  p { background-color: white; margin-top: 0; margin-bottom: 1rem; }
- .base_error{ background-color:#ff0000;}	
+ .base_error{ background-color:#ff0000 !important;}	
+ .base_filled{ background-color:green !important;}	
  .error{ color:#ff0000 !important;}
  .success{ color : green; padding:10px; }
  .invisible { display:none; }	
@@ -295,10 +296,15 @@
    
     {% endif %}
       {% csrf_token %}
-     
+   
+ {% for post in posts %}
+		{{post}}
+		{{post.category_id_id}}
+		
+ {%endfor%}
+		
     
   {% for cat in category|dictsort:"sequence" %}
- 
   
     <div class="row mt-3">
       
@@ -307,7 +313,7 @@
         <div class="card" >
           
           
-          <div class="card-header" id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
+          <div   {% if cat.filled  %}  class="card-header base_filled" {% else %} class="card-header" {% endif %}  id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}} </div>
           
             
           <table cellspacing="2" cellpadding="2" class="table singlecategory invisible" id="category_{{cat.id}}" >

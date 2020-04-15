@@ -14,8 +14,6 @@ from .forms import InspectionData
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
-from itertools import chain
-from operator import attrgetter
 
 
 from .models import ItemInCategory
@@ -39,6 +37,9 @@ class ShowInspectionData(ListView):
 
     context_object_name = 'category'
     queryset = InspectionCategory.objects.all()
+
+    def get_submit_status(self):
+        return "testtest"
 
     """def get_queryset(self):
         qs1 = InspectionCategory.objects.all() #your first qs
@@ -87,6 +88,36 @@ class ShowSiteData(ListView):
         #queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
         #return context
 
+def ShowInspectionDataFun(request):
+
+    category = InspectionCategory.objects.all().select_related()
+
+    sites = Sites.objects.filter(site_no=request.GET['site'])
+
+    for site in sites:
+        siteid = site.id
+
+    posts = InspectedItem.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
+
+
+    
+    for cat in category:
+        for post in posts:
+            if cat.id == post.category_id_id:
+                cat.filled = 1
+            else:
+                cat.filled = 0
+
+        """items = cat.items.all
+        for list in items:
+            for post in posts:
+                if(post.item_id_id == list.id ):
+                   list.filledvalue =  post.item_value"""
+
+    return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts})
+
+
+
 def GetCategories(request):
     if request.method == 'POST':
         sites = Sites.objects.all().filter(site_no=request.POST['siteid'])
@@ -128,14 +159,21 @@ def Add(request):
         return HttpResponse(request.POST.items())"""
         #print current_user.id
         #return HttpResponse(request.FILES)
+        sites = Sites.objects.filter(site_no=request.POST['site_id'])
+
+        for site in sites:
+            siteid = site.id
+
+        
+
         inspectObj = InspectedItem()
 
         inspectObj.category_id_id = request.POST['category_id']
-        inspectObj.site_id_id = request.POST['site_id']
+        inspectObj.site_id_id = siteid
         inspectObj.user_id_id = current_user.id
         inspectObj.item_id_id = request.POST['item_id']
         inspectObj.item_value = request.POST['item_value']
-        inspectObj.item_image = 1
+        #inspectObj.item_image = 1
         inspectObj.save()
 
         return HttpResponse(request.POST.items())

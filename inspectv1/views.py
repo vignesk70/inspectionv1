@@ -14,6 +14,8 @@ from .forms import InspectionData
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
+from itertools import chain
+from operator import attrgetter
 
 
 from .models import ItemInCategory
@@ -31,12 +33,19 @@ class CreateInspectionForm(CreateView):
     form_class =  RunInspection
 
 
-class ShowInspectionData(FormMixin, ListView):
+class ShowInspectionData(ListView):
     template_name = "inspectv1/updateinspection.html"
-    form_class = InspectionData
+    #form_class = InspectionData
 
     context_object_name = 'category'
     queryset = InspectionCategory.objects.all()
+
+    """def get_queryset(self):
+        qs1 = InspectionCategory.objects.all() #your first qs
+        qs2 = InspectedItem.objects.all()  #your second qs
+        #you can add as many qs as you want
+        queryset = sorted(chain(qs1,qs2))
+        return queryset"""
 
     
 """class ShowInspectionDataText(ListView):
@@ -99,7 +108,7 @@ def Add(request):
     if request.method == 'POST':
         current_user = request.user
 
-        image = request.FILES['item_image']
+        """image = request.FILES['item_image']
         image_types = [
             'image/png', 'image/jpg',
             'image/jpeg', 'image/pjpeg', 'image/gif'
@@ -116,7 +125,7 @@ def Add(request):
         path = default_storage.save(tmp_file, ContentFile(image.read()))
         img_url = os.path.join(settings.MEDIA_URL, path)
 
-        return HttpResponse(request.POST.items())
+        return HttpResponse(request.POST.items())"""
         #print current_user.id
         #return HttpResponse(request.FILES)
         inspectObj = InspectedItem()
@@ -126,7 +135,7 @@ def Add(request):
         inspectObj.user_id_id = current_user.id
         inspectObj.item_id_id = request.POST['item_id']
         inspectObj.item_value = request.POST['item_value']
-        #inspectObj.item_image = 1
+        inspectObj.item_image = 1
         inspectObj.save()
 
         return HttpResponse(request.POST.items())

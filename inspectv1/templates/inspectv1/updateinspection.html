@@ -1,8 +1,10 @@
 {% extends 'inspectv1/base.html' %}
+{% load custom_template_tag %}
 {%load static%}
 {% block content %}
 {% load bootstrap4 %}
 {% block js %}
+
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
 
@@ -56,7 +58,6 @@
 	$("document").ready(function(){
 		//alert("test te");	
 		
-	
 		
 		
 		$(".submitbutton").click(function(event){
@@ -297,15 +298,11 @@
     {% endif %}
       {% csrf_token %}
    
- {% for post in posts %}
-		{{post}}
-		{{post.category_id_id}}
-		
- {%endfor%}
+   
 		
     
   {% for cat in category|dictsort:"sequence" %}
-  
+  	{{cat.filledvalue}}
     <div class="row mt-3">
       
       
@@ -338,7 +335,26 @@
                <input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
               <td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
               <td ><p class="para">{{list.items}}</p></td>
-              <td style="text-align:left;"><input type={{list.fieldtype}}  name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  ></td>
+              <td style="text-align:left;">
+
+				  <input type={{list.fieldtype}} value="{{itemvalueqq}}" name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  >
+				  
+				  {% for post in posts %}
+					
+				    {% ifequal post.item_id_id list.id %} 
+						{% setvar list.id as itemvalueqq %}
+				  	
+				  	<script type="text/javascript">
+						if(jQuery("#field_"+{{list.id}}).attr('type') == "checkbox"){
+							jQuery("#field_"+{{list.id}}).prop('checked', true);
+						}else{
+							jQuery("#field_"+{{list.id}}).val({{post.item_value}});
+						}
+				  	</script>
+				  	{% endifequal %}
+			   {%endfor%}
+				   
+				   </td>
               
               <td><!--<input type='Checkbox' id="mycheck_{{list.sequence}}" name="status[]" class="cboxes" onclick="myfunction({{list.sequence}});">--> <div><input type="file" name="my_image" id="image_{{list.id}}"  style="display:none"></div></td>
 

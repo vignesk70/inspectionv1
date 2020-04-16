@@ -92,6 +92,11 @@ def ShowInspectionDataFun(request):
 
     category = InspectionCategory.objects.all().select_related()
 
+    my_param = request.GET.get('site')
+    if my_param is None:
+        return render(request, 'inspectv1/updateinspection.html', {'category': category})
+
+
     sites = Sites.objects.filter(site_no=request.GET['site'])
 
     for site in sites:

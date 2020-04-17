@@ -1,4 +1,5 @@
 {%load static%}
+{% load custom_template_tag %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -33,14 +34,21 @@
                       <a class="nav-link" href="{%url 'inspectv1:index'%}">Home <span class="sr-only">(current)</span></a>
                   </li>
                   <li class="nav-item active dropdown">
-					  {%if not user.is_authenticated%}
-                      <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{%url 'inspectv1:login'%}">Inspection</a>
-					  {%else %}
+					  
+					  {%if user.is_authenticated%}
+					    {% if request.user|has_group:"inspector"%}
 					  <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="/inspect/sites">Inspection</a>
 					  <div class="dropdown-menu" aria-labelledby="dropdownId">
 						  <a class="dropdown-item" href="/inspect/sites">Manage Site</a>
 						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}?type=new">Start New Site</a>
 					  </div>
+					   {% elif request.user|has_group:"administrator"%}
+					  <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="/inspect/sites">Inspection</a>
+					  <div class="dropdown-menu" aria-labelledby="dropdownId">
+						  <a class="dropdown-item" href="/inspect/sites">Manage Site</a>
+						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}?type=new">Start New Site</a>
+					  </div>
+					    {% endif %}
 					  {% endif %}
                   </li>
                   <li class="nav-item dropdown ">

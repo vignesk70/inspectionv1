@@ -173,50 +173,58 @@
 <div class="inspection">
  
 <div class="row">
-  
-  <div class="col-sm-12">
+  <div class="col-sm-3">
+    <div class="card mt-3" >
+        <div class="card-header locationheader">Select Location</div>
+        <div class="card-body">
+          <h3 class="card-title"></h3>
+          
+          <div class="form-group">
+            <label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
+            <input type="text"
+              class="form-control" name="siteid" id="siteid" aria-describedby="helpId" placeholder="">
+              <label for="">Site Name</label>
+            <input type="text"
+              class="form-control" name="sitename" id="sitename" aria-describedby="helpId" placeholder="">
+            <!--  <label for="">Site Address</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+               <label for="">Site Lat</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder="">
+               <label for="">Site Long</label>
+            <input type="text"
+              class="form-control" name="" id="" aria-describedby="helpId" placeholder=""> -->
+          </div>
+          <button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
+        </div>
+      </div>
+  </div>
+  <div class="col-sm-9">
 	  <div class="row sitelist" style="padding-top:10px;">
         <div class="col-sm-12">
 		<div class="row">
-			
-	    {%if sites%}
-	<div class="container">
-		<div class="pagetitle">Inspection list as of Date</div>
-    <table class="table">
-        <thead><tr>
-            <th>Site</th>
-            <th>Statutory</th>
-            <th>Safety</th>
-            <th>Engineering</th>
-            <th>Operations</th>
-            <th>Images</th>
-            </tr>
-    </thead>
-
-        {% for site in sites %}
-            <tr>
-              <td><a href="/inspect/inspection/?type=site&site={{site.site_no}}">{{site.name}}</a></td>
-              <td>4</td>
-              <td>7</td>
-              <td>10</td>
-              <td>4</td>
-              <td>image</td>
-            </tr>
-        {%endfor%}
-        {%else %}
-        <p>No Site Avaiable. </p>
-
-    </table>
-   
-			
-			
-			</div>
-	   {%endif%}
+	  {% for site in sites %}
+	  
+	  <div class="col-sm-3">
+			<div class="card mt-3">
+        		<div class="card-header locationheader">{{site.name}}</div>
+        		<div class="card-body">
+          <h3 class="card-title"></h3>
+          
+          
+          <button type="button" class="btn btn-primary"><a href="/inspect/inspection/?type=site&site={{site.site_no}}">Choose Site</a></button>
+        </div>
+      		</div>
+			 </div> 
+	   {%endfor%}
 	 </div>
 			</div>
 		  </div>
 	  
-	 		  
+	  <div class="errormessage" style="display:none;">
+		  	<div id="choosesite" style="color:#000; background-color:#fff; width:100%; padding: 10px; border-radius:5px; margin: 20px 20px 0 0;">Choose Site First</div>
+	  </div>		  
     </div>
   </div>
   

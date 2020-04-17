@@ -202,7 +202,7 @@
         </div>
       </div>
   </div>
-  <div class="col-sm-9">
+  <div class="col-sm-9 createsiteclass">
 	
 	  
 	{% if 'type' in request.GET %}  
@@ -337,12 +337,12 @@
               <td ><p class="para">{{list.items}}</p></td>
               <td style="text-align:left;">
 
-				  <input type={{list.fieldtype}} value="{{itemvalueqq}}" name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  >
+				  <input type={{list.fieldtype}} value="" name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  >
 				  
 				  {% for post in posts %}
 					
 				    {% ifequal post.item_id_id list.id %} 
-						{% setvar list.id as itemvalueqq %}
+						
 				  	
 				  	<script type="text/javascript">
 						if(jQuery("#field_"+{{list.id}}).attr('type') == "checkbox"){

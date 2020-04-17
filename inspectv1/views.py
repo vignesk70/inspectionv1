@@ -131,7 +131,7 @@ def GetCategories(request):
         if site_count ==0:
             return HttpResponse(site_count)
         else:
-            html = render_to_string('inspectv1/sites.html', {'sites': sites})
+            html = render_to_string('inspectv1/createsite.html', {'sites': sites})
             return HttpResponse(html)
     else:
         return HttpResponse(0)

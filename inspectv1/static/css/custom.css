@@ -81,3 +81,16 @@ border-bottom: 1px solid;
 padding: 10px;
 margin-bottom: 10px;
 }
+
+
+ p { background-color: white; margin-top: 0; margin-bottom: 1rem; }
+ .base_error{ background-color:#ff0000 !important;}	
+ .base_filled{ background-color:green !important;}	
+ .error{ color:#ff0000 !important;}
+ .success{ color : green; padding:10px; }
+ .invisible { display:none; }	
+	.singlecategory.visible { display:table;width:100%;}
+	.singlecategory.visible th{background-color:#fbf7f7;padding: 10px; color:#000; vertical-align:middle; text-align:center; }
+	.singlecategory.visible td{text-align:center; }
+	.singlecategory button.special{background-color:#2fa8d7;width: auto;padding: 7px 40px;color:#fefefe;float: right;margin-right: 27px;margin-bottom: 15px;margin-top: 29px;}
+	

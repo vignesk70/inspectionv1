@@ -14,6 +14,7 @@ from .forms import InspectionData
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
 
 
 from .models import ItemInCategory
@@ -122,7 +123,7 @@ def ShowInspectionDataFun(request):
     return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts})
 
 
-
+@csrf_exempt
 def GetCategories(request):
     if request.method == 'POST':
         sites = Sites.objects.all().filter(site_no=request.POST['siteid'])
@@ -136,7 +137,7 @@ def GetCategories(request):
     else:
         return HttpResponse(0)
 
-
+@csrf_exempt
 def Add(request):
     print("In Add")
     #return HttpResponse(request.POST['category_id']) 

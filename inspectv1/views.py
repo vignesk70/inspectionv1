@@ -111,14 +111,17 @@ def ShowInspectionDataFun(request):
         for post in posts:
             if cat.id == post.category_id_id:
                 cat.filled = 1
-            else:
-                cat.filled = 0
+            
 
-        """items = cat.items.all
-        for list in items:
-            for post in posts:
-                if(post.item_id_id == list.id ):
-                   list.filledvalue =  post.item_value"""
+        for list in cat.items.all():
+            if list.fieldtype == 'checkbox':
+                for post in posts:
+                    if post.item_id_id == list.id:
+                        #if post.item_image:
+                        cat.iserror = 1
+                        #else:
+                        #    cat.iserror = 1
+
 
     return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts})
 
@@ -128,11 +131,12 @@ def GetCategories(request):
     if request.method == 'POST':
         sites = Sites.objects.all().filter(site_no=request.POST['siteid'])
         site_count = Sites.objects.all().filter(site_no=request.POST['siteid']).count()
+        category = InspectionCategory.objects.all()
 
         if site_count ==0:
             return HttpResponse(site_count)
         else:
-            html = render_to_string('inspectv1/createsite.html', {'sites': sites})
+            html = render_to_string('inspectv1/createsite.html', {'sites': sites, 'category': category})
             return HttpResponse(html)
     else:
         return HttpResponse(0)
@@ -179,7 +183,8 @@ def Add(request):
         inspectObj.user_id_id = current_user.id
         inspectObj.item_id_id = request.POST['item_id']
         inspectObj.item_value = request.POST['item_value']
-        #inspectObj.item_image = 1
+        if bool(request.FILES.get('item_image', False)) == True:
+            inspectObj.item_image = request.FILES['item_image']
         inspectObj.save()
 
         return HttpResponse(request.POST.items())

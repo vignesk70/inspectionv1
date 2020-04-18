@@ -1,5 +1,108 @@
+<div class="createSite" style="padding-top:10px;">
+			<form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}" method="post">
+				<input type="hidden" value="{{request.GET.site}}" name="site_id" id="site_id" > 
+				<p   class="showmessage" style="display:none;" > Data Saved Successfully. </p>  
+				{% if messages %}
+				{% for message in messages %}
+				<p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+				{% endfor %}
 
-	  <div class="row sitelist" style="padding-top:10px;">
+				{% endif %}
+				{% csrf_token %}
+
+
+
+
+				{% for cat in category|dictsort:"sequence" %}
+				<div class="row mt-3">
+
+
+					<div class="col-sm-12 mx-auto" >
+						<div class="card" >
+
+
+							<div   {% if cat.filled  %}  class="card-header base_filled" {% else %} class="card-header" {% endif %}  id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}} </div>
+
+
+							<table cellspacing="2" cellpadding="2" class="table singlecategory invisible" id="category_{{cat.id}}" >
+
+								<input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 
+
+
+								<thead class="thead-dark">
+									<tr>
+										<th style="width:10%; padding: 0 0 0 10px;">S.NO</th>
+										<th style="width:40%;">Items</th>
+										<th style="width:20%; text-align:left;">Remarks</th>
+										<th style="width:30%;"></th>
+									</tr>
+								</thead>
+								<tbody class="table-striped">
+									{%for list in cat.items.all %}
+
+									<tr class="singleitem" id="item_{{list.id}}">
+										<input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}" >
+										<input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
+										<td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
+										<td ><p class="para">{{list.items}}</p></td>
+										<td style="text-align:left;">
+
+											<input type={{list.fieldtype}} value="" name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')"  >
+
+											{% for post in posts %}
+
+											{% ifequal post.item_id_id list.id %} 
+
+
+											<script type="text/javascript">
+												if(jQuery("#field_"+{{list.id}}).attr('type') == "checkbox"){
+													jQuery("#field_"+{{list.id}}).prop('checked', true);
+												}else{
+													jQuery("#field_"+{{list.id}}).val({{post.item_value}});
+												}
+											</script>
+											{% endifequal %}
+											{%endfor%}
+
+										</td>
+
+										<td><div><input type="file" name="my_image" id="image_{{list.id}}"  style="display:none"></div></td>
+
+
+
+									</tr>
+
+									{%endfor%}
+								</tbody>
+
+
+								<tr><td colspan="4">   
+									<button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="">Save</button>
+
+								</td></tr>
+
+
+
+
+							</table>
+
+
+
+						</div>
+					</div>
+
+				</div>
+				{%endfor%}
+			</form>  
+			<div class="alert alert-success alertbox"  style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px; display:none;">
+				<span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
+			</div>
+			
+</div>
+<div id="choosesite" style="display:none; color:#000; background-color:#fff; width:100%; padding: 10px; border-radius:5px; margin: 20px 20px 0 0;">Choose Site First</div>
+
+
+<!--	  <div class="row sitelist" style="padding-top:10px;">
         <div class="col-sm-12">
 		<div class="row">
 	  {% for site in sites %}
@@ -11,7 +114,7 @@
           <h3 class="card-title"></h3>
           
           
-          <button type="button" class="btn btn-primary"><a href="/inspect/inspection/?type=site&site={{site.site_no}}">Choose Site</a></button>
+          <button type="button" class="btn btn-primary"><a href="/inspect/inspection/?type=site&site={{site.site_no}}">Create Site</a></button>
         </div>
       		</div>
 			 </div> 
@@ -22,8 +125,8 @@
 	  
 	 
 
-      <div id="choosesite" style="display:none; color:#000; background-color:#fff; width:100%; padding: 10px; border-radius:5px; margin: 20px 20px 0 0;">Choose Site First</div>
-	   <
+      <div id="choosesite" style="display:none; color:#000; background-color:#fff; width:100%; padding: 10px; border-radius:5px; margin: 20px 20px 0 0;">Choose Site First</div> -->
+	   
    
 
   

@@ -29,11 +29,11 @@
 
         {% for site in sites %}
             <tr>
-              <td><a href="/inspect/inspection/?type=site&site={{site.site_no}}">{{site.name}}</a></td>
-              <td>4</td>
-              <td>7</td>
-              <td>10</td>
-              <td>4</td>
+              <td><a href="/inspect/inspection/?type=site&site={{site.site_no}}">{{site.name}} </a></td>
+              <td>{{site.item_statutory}}</td>
+              <td>{{site.item_safety}}</td>
+              <td>{{site.item_engineering}}</td>
+              <td>{{site.item_operations}}</td>
               <td>image</td>
             </tr>
         {%endfor%}

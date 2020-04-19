@@ -2,7 +2,7 @@ import os
 import json
 
 from django.shortcuts import render,redirect
-from django.views.generic import TemplateView, ListView, UpdateView, CreateView
+from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DetailView
 from django import forms
 from .models import *
 from django.http import HttpResponse,HttpResponseRedirect
@@ -69,12 +69,7 @@ class ShowInspectionData(ListView):
         return self.render_to_response(
             self.get_context_data(form=form)) """
 
-class ShowSiteData(ListView):
-    template_name = "inspectv1/sites.html"
-    #form_class = InspectionData
 
-    context_object_name = 'sites'
-    queryset = Sites.objects.all()
 
     #def get_queryset(self):
         #user_id = self.request.user.id
@@ -111,28 +106,65 @@ def ShowInspectionDataFun(request):
         for post in posts:
             if cat.id == post.category_id_id:
                 cat.filled = 1
-            else:
-                cat.filled = 0
+            
 
-        """items = cat.items.all
-        for list in items:
-            for post in posts:
-                if(post.item_id_id == list.id ):
-                   list.filledvalue =  post.item_value"""
+        for list in cat.items.all():
+            if list.fieldtype == 'checkbox':
+                for post in posts:
+                    if post.item_id_id == list.id:
+                        #if post.item_image:
+                        cat.iserror = 1
+                        #else:
+                        #    cat.iserror = 1
+
 
     return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts})
 
+
+
+def ShowSiteData(request):
+   
+    
+    sites = Sites.objects.all()
+    for site in sites:
+        site.isverfied = "test"
+
+        item_safety = ItemInCategory.objects.filter(errortype="SAFETY").values_list('id', flat=True)
+        site.item_safety = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id, item_id_id__in=item_safety ).select_related().count()
+
+        item_statutory = ItemInCategory.objects.filter(errortype="STATUTORY").values_list('id', flat=True)
+        site.item_statutory = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id, item_id_id__in=item_statutory ).select_related().count()
+
+        item_engineering = ItemInCategory.objects.filter(errortype="ENGINEERING").values_list('id', flat=True)
+        site.item_engineering = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id, item_id_id__in=item_engineering ).select_related().count()
+
+         
+
+        item_operations = ItemInCategory.objects.filter(errortype="OPERATIONS").values_list('id', flat=True)
+        site.item_operations = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id, item_id_id__in=item_operations ).select_related().count()
+
+
+        items = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
+        #filleditems = 0
+        #for item in items:
+        #    filleditems += 1
+
+        #site.filleditems = filleditems;
+
+
+    return render(request, 'inspectv1/sites.html', {'sites': sites, })
 
 @csrf_exempt
 def GetCategories(request):
     if request.method == 'POST':
         sites = Sites.objects.all().filter(site_no=request.POST['siteid'])
         site_count = Sites.objects.all().filter(site_no=request.POST['siteid']).count()
+        category = InspectionCategory.objects.all()
 
         if site_count ==0:
             return HttpResponse(site_count)
         else:
-            html = render_to_string('inspectv1/createsite.html', {'sites': sites})
+            html = render_to_string('inspectv1/createsite.html', {'sites': sites, 'category': category})
             return HttpResponse(html)
     else:
         return HttpResponse(0)
@@ -179,7 +211,8 @@ def Add(request):
         inspectObj.user_id_id = current_user.id
         inspectObj.item_id_id = request.POST['item_id']
         inspectObj.item_value = request.POST['item_value']
-        #inspectObj.item_image = 1
+        if bool(request.FILES.get('item_image', False)) == True:
+            inspectObj.item_image = request.FILES['item_image']
         inspectObj.save()
 
         return HttpResponse(request.POST.items())

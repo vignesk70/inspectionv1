@@ -92,7 +92,7 @@ $("document").ready(function(){
         			processData: false,
 					success:  function (data) {
 						if(data == 0){
-							$(".sitelist").hide();
+							$(".createSite").hide();
 							$("#choosesite").html("Entered Site Id doesn't Exist.");
 							$("#choosesite").addClass("error");
 							$("#choosesite").show();

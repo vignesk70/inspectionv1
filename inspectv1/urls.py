@@ -12,7 +12,7 @@ urlpatterns = [
     path('getcategories/',views.GetCategories,name='getcategories'),
     #path('inspection/',views.ShowInspectionData.as_view(),name='inspectiondata'),
     path('inspection/',views.ShowInspectionDataFun,name='inspectiondata'),
-    path('sites/',views.ShowSiteData.as_view(),name='sitedata'),
+    path('sites/',views.ShowSiteData,name='sitedata'),
     path('runinspection/',views.CreateInspectionForm.as_view(),name='runinspectiondata'),
     #path('inspection_test/',views.ShowInspectionDataText.as_view(),name='inspectiondataText'),
     path('accounts/', include('django.contrib.auth.urls')),

@@ -12,10 +12,9 @@ function myfunction(id){
 	}
 
 $("document").ready(function(){
-		
-		$(".submitbutton").click(function(event){
+		$(document).on('click','.submitbutton',function(event){
+		//$(".submitbutton").live( "click",function(event){
 		  event.preventDefault();
-			
 			
 			var category_id = $(this).prop('id');
 			

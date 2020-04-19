@@ -15,6 +15,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 
 from .models import ItemInCategory
@@ -83,7 +84,7 @@ class ShowInspectionData(ListView):
         #user_id = self.get_user();
         #queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
         #return context
-
+@login_required
 def ShowInspectionDataFun(request):
 
     category = InspectionCategory.objects.all().select_related()
@@ -121,7 +122,7 @@ def ShowInspectionDataFun(request):
     return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts})
 
 
-
+@login_required
 def ShowSiteData(request):
    
     
@@ -164,7 +165,7 @@ def GetCategories(request):
         if site_count ==0:
             return HttpResponse(site_count)
         else:
-            html = render_to_string('inspectv1/createsite.html', {'sites': sites, 'category': category})
+            html = render_to_string('inspectv1/createsite.html', {'sites': request.POST['siteid'], 'category': category})
             return HttpResponse(html)
     else:
         return HttpResponse(0)

@@ -1,5 +1,6 @@
 import os
 import json
+import array as arr
 
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DetailView
@@ -16,6 +17,7 @@ from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+
 
 
 from .models import ItemInCategory
@@ -169,6 +171,37 @@ def GetCategories(request):
             return HttpResponse(html)
     else:
         return HttpResponse(0)
+
+@csrf_exempt
+def GetSites(request):
+    if request.method == 'POST':
+        
+
+        if request.POST.get('siteid',False):        
+            sites = Sites.objects.all().filter(site_no__contains=request.POST['siteid'])
+            totalsites = Sites.objects.all().filter(site_no__contains=request.POST['siteid']).count() 
+        elif request.POST.get('sitename',False): 
+            sites = Sites.objects.all().filter(name__contains=request.POST['sitename'])
+            totalsites = Sites.objects.all().filter(name__contains=request.POST['sitename']).count()
+
+
+        #a_dict = dict()
+        a_dict = [None] * totalsites
+        
+        countarr = 0
+        for site in sites:
+            sitevalue = str(site.site_no) + '-' + str(site.name)
+            #a_dict.append(sitevalue)
+            b_dict = [None] * 3
+            b_dict[0] = site.site_no
+            b_dict[1] = site.name
+            b_dict[2] = sitevalue
+            a_dict[countarr] = b_dict
+            #a_dict[1] = sitevalue
+            countarr += 1
+
+        return HttpResponse(json.dumps(a_dict))
+        
 
 @csrf_exempt
 def Add(request):

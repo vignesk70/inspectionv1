@@ -19,6 +19,16 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = [CategoryItemInline]
     save_as = True
 
+class InspectionDetailInline(admin.TabularInline):
+    model = InspectionDetails
+    extra = 0
+
+class InspectionMasterAdmin(admin.ModelAdmin):
+    list_display = ('site_id', 'add_date', 'update_date', 'user_id')
+    list_filter = ('site_id', 'user_id')
+    inlines = [InspectionDetailInline]
+    save_as = True
+
 class InspectItemAdmin(admin.ModelAdmin):
     #list_display = ('Cat',)
     list_display=('category_name','site_name','inspector_name','Items','image')
@@ -113,7 +123,7 @@ class InspectedItemAdmin(admin.ModelAdmin):
 #admin.site.register(ItemInCategory)
 admin.site.register(Sites)
 admin.site.register(InspectionCategory,CategoryAdmin)
-admin.site.register(InspectedItem, InspectedItemAdmin)
+admin.site.register(InspectionMaster, InspectionMasterAdmin)
 #admin.site.register(Inspected_Item)
 admin.site.register(InspectorDetails)
 #admin.site.register(ItemInCategory)

@@ -15,28 +15,7 @@ function myfunction(id){
 
  $(document).ready(function () {  
 	 
-	             var projects = [
-				  {
-					value: "jquery",
-					label: "jQuery",
-					desc: "the write less, do more, JavaScript library",
-					icon: "jquery_32x32.png"
-				  },
-				  {
-					value: "jquery-ui",
-					label: "jQuery UI",
-					desc: "the official user interface library for jQuery",
-					icon: "jqueryui_32x32.png"
-				  },
-				  {
-					value: "sizzlejs",
-					label: "Sizzle JS",
-					desc: "a pure-JavaScript CSS selector engine",
-					icon: "sizzlejs_32x32.png"
-				  }
-				];
-				
-	 
+
 	                $( "#siteid" ).autocomplete({
 					  minLength: 0,
 					  source: function (request, responce) { 
@@ -203,6 +182,11 @@ $("document").ready(function(){
 				var itemvalue = $("#field_"+itemid).val();
 				var itemimage = $("#image_"+itemid).val();
 				var site_id = $("#site_id").val();
+				var master_id = $("#master_id").val();
+				if(master_id == 0){
+					master_id = "";
+				}
+				
 				
 				
 				if($("#field_"+itemid).prop('type') == 'checkbox'){
@@ -218,6 +202,7 @@ $("document").ready(function(){
 				form_data.append("item_id", itemid);	
 				form_data.append("site_id", site_id);	
 				form_data.append("item_value", itemvalue);	
+				form_data.append("master_id", master_id);	
 				//form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
 				form_data.append("item_image", file); 
 					
@@ -230,11 +215,12 @@ $("document").ready(function(){
 					data : form_data,
           			contentType: false,
         			processData: false,
+					async: false,
 					success:  function (data) {
 						if( $("#throw_error_"+itemid).val()  ){
 							$( "#card_header_"+category_id ).addClass( "base_error" );
 						}
-							
+					    jQuery("#master_id").val(data);
 					   $(".alert").show();	
 
            

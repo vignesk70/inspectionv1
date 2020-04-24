@@ -101,7 +101,18 @@ def ShowInspectionDataFun(request):
     for site in sites:
         siteid = site.id
 
-    posts = InspectedItem.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
+    inspectionmaster = InspectionMaster.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
+    master_id = 0
+
+    for im in inspectionmaster:
+        master_id = im.id
+
+   
+    if master_id == "0":
+        return render(request, 'inspectv1/updateinspection.html', {'category': category})
+
+    #posts = InspectedItem.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
+    posts = InspectionDetails.objects.all().filter(master_id_id = master_id ).select_related()
 
 
     
@@ -127,27 +138,35 @@ def ShowInspectionDataFun(request):
 @login_required
 def ShowSiteData(request):
    
+
     
+
+
     sites = Sites.objects.all()
     for site in sites:
-        site.isverfied = "test"
 
+        inspectionmaster = InspectionMaster.objects.all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
+        master_id = 0
+        for im in inspectionmaster:
+            master_id = im.id
+        
+        site.master_id = master_id
         item_safety = ItemInCategory.objects.filter(errortype="SAFETY").values_list('id', flat=True)
-        site.item_safety = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id, item_id_id__in=item_safety ).select_related().count()
+        site.item_safety = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id,  item_id_id__in=item_safety ).select_related().count()
 
         item_statutory = ItemInCategory.objects.filter(errortype="STATUTORY").values_list('id', flat=True)
-        site.item_statutory = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id, item_id_id__in=item_statutory ).select_related().count()
+        site.item_statutory = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id, item_id_id__in=item_statutory ).select_related().count()
 
         item_engineering = ItemInCategory.objects.filter(errortype="ENGINEERING").values_list('id', flat=True)
-        site.item_engineering = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id, item_id_id__in=item_engineering ).select_related().count()
+        site.item_engineering = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id, item_id_id__in=item_engineering ).select_related().count()
 
          
 
         item_operations = ItemInCategory.objects.filter(errortype="OPERATIONS").values_list('id', flat=True)
-        site.item_operations = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id, item_id_id__in=item_operations ).select_related().count()
+        site.item_operations = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id, item_id_id__in=item_operations ).select_related().count()
 
 
-        items = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
+        #items = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
         #filleditems = 0
         #for item in items:
         #    filleditems += 1
@@ -237,8 +256,38 @@ def Add(request):
             siteid = site.id
 
         
+        if request.POST['master_id'] == '':  
 
-        inspectObj = InspectedItem()
+            inspectObj = InspectionMaster()
+
+            inspectObj.site_id_id = siteid
+            inspectObj.user_id_id = current_user.id
+
+            inspectObj.save()
+
+            master_id = inspectObj.id
+        else:
+            master_id = request.POST['master_id']
+
+
+        inspectDetailObj = InspectionDetails()
+
+        inspectDetailObj.master_id_id = master_id
+        inspectDetailObj.category_id_id = request.POST['category_id']
+        inspectDetailObj.item_id_id = request.POST['item_id']
+        inspectDetailObj.item_value = request.POST['item_value']
+        if bool(request.FILES.get('item_image', False)) == True:
+            inspectDetailObj.item_image = request.FILES['item_image']
+        inspectDetailObj.save()
+
+        return HttpResponse(master_id)
+
+    else:
+        return HttpResponse("0")  
+
+
+
+        """inspectObj = InspectedItem()
 
         inspectObj.category_id_id = request.POST['category_id']
         inspectObj.site_id_id = siteid
@@ -252,59 +301,6 @@ def Add(request):
         return HttpResponse(request.POST.items())
 
     else:
-        return HttpResponse("0")  
+        return HttpResponse("0")  """
 
-    """if request.method == 'POST':
-        print("In Add") 
-
-        field_name1 = 'category'
-        field_name2='name'
-        field_name3='users'
-        field_name4='items'
-        field_name5='id'
-        obj =InspectionCategory.objects.first()
-        field_object = InspectionCategory._meta.get_field(field_name1)
-        field_value1 = field_object.value_from_object(obj)
-
-        obj2 =InspectionDetails.objects.first()
-        field_object = InspectionDetails._meta.get_field(field_name3)
-        field_value2 = field_object.value_from_object(obj2)
-
-        obj2 =Sites.objects.first()
-        field_object = Sites._meta.get_field(field_name2)
-        field_value3 = field_object.value_from_object(obj2)
-
-        obj2 =ItemInCategory.objects.first()
-        field_object = ItemInCategory._meta.get_field(field_name4)
-        field_value4 = field_object.value_from_object(obj2)
-
-        obj2 =ItemInCategory.objects.first()
-        field_object = ItemInCategory._meta.get_field(field_name5)
-        field_value5 = field_object.value_from_object(obj2)
-        print(request.POST['field'])
-        print(request.POST['status'])
-        print(request.POST['my_image'])
-        if  request.POST.get('field') or request.POST.get('status'):
-            print("Come Inside")
-            #print(request.POST.get('my_image'))
-            shyam=InspectItem()
-            
-            #shyam.field_value=request.POST.get('status')
-            shyam.site_name=field_value3
-
-
-            shyam.Inspector_Name=field_value2
-            shyam.category_name=field_value1
-            shyam.Item_id=field_value5
-            
-
-            shyam.Items= request.POST['field']
-            shyam.fieldname=request.POST['status']
-            #shyam.status= request.POST.get('option')
-            shyam.image= request.POST['my_image']
-            shyam.save()
-            messages.success(request, 'Category Add Successfully.')
-            return HttpResponseRedirect('/inspect/inspection')
-
-        else:
-            return HttpResponse("NotDone")  """ 
+    

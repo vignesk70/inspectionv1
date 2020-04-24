@@ -32,7 +32,8 @@
 
 			{% ifequal request.GET.type 'site' %} 
 			<form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}" method="post" enctype="multipart/form-data">
-				<input type="hidden" value="{{request.GET.site}}" name="site_id" id="site_id" > 
+				<input type="hidden" value="{{request.GET.site}}" name="site_id" id="site_id" >
+				<input type="hidden" value="{{request.GET.id}}" name="master_id" id="master_id" >
 				<p   class="showmessage" style="display:none;" > Data Saved Successfully. </p>  
 				{% if messages %}
 				{% for message in messages %}

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import *
+from import_export.admin import ImportExportModelAdmin
 admin.AdminSite.site_header='Inspect'
 
 # Register your models here.
@@ -121,7 +122,10 @@ class InspectedItemAdmin(admin.ModelAdmin):
 
 #admin.site.register(InspectionCategory)
 #admin.site.register(ItemInCategory)
-admin.site.register(Sites)
+@admin.register(Sites)
+class SitesAdmin(ImportExportModelAdmin):
+    pass
+
 admin.site.register(InspectionCategory,CategoryAdmin)
 admin.site.register(InspectionMaster, InspectionMasterAdmin)
 #admin.site.register(Inspected_Item)

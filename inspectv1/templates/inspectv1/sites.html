@@ -19,6 +19,7 @@
     <table class="table">
         <thead><tr>
             <th>Site</th>
+			<th>Date</th>
             <th>Statutory</th>
             <th>Safety</th>
             <th>Engineering</th>
@@ -28,14 +29,17 @@
     </thead>
 
         {% for site in sites %}
+		{% if site.show_site %}
             <tr>
               <td><a href="/inspect/inspection/?type=site&site={{site.site_no}}&id={{site.master_id}}">{{site.name}} </a></td>
-              <td>{{site.item_statutory}}</td>
+              <td>{{site.add_date}}</td>
+			  <td>{{site.item_statutory}}</td>
               <td>{{site.item_safety}}</td>
               <td>{{site.item_engineering}}</td>
               <td>{{site.item_operations}}</td>
               <td>image</td>
             </tr>
+	     {% endif %}
         {%endfor%}
         {%else %}
         <p>No Site Avaiable. </p>

@@ -164,6 +164,19 @@ def ShowSiteData(request):
 
         item_operations = ItemInCategory.objects.filter(errortype="OPERATIONS").values_list('id', flat=True)
         site.item_operations = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id, item_id_id__in=item_operations ).select_related().count()
+        
+        show_site = 0;
+        if site.item_safety != 0:
+            show_site = 1
+        elif site.item_statutory != 0:
+            show_site = 1
+        elif site.item_engineering != 0:
+            show_site = 1
+        elif site.item_operations != 0:
+            show_site = 1
+
+        site.show_site = show_site
+
 
 
         #items = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()

@@ -17,6 +17,7 @@ from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 
@@ -138,10 +139,6 @@ def ShowInspectionDataFun(request):
 @login_required
 def ShowSiteData(request):
    
-
-    
-
-
     sites = Sites.objects.all()
     for site in sites:
 
@@ -316,4 +313,39 @@ def Add(request):
     else:
         return HttpResponse("0")  """
 
-    
+class ListSitesForInspector(LoginRequiredMixin,ListView):
+    model = InspectionMaster
+    template_name = 'inspectv1/listsites.html'
+
+    def get_context_data(self, **kwargs):
+        sitedata = []
+        context = super(ListSitesForInspector,self).get_context_data(**kwargs)
+        listofsites = InspectionMaster.objects.filter(user_id=self.request.user.id).select_related()
+        
+        for sites in listofsites:
+            data={}
+            data['sitename']=sites.site_id.name
+            data['siteadd']=sites.add_date
+            for  errors in getERRTYPE():         
+                data[errors] = getCount(sites.id,errors)
+            
+            sitedata.append(data)
+        context['headers']=getERRTYPE()
+        context["sitedata"]=sitedata        
+        
+        #context["details"] = InspectionDetails.objects.all().filter()
+      
+        return context
+
+def getERRTYPE():
+    list=[]
+    for x in ItemInCategory.ERRORTYPE:
+        if(x[0]!='NONE'):
+            list.append(x[0])
+    return list
+
+def getCount(masterid,errtype):
+    if not errtype=='NONE':
+        count = InspectionDetails.objects.all().filter(master_id=masterid,item_id__errortype=errtype).count()
+        return count
+    pass

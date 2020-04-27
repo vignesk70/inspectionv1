@@ -15,9 +15,10 @@
 
                         
 
-                        {%if sitedata%}
+                       
                         <div class="container">
-                            <div class="pagetitle">Inspection list as of Date</div>
+                            {%if sitedata%}
+                             <div class="pagetitle">Inspection list as of Date</div>
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -33,22 +34,19 @@
                                     {% for x in sitedata %}
                                     <tr>
                                     {% for key,val in x.items %}
+                                    {{key}}
+                                       
                                     <td>{{val}}</td>
 
                                     {% endfor %}
                                     {%endfor%}
                                 </tr>
-                                {%else %}
-
-
+                               
                             </table>
+                            {%else %}
                             <p>No Site Avaiable. </p>
 
-                            {% for x in sitedata%}
-                            {% for key,val in x.items%}
-                            {{key}} - {{val}}
-                            {%endfor%}
-                            {%endfor%}
+                           
                         </div>
                         {%endif%}
                     </div>

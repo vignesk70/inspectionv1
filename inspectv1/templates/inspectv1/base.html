@@ -76,7 +76,7 @@
                   </li>
                   <li class="nav-item dropdown ">
                     {%if not user.is_authenticated%}
-                      <a class="nav-link dropdown-toggle" href="{%url "inspectv1:login"%}" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login</a>
+                      <a class="nav-link dropdown-toggle" href="{%url 'inspectv1:login'%}" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login</a>
                       {%else %}
                       <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{user.first_name}}</a>
                 {% endif %}
@@ -84,7 +84,7 @@
                         {%if not user.is_authenticated%}
                         <a class="dropdown-item" href="{% url 'inspectv1:login' %}?next={{request.path}}">Login</a>
                         {%else%}
-                          <a class="dropdown-item" href="{% url 'inspectv1:logout' %}?next={{request.path}}">Logout</a>
+                          <a class="dropdown-item" href="{% url 'inspectv1:logout' %}?next={% url 'inspectv1:index'%}">Logout</a>
                         {%endif%}
                       </div>
                   </li>

@@ -54,7 +54,7 @@
 						<div class="card" >
 
 
-							<div {% if cat.iserror  %} class="card-header base_error"  {% elif cat.filled  %}  class="card-header base_filled" {% else %} class="card-header" {% endif %}  id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
+							<div {% if cat.iserror  %} class="card-header bg-danger"  {% elif cat.filled  %}  class="card-header bg-success" {% else %} class="card-header" {% endif %}  id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
 
 
 							<table cellspacing="2" cellpadding="2" class="table singlecategory invisible" id="category_{{cat.id}}" >
@@ -120,7 +120,7 @@
 
 
 								<tr><td colspan="4">   
-									<button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="">Save</button>
+									<button class="btn special submitbutton" id="{{cat.id}}" type="submit" >Save</button>
 
 								</td></tr>
 
@@ -206,7 +206,7 @@
 
 
 								<tr><td colspan="4">   
-									<button class="btn special submitbutton" id="{{cat.id}}" type="submit" style="">Save</button>
+									<button class="btn special submitbutton" id="{{cat.id}}" type="submit" >Save</button>
 								</td></tr>
 
 

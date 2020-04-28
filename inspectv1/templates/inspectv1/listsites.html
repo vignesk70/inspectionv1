@@ -13,14 +13,14 @@
                 <div class="col-sm-12">
                     <div class="row">
 
-                        
-
-                       
                         <div class="container">
-                            {%if sitedata%}
-                             <div class="pagetitle">Inspection list as of Date</div>
+                            
+                            <div class="pagetitle">Inspection list as of {% now "SHORT_DATETIME_FORMAT" %}</div>
+
                             <table class="table">
+
                                 <thead>
+
                                     <tr>
                                         <th>Site Name</th>
                                         <th>Date Visited</th>
@@ -30,23 +30,24 @@
 
                                     </tr>
                                 </thead>
-
+                                {%if sitedata%}
+                                <tbody>
                                     {% for x in sitedata %}
                                     <tr>
-                                    {% for key,val in x.items %}
-                                    {{key}}
-                                       
-                                    <td>{{val}}</td>
+                                       <td>{{x.sitename}}</td>
+                                       <td>{{x.siteadd}}</td>
+                                        {% for y,val in x.errors.items%}
+                                       <td>{{val}}</td> 
+                                        {%endfor%}
+                                    </tr>
+                                </tbody>
+                                {%endfor%}
 
-                                    {% endfor %}
-                                    {%endfor%}
-                                </tr>
-                               
                             </table>
                             {%else %}
                             <p>No Site Avaiable. </p>
 
-                           
+
                         </div>
                         {%endif%}
                     </div>
@@ -59,5 +60,7 @@
 
 
 </div>
+
+
 
 {% endblock content %}

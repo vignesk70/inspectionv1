@@ -324,12 +324,14 @@ class ListSitesForInspector(LoginRequiredMixin,ListView):
         
         for sites in listofsites:
             data={}
+            error={}
             data['sitename']=sites.site_id.name
             data['siteadd']=sites.add_date
             for  errors in getERRTYPE():         
-                data[errors] = getCount(sites.id,errors)
-            
+                error[errors] = getCount(sites.id,errors)
+
             sitedata.append(data)
+            data["errors"]=error
         context['headers']=getERRTYPE()
         context["sitedata"]=sitedata        
         

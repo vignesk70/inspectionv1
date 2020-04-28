@@ -34,7 +34,7 @@
                                 <tbody>
                                     {% for x in sitedata %}
                                     <tr>
-                                       <td>{{x.sitename}}</td>
+                                       <td><a href="{%url 'inspectv1:inspectiondata'%}?type=site&site={{x.siteno}}&id={{x.siteid}}">{{x.sitename}}</a></td>
                                        <td>{{x.siteadd}}</td>
                                         {% for y,val in x.errors.items%}
                                        <td>{{val}}</td> 

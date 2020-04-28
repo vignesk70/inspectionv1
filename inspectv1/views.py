@@ -327,6 +327,8 @@ class ListSitesForInspector(LoginRequiredMixin,ListView):
             error={}
             data['sitename']=sites.site_id.name
             data['siteadd']=sites.add_date
+            data['siteid']=sites.id
+            data['siteno']=sites.site_id.site_no
             for  errors in getERRTYPE():         
                 error[errors] = getCount(sites.id,errors)
 

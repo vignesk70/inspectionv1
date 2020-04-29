@@ -15,7 +15,7 @@ function myfunction(id){
 
  $(document).ready(function () {  
 	 
-
+					if($('#siteid').length){
 	                $( "#siteid" ).autocomplete({
 					  minLength: 0,
 					  source: function (request, responce) { 
@@ -159,7 +159,7 @@ function myfunction(id){
 						.appendTo( ul );
 					};
 	 
-
+					}
 	 
 	 
              

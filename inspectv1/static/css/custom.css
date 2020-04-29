@@ -93,4 +93,9 @@ margin-bottom: 10px;
 	.singlecategory.visible th{background-color:#fbf7f7;padding: 10px; color:#000; vertical-align:middle; text-align:center; }
 	.singlecategory.visible td{text-align:center; }
 	.singlecategory button.special{background-color:#2fa8d7;width: auto;padding: 7px 40px;color:#fefefe;float: right;margin-right: 27px;margin-bottom: 15px;margin-top: 29px;}
+
+
+input[type="checkbox"][readonly] {
+  pointer-events: none;
+}
 	

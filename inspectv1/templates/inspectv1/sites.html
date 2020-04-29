@@ -1,0 +1,65 @@
+{% extends 'inspectv1/base.html' %}
+{%load static%}
+{% block content %}
+{% load bootstrap4 %}
+
+
+<div class="inspection">
+ 
+<div class="row">
+  
+  <div class="col-sm-12">
+	  <div class="row sitelist" style="padding-top:10px;">
+        <div class="col-sm-12">
+		<div class="row">
+			
+	    {%if sites%}
+	<div class="container">
+		<div class="pagetitle">Inspection list as of {% now "SHORT_DATETIME_FORMAT" %}</div>
+    <table class="table">
+        <thead><tr>
+            <th>Site</th>
+			<th>Date</th>
+            <th>Statutory</th>
+            <th>Safety</th>
+            <th>Engineering</th>
+            <th>Operations</th>
+            <th>Images</th>
+            </tr>
+    </thead>
+
+        {% for site in sites %}
+		{% if site.show_site %}
+            <tr>
+              <td><a href="/inspect/inspection/?type=site&site={{site.site_no}}&id={{site.master_id}}">{{site.name}} </a></td>
+              <td>{{site.add_date}}</td>
+			  <td>{{site.item_statutory}}</td>
+              <td>{{site.item_safety}}</td>
+              <td>{{site.item_engineering}}</td>
+              <td>{{site.item_operations}}</td>
+              <td>image</td>
+            </tr>
+	     {% endif %}
+        {%endfor%}
+        {%else %}
+        <p>No Site Avaiable. </p>
+
+    </table>
+   
+			
+			
+			</div>
+	   {%endif%}
+	 </div>
+			</div>
+		  </div>
+	  
+	 		  
+    </div>
+  </div>
+  
+    
+  </div>
+  
+  {% endblock content %}
+	

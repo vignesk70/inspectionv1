@@ -1,0 +1,66 @@
+{% extends 'inspectv1/base.html' %}
+{%load static%}
+{% block content %}
+{% load bootstrap4 %}
+
+
+<div class="inspection">
+
+    <div class="row">
+
+        <div class="col-sm-12">
+            <div class="row sitelist" style="padding-top:10px;">
+                <div class="col-sm-12">
+                    <div class="row">
+
+                        <div class="container">
+                            
+                            <div class="pagetitle">Inspection list as of {% now "SHORT_DATETIME_FORMAT" %}</div>
+
+                            <table class="table">
+
+                                <thead>
+
+                                    <tr>
+                                        <th>Site Name</th>
+                                        <th>Date Visited</th>
+                                        {%for x in headers%}
+                                        <th>{{x}}</th>
+                                        {%endfor%}
+
+                                    </tr>
+                                </thead>
+                                {%if sitedata%}
+                                <tbody>
+                                    {% for x in sitedata %}
+                                    <tr>
+                                       <td><a href="{%url 'inspectv1:inspectiondata'%}?type=site&site={{x.siteno}}&id={{x.siteid}}">{{x.sitename}}</a></td>
+                                       <td>{{x.siteadd}}</td>
+                                        {% for y,val in x.errors.items%}
+                                       <td>{{val}}</td> 
+                                        {%endfor%}
+                                    </tr>
+                                </tbody>
+                                {%endfor%}
+
+                            </table>
+                            {%else %}
+                            <p>No Site Avaiable. </p>
+
+
+                        </div>
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+</div>
+
+
+
+{% endblock content %}

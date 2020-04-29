@@ -1,4 +1,5 @@
 {%load static%}
+{% load custom_template_tag %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -15,10 +16,37 @@
 
     <!-- Custom CSS-->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+    <!-- Custom Font-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+	 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">  
+    
+	  
+	 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>  
+  <script>
+    
+    $('.close').ready(function() {
+   $('.alertbox').hide();
+})
+  </script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+
+
+  <!-- Custom CSS-->
+    <script  src="{% static 'js/custom.js' %}"></script>
+
+
+	  
+	  
 </head>
   <body>
       <nav class="navbar navbar-expand-sm navbar-light bg-light">
-          <a class="navbar-brand" href="#">Inspect</a>
+          <a class="navbar-brand" href="{%url 'inspectv1:index'%}">Inspect</a>
           <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
               aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
@@ -28,12 +56,27 @@
                   <li class="nav-item active">
                       <a class="nav-link" href="{%url 'inspectv1:index'%}">Home <span class="sr-only">(current)</span></a>
                   </li>
-                  <li class="nav-item active">
-                      <a class="nav-link" href="{%url 'inspectv1:inspectiondata'%}">Inspection</a>
+                  <li class="nav-item active dropdown">
+					  
+					  {%if user.is_authenticated%}
+					    {% if request.user|has_group:"inspector"%}
+					  <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="/inspect/sites">Inspection</a>
+					  <div class="dropdown-menu" aria-labelledby="dropdownId">
+						  <a class="dropdown-item" href="{%url 'inspectv1:listsites'%}">Manage Site</a>
+						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}?type=new">Start New Site</a>
+					  </div>
+					   {% elif request.user|has_group:"administrator"%}
+					  <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="/inspect/sites">Inspection</a>
+					  <div class="dropdown-menu" aria-labelledby="dropdownId">
+						  <a class="dropdown-item" href="{%url 'inspectv1:listsites'%}">Manage Site</a>
+						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}?type=new">Start New Site</a>
+					  </div>
+					    {% endif %}
+					  {% endif %}
                   </li>
                   <li class="nav-item dropdown ">
                     {%if not user.is_authenticated%}
-                      <a class="nav-link dropdown-toggle" href="{%url "inspectv1:login"%}" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login</a>
+                      <a class="nav-link dropdown-toggle" href="{%url 'inspectv1:login'%}" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login</a>
                       {%else %}
                       <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{user.first_name}}</a>
                 {% endif %}
@@ -41,9 +84,8 @@
                         {%if not user.is_authenticated%}
                         <a class="dropdown-item" href="{% url 'inspectv1:login' %}?next={{request.path}}">Login</a>
                         {%else%}
-                          <a class="dropdown-item" href="{% url 'inspectv1:logout' %}?next={{request.path}}">Logout</a>
+                          <a class="dropdown-item" href="{% url 'inspectv1:logout' %}?next={% url 'inspectv1:index'%}">Logout</a>
                         {%endif%}
-                          <a class="dropdown-item" href="#">Action 2</a>
                       </div>
                   </li>
               </ul>
@@ -52,12 +94,10 @@
           
         
       </nav>
-    {%block content%}
+    {%block content%} <!--content for display here-->
     
     {%endblock%}
     <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>

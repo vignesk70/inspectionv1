@@ -31,6 +31,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+	'django_adminlte',
+	'django_adminlte_theme',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inspectv1.apps.Inspectv1Config',
     'bootstrap4',
+    'import_export',
     
 ]
 
@@ -84,7 +87,7 @@ WSGI_APPLICATION = 'inspection.wsgi.application'
 #        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
 #}
-"""
+
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -95,18 +98,7 @@ DATABASES = {
        'PORT' : '5432',
    }
 }
-"""
 
-DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME':  'inspection',
-       'USER' : 'postgres',
-       'PASSWORD' : 'comp197',
-       'HOST' : 'localhost',
-       'PORT' : '5432',
-   }
-}
 
 # DATABASES = {
 #     'default': {
@@ -164,3 +156,4 @@ STATIC_ROOT =  os.path.join(BASE_DIR, 'static/')
 LOGIN_REDIRECT_URL = '/inspect'
 MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
 MEDIA_URL= "/media/"
+UPLOAD_PATH = '/media/images/uploads/'

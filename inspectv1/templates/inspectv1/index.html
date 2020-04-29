@@ -1,13 +1,56 @@
 {% extends 'inspectv1/base.html' %}
 {%load static%}
 {%block content%}
+{% load bootstrap4 %}
+{% block js %}
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+
+  
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+ 
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+{% endblock %}
 <section class="indexpage">
 <div class="container-fluid">
     
 
-    <div class="row">
+    <div class="row" style="padding-top:10px;">
         <div class="col-sm-12">
-            Dashboard - comes here
+			<h3>Dashboard</h3>
+			
+			<!-- <div class="row">
+			<div class="col-sm-3"></div>	
+			<div class="col-sm-3">
+			<div class="card mt-3">
+        		<div class="card-header locationheader">Manage Site</div>
+        		<div class="card-body">
+          <h3 class="card-title"></h3>
+          
+					<button type="button" class="btn btn-primary"><a href="/inspect/sites">Manage Existing Site</a></button>
+        </div>
+      		</div>
+			 </div> 
+			
+			<div class="col-sm-3">
+			<div class="card mt-3">
+        		<div class="card-header locationheader">Create New Site</div>
+        		<div class="card-body">
+          <h3 class="card-title"></h3>
+          
+          
+          <button type="button" class="btn btn-primary"><a href="/inspect/inspection/?type=new">Start New Site</a></button>
+        </div>
+      		</div>
+			 </div> 
+			<div class="col-sm-3"></div>
+			</div>	-->
+				
         </div>
 
     </div>

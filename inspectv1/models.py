@@ -24,7 +24,8 @@ class InspectionCategory(models.Model):
     def get_absolute_url(self):
         return reverse("category_detail", kwargs={"pk": self.pk})  
 
-         
+    def get_submit_status(self):
+    	return "testtest"    
  
 class ItemInCategory(models.Model):
     FIELDTYPE = ( ('checkbox','CheckBox'),
@@ -115,12 +116,71 @@ class InspectorDetails(models.Model):
     signature= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
     
     class Meta:
-        verbose_name = "Inspector Detail"
-        verbose_name_plural = "Inspector Details"
+    	verbose_name = "Inspector Detail"
+    	verbose_name_plural = "Inspector Details"
         
 
     def __str__(self):
-        return self.com_lev
+        return str(self.users)
+
+
+class CategoryFilterManager(models.Manager):
+    def get_queryset(self):
+    	return super().get_queryset() #.filter(category_id__id__exact = '6')
+
+
+
+
+class InspectionMaster(models.Model):
+    site_id = models.ForeignKey("Sites",  on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    add_date = models.DateField("Add Date", auto_now_add=True)
+    update_date = models.DateField("Update Date",  auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Inspection Result"
+        verbose_name_plural = "Inspections Result"
+
+    def __str__(self):
+        return str(self.id)
+
+
+class InspectionDetails(models.Model):
+    master_id = models.ForeignKey("InspectionMaster", verbose_name="InspectionMaster", on_delete=models.CASCADE, related_name='details', default=3)
+    category_id = models.ForeignKey("InspectionCategory",  on_delete=models.CASCADE)
+    item_id = models.ForeignKey("ItemInCategory",  on_delete=models.CASCADE) #models.CharField("Item Id", max_length = 200)
+    item_value = models.CharField("Item value", max_length = 500)
+    item_image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
+
+    class Meta:
+        verbose_name = "Detail"
+        verbose_name_plural = "Details"
+
+    def __str__(self):
+        return self.item_value
+
+
+
+class InspectedItem(models.Model):
+    category_id = models.ForeignKey("InspectionCategory",  on_delete=models.CASCADE)
+    site_id = models.ForeignKey("Sites",  on_delete=models.CASCADE)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    item_id = models.ForeignKey("ItemInCategory",  on_delete=models.CASCADE) #models.CharField("Item Id", max_length = 200)
+    item_value = models.CharField("Item value", max_length = 500)
+    item_image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
+    add_date = models.DateField("Add Date", auto_now_add=True)
+    update_date = models.DateField("Update Date",  auto_now_add=True)
+
+    objects = CategoryFilterManager()
+    filter_objects = CategoryFilterManager() # The Dahl-specific manager.
+
+    class Meta:
+    	verbose_name = "Inspection Result"
+    	verbose_name_plural = "Inspections Result"
+
+    def __str__(self):
+        return self.item_value    
+
 
 class InspectItem(models.Model):
     inspector_name=models.CharField("Inspector Name",max_length=100,default=' ')
@@ -140,7 +200,7 @@ class InspectItem(models.Model):
         verbose_name = "Inspected Item"
         verbose_name_plural = "Inspected Items"
 
-   
+ 
 
     def __str__(self):
         template = '{0.category_name} {0.site_name} {0.inspector_name}  {0.Items} {0.image}'

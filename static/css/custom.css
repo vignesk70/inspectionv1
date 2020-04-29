@@ -1,6 +1,7 @@
 body {
     background-color: rgba(0, 0, 0, 0.76);
-    
+    font-family: 'Open Sans', sans-serif;
+
 }
 
 
@@ -58,3 +59,6 @@ li .nocircle{
     color:white;
 }
  
+.btn-primary a{
+	color:#fff;
+}

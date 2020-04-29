@@ -18,6 +18,8 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_list_or_404
+
 
 
 
@@ -97,7 +99,10 @@ def ShowInspectionDataFun(request):
         return render(request, 'inspectv1/updateinspection.html', {'category': category})
 
 
-    sites = Sites.objects.filter(site_no=request.GET['site'])
+    #sites = Sites.objects.filter(site_no=request.GET['site'])
+    sites = get_list_or_404(Sites,site_no=request.GET['site'])
+
+
 
     for site in sites:
         siteid = site.id

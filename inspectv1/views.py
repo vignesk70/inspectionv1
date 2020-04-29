@@ -101,6 +101,7 @@ def ShowInspectionDataFun(request):
 
     for site in sites:
         siteid = site.id
+        sitename = site.name
 
     inspectionmaster = InspectionMaster.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
     master_id = 0
@@ -110,11 +111,10 @@ def ShowInspectionDataFun(request):
 
    
     if master_id == "0":
-        return render(request, 'inspectv1/updateinspection.html', {'category': category})
+        return render(request, 'inspectv1/updateinspection.html', {'category': category,'site_data':sites})
 
     #posts = InspectedItem.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
     posts = InspectionDetails.objects.all().filter(master_id_id = master_id ).select_related()
-
 
     
     for cat in category:
@@ -133,7 +133,7 @@ def ShowInspectionDataFun(request):
                         #    cat.iserror = 1
 
 
-    return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts})
+    return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts,'site_data':sites})
 
 
 @login_required
@@ -353,3 +353,5 @@ def getCount(masterid,errtype):
         count = InspectionDetails.objects.all().filter(master_id=masterid,item_id__errortype=errtype).count()
         return count
     pass
+
+

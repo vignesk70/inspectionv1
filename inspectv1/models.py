@@ -197,10 +197,10 @@ class InspectItem(models.Model):
     image= models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
 
     class Meta:
-    	verbose_name = "Inspected Item"
-    	verbose_name_plural = "Inspected Items"
+        verbose_name = "Inspected Item"
+        verbose_name_plural = "Inspected Items"
 
-   
+ 
 
     def __str__(self):
         template = '{0.category_name} {0.site_name} {0.inspector_name}  {0.Items} {0.image}'

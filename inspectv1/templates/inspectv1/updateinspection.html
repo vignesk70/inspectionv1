@@ -12,16 +12,30 @@
 				<div class="card-header locationheader">Select Location</div>
 				<div class="card-body">
 					<h3 class="card-title"></h3>
-					
+					{% block site_data %}
+					{% if site_data %}
 					<div class="form-group">
 						<label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
 						<input type="text"
-						class="form-control" name="siteid" id="siteid" aria-describedby="helpId" placeholder="">
+						class="form-control" name="siteid" id="siteid" aria-describedby="helpId" placeholder="" value="{{site_data.0.site_no}}">
 						<label for="">Site Name</label>
 						<input type="text"
-						class="form-control" name="sitename" id="sitename" aria-describedby="helpId" placeholder="">
+						class="form-control" name="sitename" id="sitename" aria-describedby="helpId" placeholder="" value="{{site_data.0.name}}">
 					</div>
 					<button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
+					{% else %}
+					<div class="form-group">
+						<label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
+						<input type="text"
+						class="form-control" name="siteid" id="siteid" aria-describedby="helpId" placeholder="" value="">
+						<label for="">Site Name</label>
+						<input type="text"
+						class="form-control" name="sitename" id="sitename" aria-describedby="helpId" placeholder="" value="">
+					</div>
+					<button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
+					{% endif %}
+					{% endblock %}
+					
 				</div>
 			</div>
 		</div>

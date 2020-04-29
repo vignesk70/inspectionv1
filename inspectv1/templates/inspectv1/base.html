@@ -63,13 +63,13 @@
 					  <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="/inspect/sites">Inspection</a>
 					  <div class="dropdown-menu" aria-labelledby="dropdownId">
 						  <a class="dropdown-item" href="{%url 'inspectv1:listsites'%}">Manage Site</a>
-						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}?type=new">Start New Site</a>
+						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}">Start New Site</a>
 					  </div>
 					   {% elif request.user|has_group:"administrator"%}
 					  <a class="nav-link dropdown-toggle"  id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="/inspect/sites">Inspection</a>
 					  <div class="dropdown-menu" aria-labelledby="dropdownId">
 						  <a class="dropdown-item" href="{%url 'inspectv1:listsites'%}">Manage Site</a>
-						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}?type=new">Start New Site</a>
+						  <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}">Start New Site</a>
 					  </div>
 					    {% endif %}
 					  {% endif %}

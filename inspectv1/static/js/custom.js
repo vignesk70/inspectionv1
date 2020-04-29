@@ -171,7 +171,8 @@ $("document").ready(function(){
 		//$(".submitbutton").live( "click",function(event){
 		  event.preventDefault();
 			
-			var category_id = $(this).prop('id');
+			var category_id = $(this).attr('data-id');
+			
 			
 			$("#category_"+category_id).find("input[type=hidden]").each(function(){
 				
@@ -218,8 +219,18 @@ $("document").ready(function(){
 					async: false,
 					success:  function (data) {
 						if( $("#throw_error_"+itemid).val()  ){
-							$( "#card_header_"+category_id ).addClass( "base_error" );
-						}
+				if($("#field_"+itemid).prop('type') == 'checkbox' && $("#field_"+itemid).is(":checked")){
+						$( "#card_header_"+category_id ).addClass( "bg-danger" );
+				}
+				else{
+				$( "#card_header_"+category_id ).addClass( "bg-success" );
+				}
+				}
+				else{
+					$( "#card_header_"+category_id ).addClass( "bg-success" );
+				}
+						
+						$( "#savebutton_"+category_id ).hide();
 					    jQuery("#master_id").val(data);
 					   $(".alert").show();	
 

@@ -4,7 +4,7 @@
 <html lang="en">
 
   <head>
-    <title>Inspector</title>
+    <title>Petron</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -48,7 +48,7 @@
   <body>
     <section class="navigation">
       <nav class="navbar navbar-expand-sm navbar-light bg-light">
-        <a class="navbar-brand" href="{%url 'inspectv1:index'%}">Inspect</a>
+        <a class="navbar-brand" href="{%url 'inspectv1:index'%}">Petron ESI</a>
         <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
           aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -65,34 +65,30 @@
               <a class="nav-link dropdown-toggle" id="dropdownId" data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false" href="/inspect/sites">Inspection</a>
               <div class="dropdown-menu" aria-labelledby="dropdownId">
-                <a class="dropdown-item" href="{%url 'inspectv1:listsites'%}">Manage Site</a>
-                <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}">Start New Site</a>
+                <a class="dropdown-item" href="{%url 'inspectv1:listsites'%}">View Completed Sites</a>
+                <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}">Start New Inpsection</a>
               </div>
               {% elif request.user|has_group:"administrator"%}
               <a class="nav-link dropdown-toggle" id="dropdownId" data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false" href="/inspect/sites">Inspection</a>
               <div class="dropdown-menu" aria-labelledby="dropdownId">
-                <a class="dropdown-item" href="{%url 'inspectv1:listsites'%}">Manage Site</a>
-                <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}">Start New Site</a>
+                <a class="dropdown-item" href="{%url 'inspectv1:listsites'%}">View Completed Sites</a>
+                <a class="dropdown-item" href="{%url 'inspectv1:inspectiondata'%}">Start New Inspection</a>
               </div>
               {% endif %}
               {% endif %}
             </li>
-            <li class="nav-item dropdown ">
+            <li class="nav-item  ">
               {%if not user.is_authenticated%}
-              <a class="nav-link dropdown-toggle" href="{%url 'inspectv1:login'%}" id="dropdownId"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login</a>
+              <a class="nav-link " href="{%url 'inspectv1:login'%}">Login</a>
               {%else %}
-              <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false">{{user.first_name}}</a>
+              <a class="nav-link " href="{% url 'inspectv1:logout' %}?next={% url 'inspectv1:login'%}">Logout</a>
               {% endif %}
-              <div class="dropdown-menu" aria-labelledby="dropdownId">
-                {%if not user.is_authenticated%}
-                <a class="dropdown-item" href="{% url 'inspectv1:login' %}?next={{request.path}}">Login</a>
-                {%else%}
-                <a class="dropdown-item" href="{% url 'inspectv1:logout' %}?next={% url 'inspectv1:index'%}">Logout</a>
-                {%endif%}
-              </div>
+            </li>
+            <li>
+              {% if user.is_authenticated%}
+              <a class="nav-link " href="#">{{user.first_name}}</a>
+              {%endif%}
             </li>
           </ul>
 

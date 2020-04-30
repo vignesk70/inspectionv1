@@ -76,7 +76,7 @@
 								id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">
 								<h5>{{cat}}</h5>
 							</div>
-							<div class="card-body">
+							<div class="card-body form-group invisible" id="category_{{cat.id}}">
 								<input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}">
 								{%for list in cat.items.all %}
 								<input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}">

@@ -122,7 +122,7 @@ class InspectedItemAdmin(admin.ModelAdmin):
 
 #admin.site.register(InspectionCategory)
 #admin.site.register(ItemInCategory)
-@admin.register(Sites)
+@admin.register(Sites,Stoffice)
 class SitesAdmin(ImportExportModelAdmin):
     pass
 
@@ -132,5 +132,5 @@ admin.site.register(InspectionMaster, InspectionMasterAdmin)
 admin.site.register(InspectorDetails)
 #admin.site.register(ItemInCategory)
 admin.site.register(Subsidiary)
-admin.site.register(Stoffice)
+#admin.site.register(Stoffice)
 

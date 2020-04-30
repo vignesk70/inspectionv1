@@ -8,50 +8,53 @@
 
 	<div class="row">
 		<div class="col-sm-3">
-			<div class="card mt-3" >
-				<div class="card-header locationheader">Select Location</div>
+			<div class="card mt-3">
+				<div class="card-header bg-primary">
+					<h5>Select Location</h5>
+				</div>
 				<div class="card-body">
 					<h3 class="card-title"></h3>
 					{% block site_data %}
 					{% if site_data %}
 					<div class="form-group">
 						<label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
-						<input type="text"
-						class="form-control" name="siteid" id="siteid" aria-describedby="helpId" placeholder="" value="{{site_data.0.site_no}}">
+						<input type="text" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
+							placeholder="" value="{{site_data.0.site_no}}">
 						<label for="">Site Name</label>
-						<input type="text"
-						class="form-control" name="sitename" id="sitename" aria-describedby="helpId" placeholder="" value="{{site_data.0.name}}">
+						<input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
+							placeholder="" value="{{site_data.0.name}}">
 					</div>
-					
+
 					{% else %}
 					<div class="form-group">
 						<label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
-						<input type="text"
-						class="form-control" name="siteid" id="siteid" aria-describedby="helpId" placeholder="" value="">
+						<input type="text" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
+							placeholder="" value="">
 						<label for="">Site Name</label>
-						<input type="text"
-						class="form-control" name="sitename" id="sitename" aria-describedby="helpId" placeholder="" value="">
+						<input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
+							placeholder="" value="">
 					</div>
 					<button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
 					{% endif %}
 					{% endblock %}
-					
+
 				</div>
 			</div>
 		</div>
 		<div class="col-sm-9 createsiteclass">
 
 
-			{% if 'type' in request.GET %}  
+			{% if 'type' in request.GET %}
 
-			{% ifequal request.GET.type 'site' %} 
-			<form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}" method="post" enctype="multipart/form-data">
-				<input type="hidden" value="{{request.GET.site}}" name="site_id" id="site_id" >
-				<input type="hidden" value="{{request.GET.id}}" name="master_id" id="master_id" >
-				<p   class="showmessage" style="display:none;" > Data Saved Successfully. </p>  
+			{% ifequal request.GET.type 'site' %}
+			<form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}"
+				method="post" enctype="multipart/form-data">
+				<input type="hidden" value="{{request.GET.site}}" name="site_id" id="site_id">
+				<input type="hidden" value="{{request.GET.id}}" name="master_id" id="master_id">
+				<p class="showmessage" style="display:none;"> Data Saved Successfully. </p>
 				{% if messages %}
 				{% for message in messages %}
-				<p  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
+				<p {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </p>
 				{% endfor %}
 
 				{% endif %}
@@ -61,87 +64,59 @@
 
 
 				{% for cat in category|dictsort:"sequence" %}
-				<div class="row mt-3">
+				<div class="row">
 
 
-					<div class="col-sm-12 mx-auto" >
-						<div class="card" >
+					<div class="col-sm-12 mx-auto">
+						<div class="card">
 
 
-							<div {% if cat.iserror  %} class="card-header bg-danger"  {% elif cat.filled  %}  class="card-header bg-success" {% else %} class="card-header" {% endif %}  id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">{{cat}}</div>
+							<div {% if cat.iserror  %} class="card-header bg-danger" {% elif cat.filled  %}
+								class="card-header bg-success" {% else %} class="card-header  bg-primary" {% endif %}
+								id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">
+								<h5>{{cat}}</h5>
+							</div>
+							<div class="card-body">
+								<input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}">
+								{%for list in cat.items.all %}
+								<input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}">
+								<input type="hidden" value="{{list.throw_error}}" name="item_throw_error"
+									id="throw_error_{{list.id}}">
+								<label for="">{{list.items}}</label>
+								<input class="form-control" type={{list.fieldtype}} value="" name="field"
+									id="field_{{list.id}}" onclick="myfunction('{{list.id}}')" readonly>
+
+								{% for post in posts %}
+
+								{% ifequal post.item_id_id list.id %}
 
 
-							<table cellspacing="2" cellpadding="2" class="table singlecategory invisible" id="category_{{cat.id}}" >
+								<script type="text/javascript">
+									if (jQuery("#field_" + {{ list.id }}).attr('type') == "checkbox") {
+										jQuery("#field_" + {{ list.id }}).prop('checked', true);
+																				}else {
+										jQuery("#field_" + {{ list.id }}).val({{ post.item_value }});
+																				}
+								</script>
+								{% endifequal %}
+								{%endfor%}
 
-								<input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}" > 
+								<div>
 
-
-								<thead class="thead-dark">
-									<tr>
-										<th style="width:10%; padding: 0 0 0 10px;">S.NO</th>
-										<th style="width:40%;">Items</th>
-										<th style="width:20%; text-align:left;">Remarks</th>
-										<th style="width:30%;"></th>
-									</tr>
-								</thead>
-								<tbody class="table-striped">
-									{%for list in cat.items.all %}
-
-									<tr class="singleitem" id="item_{{list.id}}">
-										<input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}" >
-										<input type="hidden" value="{{list.throw_error}}" name="item_throw_error" id="throw_error_{{list.id}}" >
-										<td style="padding: 0 0 0 20px;"><p>{{list.sequence}}.</p>    </td> 
-										<td ><p class="para">{{list.items}}</p></td>
-										<td style="text-align:left;">
-
-											<input type={{list.fieldtype}} value="" name="field" id="field_{{list.id}}" onclick="myfunction('{{list.id}}')" readonly >
-
-											{% for post in posts %}
-
-											{% ifequal post.item_id_id list.id %} 
-
-
-											<script type="text/javascript">
-												if(jQuery("#field_"+{{list.id}}).attr('type') == "checkbox"){
-													jQuery("#field_"+{{list.id}}).prop('checked', true);
-												}else{
-													jQuery("#field_"+{{list.id}}).val({{post.item_value}});
-												}
-											</script>
-											{% endifequal %}
-											{%endfor%}
-
-										</td>
-
-										<td><div>
-											
-											{% for post in posts %}
-											{% ifequal post.item_id_id list.id %}
-											{% if post.item_image %}
-											<a href="{{ post.item_image.url }}" target="_blank"><img src="{{ post.item_image.url }}" style="width:50px;"></a>
-										    {% endif %}
-											{% endifequal %}
-											{%endfor%}
-							<input type="file" name="my_image" id="image_{{list.id}}"  style="display:none">
-											</div></td>
-
-
-
-									</tr>
-
+									{% for post in posts %}
+									{% ifequal post.item_id_id list.id %}
+									{% if post.item_image %}
+									<a href="{{ post.item_image.url }}" target="_blank"><img
+											src="{{ post.item_image.url }}" style="width:50px;"></a>
+									{% endif %}
+									{% endifequal %}
 									{%endfor%}
-								</tbody>
+									<input type="file" name="my_image" id="image_{{list.id}}" style="display:none">
+								</div>
+								{%endfor%}
+							</div>
 
 
-								<tr><td colspan="4">   
-									
-
-								</td></tr>
-
-
-
-
-							</table>
 
 
 
@@ -150,19 +125,23 @@
 
 				</div>
 				{%endfor%}
-			</form>  
-			<div class="alert alert-success alertbox"  style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
+			</form>
+			<div class="alert alert-success alertbox"
+				style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
 				<span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
 			</div>
 			{% endifequal %}
 			{% else %}
-			<div id="choosesite" style="color:#000; background-color:#fff; width:100%; padding: 10px; border-radius:5px; margin: 20px 20px 0 0;">Choose Site First</div>
-			<div class="alert alert-success alertbox"  style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
+			<div id="choosesite"
+				style="color:#000; background-color:#fff; width:100%; padding: 10px; border-radius:5px; margin: 20px 20px 0 0;">
+				Choose Site First</div>
+			<div class="alert alert-success alertbox"
+				style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
 				<span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
 			</div>
-			{% endif %}  
+			{% endif %}
 
-			
+
 
 
 		</div>

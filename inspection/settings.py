@@ -154,6 +154,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT =  os.path.join(BASE_DIR, 'static/')
 
 LOGIN_REDIRECT_URL = '/inspect'
+LOGIN_URL = '/inspect/accounts/login/'
 MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
 MEDIA_URL= "/media/"
 UPLOAD_PATH = '/media/images/uploads/'

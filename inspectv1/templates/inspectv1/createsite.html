@@ -1,4 +1,4 @@
-<div class="createSite" style="padding-top:1rem;">
+<div class="createSite">
 	<form id="categoryform" onsubmit="return ajaxsubmit()" class="" action="{% url 'inspectv1:add' %}" method="post">
 		<input type="hidden" value="{{sites}}" name="site_id" id="site_id">
 		<input type="hidden" value="" name="master_id" id="master_id">
@@ -10,8 +10,6 @@
 
 		{% endif %}
 		{% csrf_token %}
-
-
 
 
 		{% for cat in category|dictsort:"sequence" %}
@@ -56,10 +54,6 @@
 						<button class="btn btn-primary special submitbutton" id="savebutton_{{cat.id}}" type="submit"
 							data-id="{{cat.id}}">Save</button>
 					</div>
-
-
-
-
 
 				</div>
 			</div>

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 
 
 
@@ -31,7 +32,7 @@ class ItemInCategory(models.Model):
     FIELDTYPE = ( ('checkbox','CheckBox'),
     ('text','Textfield'),('number','NumberField'),('date','DateField'))
     ERRORTYPE = [ ('NONE','None'),('STATUTORY','Statutory'),
-    ('SAFETY','Safety'),('ENGINEERING','Engineering'),('OPERATIONS','Operations')]
+    ('SAFETY','Safety'),('ENGINEERING','Engineering'),('OPERATIONS','Operations'),('POWER','Power')]
 
     category = models.ForeignKey("InspectionCategory", verbose_name="Category", on_delete=models.CASCADE, related_name='items', default=3)
     items = models.CharField("Item", max_length=200)
@@ -39,7 +40,9 @@ class ItemInCategory(models.Model):
     throw_error = models.BooleanField("Throw error if True")
     sequence = models.IntegerField("Sequence")
     fieldtype = models.CharField(max_length=20, choices=FIELDTYPE) 
-    errortype= models.CharField(max_length=20,choices=ERRORTYPE,default=' ')
+    errortype = models.CharField(max_length=20, choices=ERRORTYPE, default=' ', verbose_name="Category")
+    severity = models.IntegerField("Severity",default=0)
+    
     
     class Meta:
         verbose_name = "Item"
@@ -52,7 +55,7 @@ class ItemInCategory(models.Model):
     def get_absolute_url(self):
         return reverse("item_detail", kwargs={"pk": self.pk})
 
-    def get_menu_choices():
+    def get_menu_choices(self):
         choices_tuple = []
         #do your stuff
         return choices_tuple

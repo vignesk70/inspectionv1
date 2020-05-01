@@ -359,4 +359,16 @@ def getCount(masterid,errtype):
         return count
     pass
 
-
+def distance(slat, slon, elat, elon):
+    """
+Function to get distance of 2 points
+slat/slon - start lat , start lon - get this from the geolocation
+elat,elon - pass the values from the database list
+Sample code: refer distance.py
+    """
+    slat = radians(float(slat))
+    slon = radians(float(slon))
+    elat = radians(float(elat))
+    elon = radians(float(elon))
+    dist = 6371.01 * acos(sin(slat) * sin(elat) + cos(slat) * cos(elat) * cos(slon - elon))
+    return dist

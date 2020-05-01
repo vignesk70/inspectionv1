@@ -17,8 +17,9 @@
 					{% block site_data %}
 					{% if site_data %}
 					<div class="form-group">
-						<label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
-						<input type="text" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
+						<label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
+								aria-hidden="true"></i></button><i class="fa fa-location-arrow" aria-hidden="true"></i>
+						<input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
 							placeholder="" value="{{site_data.0.site_no}}">
 						<label for="">Site Name</label>
 						<input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
@@ -27,8 +28,10 @@
 
 					{% else %}
 					<div class="form-group">
-						<label for="">Site Id</label> <i class="fa fa-location-arrow" aria-hidden="true"></i>
-						<input type="text" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
+						<label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
+								aria-hidden="true" onclick="geolocate()"></i></button><i class="fa fa-location-arrow"
+							aria-hidden="true"></i>
+						<input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
 							placeholder="" value="">
 						<label for="">Site Name</label>
 						<input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
@@ -37,7 +40,7 @@
 					<button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
 					{% endif %}
 					{% endblock %}
-
+					<p id="demo"></p>
 				</div>
 			</div>
 		</div>

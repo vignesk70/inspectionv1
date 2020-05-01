@@ -17,17 +17,17 @@ def distance(slat, slon, elat, elon):
     dist = 6371.01 * acos(sin(slat) * sin(elat) + cos(slat) * cos(elat) * cos(slon - elon))
     return dist
 
-slat = 3.072988
-slon = 101.592524
+slat = 3.081848  #these values  to come from browser geolocation
+slon = 101.630661
 
 
 sites = Sites.objects.all()
 site_dict = {}
 for site in sites:
     dist = distance(slat, slon, site.latitude, site.longitude)
-    print('{}-{:.2f}'.format(site.id, dist))
+    #print('{}-{:.2f}'.format(site.id, dist))
     site_dict[site.name]=dist
     x = site_dict
     sorted_x = sorted(x.items(), key=lambda kv: kv[1])
-print(sorted_x[:3]) #return closest 3 sites.
+print(sorted_x[:3]) #return closest 3 sites. the values from here are to be passed to UI for selection by the inspector
 

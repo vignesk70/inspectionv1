@@ -164,12 +164,12 @@ input[type="checkbox"][readonly] {
 }
 
 h5 {
-  color: white !important;
+  color: rgb(63, 55, 55) !important;
   text-decoration: none;
 }
 h5:hover {
   text-decoration: none !important;
-  color: rgb(219, 219, 219) !important;
+  color: rgba(63, 55, 55, 0.651) !important;
 }
 .form-control {
   border: 0px !important;

@@ -11,11 +11,13 @@
         <div class="col-sm-12">
             <div class="row sitelist" style="padding-top:10px;">
                 <div class="col-sm-12">
-                    <div class="row">
+                    <div class="row mb-2">
 
                         <div class="container">
-                            
+
                             <div class="pagetitle">Inspection list as of {% now "SHORT_DATETIME_FORMAT" %}</div>
+
+
 
                             <table class="table">
 
@@ -34,10 +36,12 @@
                                 <tbody>
                                     {% for x in sitedata %}
                                     <tr>
-                                       <td><a href="{%url 'inspectv1:inspectiondata'%}?type=site&site={{x.siteno}}&id={{x.siteid}}">{{x.sitename}}</a></td>
-                                       <td>{{x.siteadd}}</td>
+                                        <td><a
+                                                href="{%url 'inspectv1:inspectiondata'%}?type=site&site={{x.siteno}}&id={{x.siteid}}">{{x.sitename}}</a>
+                                        </td>
+                                        <td>{{x.siteadd}}</td>
                                         {% for y,val in x.errors.items%}
-                                       <td>{{val}}</td> 
+                                        <td>{{val}}</td>
                                         {%endfor%}
                                     </tr>
                                 </tbody>

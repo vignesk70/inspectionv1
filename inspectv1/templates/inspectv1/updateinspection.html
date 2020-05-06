@@ -73,10 +73,11 @@
 						<div class="card">
 
 
-							<div {% if cat.iserror  %} class="card-header bg-danger" {% elif cat.filled  %}
-								class="card-header bg-success" {% else %} class="card-header  bg-primary" {% endif %}
-								id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">
-								<h5>{{cat}}</h5>
+							<div class="card-header" id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">
+								<h5>{{cat}} <span {% if cat.iserror  %} class="badge badge-danger"
+										{% elif cat.filled  %} class="badge badge-success" {% else %}
+										class="badge badge-primary" {% endif %}><i class="fa fa-exclamation-triangle"
+											aria-hidden="true"></i></i></span></h5>
 							</div>
 							<div class="card-body form-group invisible" id="category_{{cat.id}}">
 								<input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}">

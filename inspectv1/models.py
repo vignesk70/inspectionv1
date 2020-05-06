@@ -41,7 +41,7 @@ class ItemInCategory(models.Model):
     sequence = models.IntegerField("Sequence")
     fieldtype = models.CharField(max_length=20, choices=FIELDTYPE) 
     errortype = models.CharField(max_length=20, choices=ERRORTYPE, default=' ', verbose_name="Category")
-    severity = models.IntegerField("Risk Factor",default=0)
+    severity = models.IntegerField("Risk Factors",default=0)
     
     
     class Meta:

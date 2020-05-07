@@ -28,27 +28,29 @@
 						<input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}">
 
 						{%for list in cat.items.all %}
-						<input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}">
-						<input type="hidden" value="{{list.throw_error}}" name="item_throw_error"
-							id="throw_error_{{list.id}}">
-						<label for="">{{list.items}}</label>
-						<input class="form-control" type={{list.fieldtype}} value="" name="field" id="field_{{list.id}}"
-							onclick="myfunction('{{list.id}}')">
-						{% for post in posts %}
+						<div class="itembgnd">
+							<input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}">
+							<input type="hidden" value="{{list.throw_error}}" name="item_throw_error"
+								id="throw_error_{{list.id}}">
+							<label for="">{{list.items}}</label>
+							<input class="form-control" type={{list.fieldtype}} value="" name="field"
+								id="field_{{list.id}}" onclick="myfunction('{{list.id}}')">
+							{% for post in posts %}
 
-						{% ifequal post.item_id_id list.id %}
+							{% ifequal post.item_id_id list.id %}
 
 
-						<script type="text/javascript">
-							if (jQuery("#field_" + {{ list.id }}).attr('type') == "checkbox") {
-								jQuery("#field_" + {{ list.id }}).prop('checked', true);
+							<script type="text/javascript">
+								if (jQuery("#field_" + {{ list.id }}).attr('type') == "checkbox") {
+									jQuery("#field_" + {{ list.id }}).prop('checked', true);
 																		}else {
-								jQuery("#field_" + {{ list.id }}).val({{ post.item_value }});
+									jQuery("#field_" + {{ list.id }}).val({{ post.item_value }});
 																		}
-						</script>
-						{% endifequal %}
-						{%endfor%}
-						<div><input type="file" name="my_image" id="image_{{list.id}}" style="display:none">
+							</script>
+							{% endifequal %}
+							{%endfor%}
+							<div><input type="file" name="my_image" id="image_{{list.id}}" style="display:none">
+							</div>
 						</div>
 						{%endfor%}
 						<button class="btn btn-primary special submitbutton" id="savebutton_{{cat.id}}" type="submit"

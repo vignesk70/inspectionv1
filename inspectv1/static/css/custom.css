@@ -177,3 +177,11 @@ h5:hover {
   border-bottom: 2px solid rgba(0, 123, 255, 0.5) !important;
   margin-bottom: 0.5rem;
 }
+
+.itembgnd {
+  background-color: #98989724;
+  border-bottom: 2px solid lightgray;
+  border-top: 1px solid lightgray;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+}

@@ -14,12 +14,8 @@
 
 		{% for cat in category|dictsort:"sequence" %}
 		<div class="row mb-2">
-
-
 			<div class="col-sm-12">
 				<div class="card">
-
-
 					<div {% if cat.filled  %} class="card-header bg-primary" {% else %} class="card-header bg-primary"
 						{% endif %} id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">
 						<h5>{{cat}}</h5>

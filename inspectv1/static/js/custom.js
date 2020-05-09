@@ -194,12 +194,12 @@ $("document").ready(function () {
                     $("#field_" + itemid).prop("type") == "checkbox" &&
                     $("#field_" + itemid).is(":checked")
                   ) {
-                    $("#card_header_" + category_id).addClass("bg-danger");
+                    $("#card_header_" + category_id + " h5").addClass("bg-danger-text");
                   } else {
-                    $("#card_header_" + category_id).addClass("bg-success");
+                    $("#card_header_" + category_id + " h5").addClass("bg-success-text");
                   }
                 } else {
-                  $("#card_header_" + category_id).addClass("bg-success");
+                  $("#card_header_" + category_id + " h5").addClass("bg-success-text");
                 }
 
                 $("#savebutton_" + category_id).hide();

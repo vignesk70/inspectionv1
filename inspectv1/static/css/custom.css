@@ -185,3 +185,6 @@ h5:hover {
   margin-bottom: 0.5rem;
   padding: 0.5rem;
 }
+
+.bg-success-text{ color :#28a745 !important; }
+.bg-danger-text { color :#dc3545 !important; }

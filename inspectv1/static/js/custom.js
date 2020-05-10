@@ -194,12 +194,26 @@ $("document").ready(function () {
                     $("#field_" + itemid).prop("type") == "checkbox" &&
                     $("#field_" + itemid).is(":checked")
                   ) {
-                    $("#card_header_" + category_id + " h5").addClass("bg-danger-text");
+                    $("#card_header_" + category_id + " .badge").addClass("badge-danger");
+                    $("#card_header_" + category_id + " .badge").removeClass("badge-primary");
+					  
+					$("#card_header_" + category_id + " .fa").addClass("fa-exclamation-triangle");
+                    $("#card_header_" + category_id + " .fa").removeClass("fa-question");  
+					  
+					  
                   } else {
-                    $("#card_header_" + category_id + " h5").addClass("bg-success-text");
+                    $("#card_header_" + category_id + " .badge").addClass("badge-success");
+					$("#card_header_" + category_id + " .badge").removeClass("badge-primary");
+					  
+					$("#card_header_" + category_id + " .fa").addClass("fa-check-square");
+                    $("#card_header_" + category_id + " .fa").removeClass("fa-question");  
                   }
                 } else {
-                  $("#card_header_" + category_id + " h5").addClass("bg-success-text");
+                  $("#card_header_" + category_id + " .badge").addClass("badge-success");
+				  $("#card_header_" + category_id + " .badge").removeClass("badge-primary");
+					
+				  $("#card_header_" + category_id + " .fa").addClass("fa-check-square");
+                    $("#card_header_" + category_id + " .fa").removeClass("fa-question");	
                 }
 
                 $("#savebutton_" + category_id).hide();

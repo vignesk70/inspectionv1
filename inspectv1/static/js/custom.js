@@ -190,10 +190,10 @@ $("document").ready(function () {
               async: false,
               success: function (data) {
                 if ($("#throw_error_" + itemid).val()) {
-                  if (
+                  /*if (
                     $("#field_" + itemid).prop("type") == "checkbox" &&
                     $("#field_" + itemid).is(":checked")
-                  ) {
+                  ) { */
                     $("#card_header_" + category_id + " .badge").addClass("badge-danger");
                     $("#card_header_" + category_id + " .badge").removeClass("badge-primary");
 					  
@@ -201,13 +201,13 @@ $("document").ready(function () {
                     $("#card_header_" + category_id + " .fa").removeClass("fa-question");  
 					  
 					  
-                  } else {
+                 /* } else {
                     $("#card_header_" + category_id + " .badge").addClass("badge-success");
 					$("#card_header_" + category_id + " .badge").removeClass("badge-primary");
 					  
 					$("#card_header_" + category_id + " .fa").addClass("fa-check-square");
                     $("#card_header_" + category_id + " .fa").removeClass("fa-question");  
-                  }
+                  } */
                 } else {
                   $("#card_header_" + category_id + " .badge").addClass("badge-success");
 				  $("#card_header_" + category_id + " .badge").removeClass("badge-primary");

@@ -323,7 +323,7 @@ class ListSitesForInspector(LoginRequiredMixin, ListView):
         sitedata = []
         context = super(ListSitesForInspector, self).get_context_data(**kwargs)
         listofsites = InspectionMaster.objects.filter(
-            user_id=self.request.user.id).select_related()
+            user_id=self.request.user.id).select_related().order_by('-id')
 
         for sites in listofsites:
             data = {}

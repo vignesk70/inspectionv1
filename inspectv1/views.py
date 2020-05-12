@@ -2,11 +2,11 @@ import os
 import json
 import array as arr
 
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DetailView
 from django import forms
 from .models import *
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from .forms import *
 from django.contrib import messages
 from django.views.generic.edit import FormView
@@ -19,23 +19,18 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_list_or_404
-
-
-
-
-from .models import ItemInCategory
-
-
-
+from math import radians, acos, sin, cos
 
 # Create your views here.
+
+
 class IndexView(TemplateView):
     template_name = "inspectv1/index.html"
 
 
 class CreateInspectionForm(CreateView):
     template_name = "inspectv1/inspection.html"
-    form_class =  RunInspection
+    form_class = RunInspection
 
 
 class ShowInspectionData(ListView):
@@ -55,7 +50,7 @@ class ShowInspectionData(ListView):
         queryset = sorted(chain(qs1,qs2))
         return queryset"""
 
-    
+
 """class ShowInspectionDataText(ListView):
     template_name = "inspectv1/updateinspectiontest.html"
     model = Profile
@@ -74,21 +69,20 @@ class ShowInspectionData(ListView):
         #receipt_form = PaymentFormSet()
         return self.render_to_response(
             self.get_context_data(form=form)) """
+# def get_queryset(self):
+#user_id = self.request.user.id
+# return Sites.objects.all().filter(user_id_id=user_id).select_related()
+
+# def get_context_data(self, **kwargs):
+#context =  super(SCcheckDetailView, self).get_context_data(**kwargs)
+#context['car'] = Car.objects.get(pk=self.kwargs.get('pk',None))
+#context['member'] = Member.objects.get(id=context['car'].member_id.pk)
+#context_object_name = 'sites'
+#user_id = self.get_user();
+#queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
+# return context
 
 
-
-    #def get_queryset(self):
-        #user_id = self.request.user.id
-        #return Sites.objects.all().filter(user_id_id=user_id).select_related()
-
-    #def get_context_data(self, **kwargs):
-        #context =  super(SCcheckDetailView, self).get_context_data(**kwargs)
-        #context['car'] = Car.objects.get(pk=self.kwargs.get('pk',None))
-        #context['member'] = Member.objects.get(id=context['car'].member_id.pk)
-        #context_object_name = 'sites'
-        #user_id = self.get_user();
-        #queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
-        #return context
 @login_required
 def ShowInspectionDataFun(request):
 
@@ -98,35 +92,32 @@ def ShowInspectionDataFun(request):
     if my_param is None:
         return render(request, 'inspectv1/updateinspection.html', {'category': category})
 
-
     #sites = Sites.objects.filter(site_no=request.GET['site'])
-    sites = get_list_or_404(Sites,site_no=request.GET['site'])
-
+    sites = get_list_or_404(Sites, site_no=request.GET['site'])
 
 
     for site in sites:
         siteid = site.id
         sitename = site.name
 
-    inspectionmaster = InspectionMaster.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
+    inspectionmaster = InspectionMaster.objects.all().filter(
+        user_id_id=request.user.id, site_id_id=siteid).select_related()
     master_id = 0
 
     for im in inspectionmaster:
         master_id = im.id
 
-   
     if master_id == "0":
-        return render(request, 'inspectv1/updateinspection.html', {'category': category,'site_data':sites})
+        return render(request, 'inspectv1/updateinspection.html', {'category': category, 'site_data': sites})
 
     #posts = InspectedItem.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
-    posts = InspectionDetails.objects.all().filter(master_id_id = master_id ).select_related()
+    posts = InspectionDetails.objects.all().filter(
+        master_id_id=master_id).select_related()
 
-    
     for cat in category:
         for post in posts:
             if cat.id == post.category_id_id:
                 cat.filled = 1
-            
 
         for list in cat.items.all():
             #if list.fieldtype == 'checkbox':
@@ -137,37 +128,44 @@ def ShowInspectionDataFun(request):
                     #else:
                     #    cat.iserror = 1
 
-
     return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts,'site_data':sites})
+
 
 
 @login_required
 def ShowSiteData(request):
-   
+
     sites = Sites.objects.all()
     for site in sites:
 
-        inspectionmaster = InspectionMaster.objects.all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
+        inspectionmaster = InspectionMaster.objects.all().filter(
+            user_id_id=request.user.id, site_id_id=site.id).select_related()
         master_id = 0
         for im in inspectionmaster:
             master_id = im.id
-        
+
         site.master_id = master_id
-        item_safety = ItemInCategory.objects.filter(errortype="SAFETY").values_list('id', flat=True)
-        site.item_safety = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id,  item_id_id__in=item_safety ).select_related().count()
+        item_safety = ItemInCategory.objects.filter(
+            errortype="SAFETY").values_list('id', flat=True)
+        site.item_safety = InspectionDetails.objects.distinct("item_id_id").all().filter(
+            master_id_id=master_id,  item_id_id__in=item_safety).select_related().count()
 
-        item_statutory = ItemInCategory.objects.filter(errortype="STATUTORY").values_list('id', flat=True)
-        site.item_statutory = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id, item_id_id__in=item_statutory ).select_related().count()
+        item_statutory = ItemInCategory.objects.filter(
+            errortype="STATUTORY").values_list('id', flat=True)
+        site.item_statutory = InspectionDetails.objects.distinct("item_id_id").all().filter(
+            master_id_id=master_id, item_id_id__in=item_statutory).select_related().count()
 
-        item_engineering = ItemInCategory.objects.filter(errortype="ENGINEERING").values_list('id', flat=True)
-        site.item_engineering = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id, item_id_id__in=item_engineering ).select_related().count()
+        item_engineering = ItemInCategory.objects.filter(
+            errortype="ENGINEERING").values_list('id', flat=True)
+        site.item_engineering = InspectionDetails.objects.distinct("item_id_id").all().filter(
+            master_id_id=master_id, item_id_id__in=item_engineering).select_related().count()
 
-         
+        item_operations = ItemInCategory.objects.filter(
+            errortype="OPERATIONS").values_list('id', flat=True)
+        site.item_operations = InspectionDetails.objects.distinct("item_id_id").all().filter(
+            master_id_id=master_id, item_id_id__in=item_operations).select_related().count()
 
-        item_operations = ItemInCategory.objects.filter(errortype="OPERATIONS").values_list('id', flat=True)
-        site.item_operations = InspectionDetails.objects.distinct("item_id_id").all().filter(master_id_id = master_id, item_id_id__in=item_operations ).select_related().count()
-        
-        show_site = 0;
+        show_site = 0
         if site.item_safety != 0:
             show_site = 1
         elif site.item_statutory != 0:
@@ -179,53 +177,56 @@ def ShowSiteData(request):
 
         site.show_site = show_site
 
-
-
         #items = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
         #filleditems = 0
-        #for item in items:
+        # for item in items:
         #    filleditems += 1
 
         #site.filleditems = filleditems;
 
-
     return render(request, 'inspectv1/sites.html', {'sites': sites, })
+
 
 @csrf_exempt
 def GetCategories(request):
     if request.method == 'POST':
         sites = Sites.objects.all().filter(site_no=request.POST['siteid'])
-        site_count = Sites.objects.all().filter(site_no=request.POST['siteid']).count()
+        site_count = Sites.objects.all().filter(
+            site_no=request.POST['siteid']).count()
         category = InspectionCategory.objects.all()
 
-        if site_count ==0:
+        if site_count == 0:
             return HttpResponse(site_count)
         else:
-            html = render_to_string('inspectv1/createsite.html', {'sites': request.POST['siteid'], 'category': category})
+            html = render_to_string(
+                'inspectv1/createsite.html', {'sites': request.POST['siteid'], 'category': category})
             return HttpResponse(html)
     else:
         return HttpResponse(0)
 
+
 @csrf_exempt
 def GetSites(request):
     if request.method == 'POST':
-        
 
-        if request.POST.get('siteid',False):        
-            sites = Sites.objects.all().filter(site_no__contains=request.POST['siteid']).order_by('site_no')
-            totalsites = Sites.objects.all().filter(site_no__contains=request.POST['siteid']).count() 
-        elif request.POST.get('sitename',False): 
-            sites = Sites.objects.all().filter(name__contains= str(request.POST['sitename']).upper()).order_by('name')
-            totalsites = Sites.objects.all().filter(name__contains=str(request.POST['sitename']).upper()).count()
-
+        if request.POST.get('siteid', False):
+            sites = Sites.objects.all().filter(
+                site_no__contains=request.POST['siteid']).order_by('site_no')
+            totalsites = Sites.objects.all().filter(
+                site_no__contains=request.POST['siteid']).count()
+        elif request.POST.get('sitename', False):
+            sites = Sites.objects.all().filter(name__contains=str(
+                request.POST['sitename']).upper()).order_by('name')
+            totalsites = Sites.objects.all().filter(
+                name__contains=str(request.POST['sitename']).upper()).count()
 
         #a_dict = dict()
         a_dict = [None] * totalsites
-        
+
         countarr = 0
         for site in sites:
             sitevalue = str(site.site_no) + '-' + str(site.name)
-            #a_dict.append(sitevalue)
+            # a_dict.append(sitevalue)
             b_dict = [None] * 3
             b_dict[0] = site.site_no
             b_dict[1] = site.name
@@ -235,12 +236,12 @@ def GetSites(request):
             countarr += 1
 
         return HttpResponse(json.dumps(a_dict))
-        
+
 
 @csrf_exempt
 def Add(request):
     print("In Add")
-    #return HttpResponse(request.POST['category_id']) 
+    # return HttpResponse(request.POST['category_id'])
 
     if request.method == 'POST':
         current_user = request.user
@@ -263,15 +264,14 @@ def Add(request):
         img_url = os.path.join(settings.MEDIA_URL, path)
 
         return HttpResponse(request.POST.items())"""
-        #print current_user.id
-        #return HttpResponse(request.FILES)
+        # print current_user.id
+        # return HttpResponse(request.FILES)
         sites = Sites.objects.filter(site_no=request.POST['site_id'])
 
         for site in sites:
             siteid = site.id
 
-        
-        if request.POST['master_id'] == '':  
+        if request.POST['master_id'] == '':
 
             inspectObj = InspectionMaster()
 
@@ -283,7 +283,6 @@ def Add(request):
             master_id = inspectObj.id
         else:
             master_id = request.POST['master_id']
-
 
         inspectDetailObj = InspectionDetails()
 
@@ -298,8 +297,7 @@ def Add(request):
         return HttpResponse(master_id)
 
     else:
-        return HttpResponse("0")  
-
+        return HttpResponse("0")
 
 
         """inspectObj = InspectedItem()
@@ -318,46 +316,52 @@ def Add(request):
     else:
         return HttpResponse("0")  """
 
-class ListSitesForInspector(LoginRequiredMixin,ListView):
+
+class ListSitesForInspector(LoginRequiredMixin, ListView):
     model = InspectionMaster
     template_name = 'inspectv1/listsites.html'
 
     def get_context_data(self, **kwargs):
         sitedata = []
-        context = super(ListSitesForInspector,self).get_context_data(**kwargs)
-        listofsites = InspectionMaster.objects.filter(user_id=self.request.user.id).select_related()
-        
+        context = super(ListSitesForInspector, self).get_context_data(**kwargs)
+        listofsites = InspectionMaster.objects.filter(
+            user_id=self.request.user.id).select_related()
+
         for sites in listofsites:
-            data={}
-            error={}
-            data['sitename']=sites.site_id.name
-            data['siteadd']=sites.add_date
-            data['siteid']=sites.id
-            data['siteno']=sites.site_id.site_no
-            for  errors in getERRTYPE():         
-                error[errors] = getCount(sites.id,errors)
+            data = {}
+            error = {}
+            data['sitename'] = sites.site_id.name
+            data['siteadd'] = sites.add_date
+            data['siteid'] = sites.id
+            data['siteno'] = sites.site_id.site_no
+            for errors in getERRTYPE():
+                error[errors] = getCount(sites.id, errors)
 
             sitedata.append(data)
-            data["errors"]=error
-        context['headers']=getERRTYPE()
-        context["sitedata"]=sitedata        
-        
+            data["errors"] = error
+        context['headers'] = getERRTYPE()
+        context["sitedata"] = sitedata
+
         #context["details"] = InspectionDetails.objects.all().filter()
-      
+
         return context
 
+
 def getERRTYPE():
-    list=[]
+    list = []
     for x in ItemInCategory.ERRORTYPE:
-        if(x[0]!='NONE'):
+        if(x[0] != 'NONE'):
             list.append(x[0])
     return list
 
-def getCount(masterid,errtype):
-    if not errtype=='NONE':
-        count = InspectionDetails.objects.all().filter(master_id=masterid,item_id__errortype=errtype).count()
+
+def getCount(masterid, errtype):
+    if not errtype == 'NONE':
+        count = InspectionDetails.objects.all().filter(
+            master_id=masterid, item_id__errortype=errtype).count()
         return count
     pass
+
 
 def distance(slat, slon, elat, elon):
     """
@@ -370,5 +374,6 @@ Sample code: refer distance.py
     slon = radians(float(slon))
     elat = radians(float(elat))
     elon = radians(float(elon))
-    dist = 6371.01 * acos(sin(slat) * sin(elat) + cos(slat) * cos(elat) * cos(slon - elon))
+    dist = 6371.01 * acos(sin(slat) * sin(elat) + cos(slat)
+                          * cos(elat) * cos(slon - elon))
     return dist

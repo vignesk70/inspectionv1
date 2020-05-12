@@ -129,13 +129,13 @@ def ShowInspectionDataFun(request):
             
 
         for list in cat.items.all():
-            if list.fieldtype == 'checkbox':
-                for post in posts:
-                    if post.item_id_id == list.id:
-                        #if post.item_image:
-                        cat.iserror = 1
-                        #else:
-                        #    cat.iserror = 1
+            #if list.fieldtype == 'checkbox':
+            for post in posts:
+                if post.item_id_id == list.id:
+                    #if post.item_image:
+                    cat.iserror = 1
+                    #else:
+                    #    cat.iserror = 1
 
 
     return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts,'site_data':sites})

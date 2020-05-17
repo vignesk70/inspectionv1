@@ -1,5 +1,5 @@
 body {
-  background-color: #00246b !important;
+  background-color: rgba(0, 0, 0, 0.76) !important;
   font-family: "Open Sans", sans-serif;
   background-image: url(/static/images/background-photo.jpg);
   background-size: cover;
@@ -32,7 +32,7 @@ body {
 
 .loginpage {
   height: 800px;
-  background-color: rgba(0, 0, 0, 0.76);
+  background-color: #00246b;
 }
 
 li .nocircle {

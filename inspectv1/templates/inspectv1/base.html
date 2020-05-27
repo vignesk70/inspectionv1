@@ -2,8 +2,9 @@
 {% load custom_template_tag %}
 <!doctype html>
 <html lang="en">
-
+   {% load pwa %}
   <head>
+	  {% progressive_web_app_meta %}
     <title>Petron</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">

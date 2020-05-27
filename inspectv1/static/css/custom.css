@@ -32,7 +32,7 @@ body {
 
 .loginpage {
   height: 800px;
-  background-color: rgba(0, 0, 0, 0.76);
+  background-color: #00246b;
 }
 
 li .nocircle {
@@ -151,6 +151,11 @@ input[type="checkbox"][readonly] {
   padding-left: 200px;
   padding-top: 160px;
   width: max-content;
+  color: white !important;
+}
+
+.banner > h5 {
+  color: white !important;
 }
 
 /* updated stylesheet */

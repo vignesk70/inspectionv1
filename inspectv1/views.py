@@ -95,7 +95,6 @@ def ShowInspectionDataFun(request):
     #sites = Sites.objects.filter(site_no=request.GET['site'])
     sites = get_list_or_404(Sites, site_no=request.GET['site'])
 
-
     for site in sites:
         siteid = site.id
         sitename = site.name
@@ -120,16 +119,16 @@ def ShowInspectionDataFun(request):
                 cat.filled = 1
 
         for list in cat.items.all():
-            #if list.fieldtype == 'checkbox':
+            # if list.fieldtype == 'checkbox':
             for post in posts:
                 if post.item_id_id == list.id:
-                    #if post.item_image:
-                    cat.iserror = 1
-                    #else:
+                    # if post.item_image:
+                    if list.throw_error:
+                        cat.iserror = 1
+                    # else:
                     #    cat.iserror = 1
 
-    return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts,'site_data':sites})
-
+    return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts, 'site_data': sites})
 
 
 @login_required
@@ -299,7 +298,6 @@ def Add(request):
     else:
         return HttpResponse("0")
 
-
         """inspectObj = InspectedItem()
 
         inspectObj.category_id_id = request.POST['category_id']
@@ -325,7 +323,7 @@ class ListSitesForInspector(LoginRequiredMixin, ListView):
         sitedata = []
         context = super(ListSitesForInspector, self).get_context_data(**kwargs)
         listofsites = InspectionMaster.objects.filter(
-            user_id=self.request.user.id).select_related()
+            user_id=self.request.user.id).select_related().order_by('-id')
 
         for sites in listofsites:
             data = {}

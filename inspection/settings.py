@@ -15,6 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'inspectv1/static/js', 'serviceworker.js')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -42,7 +44,7 @@ INSTALLED_APPS = [
     'inspectv1.apps.Inspectv1Config',
     'bootstrap4',
     'import_export',
-    
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +79,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'inspection.wsgi.application'
 
+
+PWA_APP_NAME = 'Inspect V1'
+PWA_APP_DESCRIPTION = "Inspect V1"
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_START_URL = '/'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/download.png',
+        'sizes': '160x160'
+    }
+]
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

@@ -208,22 +208,3 @@ class InspectItem(models.Model):
     def __str__(self):
         template = '{0.category_name} {0.site_name} {0.inspector_name}  {0.Items} {0.image}'
         return template.format(self)
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-    
-
-
-
-    

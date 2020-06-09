@@ -18,14 +18,17 @@ $(document).ready(function () {
         source: function (request, responce) {
           var form_data = new FormData();
           form_data.append("siteid", request.term);
-
-          $.ajax({
+		  key = request.term+"_searchsitesbyid";
+		  var dataval = localStorage.getItem(key);	
+		  if(dataval == null){	
+          	$.ajax({
             url: "/inspect/getsites/",
             type: "post",
             data: form_data,
             contentType: false,
             processData: false,
             success: function (data) {
+			  localStorage.setItem(key, data);	
               var obj = JSON.parse(data);
 
               if (obj.length != 0) {
@@ -54,6 +57,41 @@ $(document).ready(function () {
               }
             },
           });
+		  }	
+		  else{
+		  	
+			  data = dataval;  
+			  var obj = JSON.parse(data);
+
+              if (obj.length != 0) {
+                var output = [];
+                for (index = 0; index < obj.length; index++) {
+                  var newstring = {
+                    label: obj[index][0],
+                    value: obj[index][1],
+                    desc: obj[index][2],
+                  };
+
+                  output[output.length] = newstring;
+                }
+
+                console.log(output);
+                responce(output);
+              } else {
+                var result = [
+                  {
+                    label: 0,
+                    value: 0,
+                    desc: "No matches found",
+                  },
+                ];
+                responce(result);
+			  
+			  
+			  
+		  }
+		  }
+			  
         },
         focus: function (event, ui) {
           //$( "#siteid" ).val( ui.item.label );
@@ -81,7 +119,11 @@ $(document).ready(function () {
         source: function (request, responce) {
           var form_data = new FormData();
           form_data.append("sitename", request.term);
-
+			
+		  key = request.term+"_searchsitesbyid";
+		  var dataval = localStorage.getItem(key);	
+		  if(dataval == null){		
+			
           $.ajax({
             url: "/inspect/getsites/",
             type: "post",
@@ -89,6 +131,7 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function (data) {
+			  localStorage.setItem(key, data);		
               var obj = JSON.parse(data);
               if (obj.length != 0) {
                 var output = [];
@@ -116,6 +159,37 @@ $(document).ready(function () {
               }
             },
           });
+		  }else{
+		   var data = dataval;
+		  	var obj = JSON.parse(data);
+              if (obj.length != 0) {
+                var output = [];
+                for (index = 0; index < obj.length; index++) {
+                  var newstring = {
+                    label: obj[index][0],
+                    value: obj[index][1],
+                    desc: obj[index][2],
+                  };
+
+                  output[output.length] = newstring;
+                }
+
+                console.log(output);
+                responce(output);
+              } else {
+                var result = [
+                  {
+                    label: 0,
+                    value: 0,
+                    desc: "No matches found",
+                  },
+                ];
+                responce(result);
+              }
+			  
+		  }	  
+			  
+			  
         },
         focus: function (event, ui) {
           //$( "#siteid" ).val( ui.item.label );
@@ -147,7 +221,7 @@ $("document").ready(function () {
     var throw_error;
     var category_id = $(this).attr("data-id");
     console.log(category_id);
-
+    
     $("#category_" + category_id)
       .find("input[type=hidden]")
       .each(function () {
@@ -189,7 +263,10 @@ $("document").ready(function () {
 
             console.log(form_data);
             //console.log('{{ csrf_token }}'); return;
-
+            
+		     if (navigator.onLine == true) {	  
+			  
+			  
             $.ajax({
               url: "/inspect/add/",
               type: "post",
@@ -245,6 +322,13 @@ $("document").ready(function () {
                 $(".alert").show();
               },
             });
+				 
+			 }
+			 else{
+			     key = site_id+'--'+category_id+'--'+itemid+'_savedvalues';
+				 localStorage.setItem(key, form_data);
+			 }
+				 
           }
         }
       });
@@ -252,14 +336,24 @@ $("document").ready(function () {
 });
 
 function updatedata() {
+
+  
+	
   var siteid = $("#siteid").val();
   var sitename = $("#sitename").val();
   var form_data = new FormData();
   form_data.append("sitename", sitename);
   form_data.append("siteid", siteid);
   //form_data.append("csrfmiddlewaretoken", csrftoken);
-
-  $.ajax({
+	
+  // Store
+	//localStorage.setItem("sitename", sitename);	
+	//localStorage.setItem("siteid", siteid);
+	
+	var data = localStorage.getItem(siteid+"_data");
+	//localStorage.removeItem(siteid+"_data");
+	if(data == null){
+  	$.ajax({
     url: "/inspect/getcategories/",
     type: "post",
     data: form_data,
@@ -272,10 +366,16 @@ function updatedata() {
         $("#choosesite").addClass("error");
         $("#choosesite").show();
       } else {
+		  localStorage.setItem(siteid+"_data", data);
         $(".createsiteclass").html(data);
       }
     },
   });
+  }
+  else{
+  	$(".createsiteclass").html(data);
+  }
+	
 }
 
 function ajaxsubmit() {
@@ -309,5 +409,13 @@ function geolocate() {
       "<br>Longitude: " +
       position.coords.longitude;
   }
+}
+
+function loaddata(){
+
+var siteid = $("#siteid").val();
+	
+window.location.href="/inspect/inspection/?type=site&site=101004";	
+	
 }
 //test

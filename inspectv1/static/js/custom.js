@@ -22,7 +22,7 @@ $(document).ready(function () {
 		  var dataval = localStorage.getItem(key);	
 		  if(dataval == null){	
           	$.ajax({
-            url: "/inspect/getsites/",
+            url: "/getsites/",
             type: "post",
             data: form_data,
             contentType: false,
@@ -125,7 +125,7 @@ $(document).ready(function () {
 		  if(dataval == null){		
 			
           $.ajax({
-            url: "/inspect/getsites/",
+            url: "/getsites/",
             type: "post",
             data: form_data,
             contentType: false,
@@ -268,7 +268,7 @@ $("document").ready(function () {
 			  
 			  
             $.ajax({
-              url: "/inspect/add/",
+              url: "/add/",
               type: "post",
               data: form_data,
               contentType: false,
@@ -354,7 +354,7 @@ function updatedata() {
 	//localStorage.removeItem(siteid+"_data");
 	if(data == null){
   	$.ajax({
-    url: "/inspect/getcategories/",
+    url: "/getcategories/",
     type: "post",
     data: form_data,
     contentType: false,
@@ -415,7 +415,7 @@ function loaddata(){
 
 var siteid = $("#siteid").val();
 	
-window.location.href="/inspect/inspection/?type=site&site=101004";	
+window.location.href="/inspection/?type=site&site=101004";	
 	
 }
 //test

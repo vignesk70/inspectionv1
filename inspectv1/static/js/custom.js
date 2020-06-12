@@ -327,7 +327,8 @@ $("document").ready(function () {
 			 }
 			 else{
 			     key = site_id+'--'+category_id+'--'+itemid+'_savedvalues';
-				 localStorage.setItem(key, form_data);
+         localStorage.setItem(key, form_data);
+         $(showcard(category_id));
 			 }
 				 
           }

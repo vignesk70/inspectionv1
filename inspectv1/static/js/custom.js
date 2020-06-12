@@ -420,3 +420,9 @@ window.location.href="/inspection/?type=site&site=101004";
 	
 }
 //test
+$(document).on("click", ".submitbutton2", function (event) {
+  for (i = 0; i < document.getElementsByClassName("submitbutton").length; i++) {
+    document.getElementsByClassName("submitbutton")[i].click();
+  }
+});
+

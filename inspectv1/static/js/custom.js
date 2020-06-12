@@ -280,7 +280,8 @@ $("document").ready(function () {
                     $("#field_" + itemid).prop("type") == "checkbox" &&
                     $("#field_" + itemid).is(":checked")
                   ) { */
-                  $("#card_header_" + category_id + " .badge").addClass(
+                    $("#card_header_" + category_id+ " .badge").removeClass("badge-warning");
+                    $("#card_header_" + category_id + " .badge").addClass(
                     "badge-danger"
                   );
                   $("#card_header_" + category_id + " .badge").removeClass(
@@ -302,6 +303,7 @@ $("document").ready(function () {
                     $("#card_header_" + category_id + " .fa").removeClass("fa-question");  
                   } */
                 } else {
+                  $("#card_header_" + category_id + " .badge").removeClass("badge-warning")
                   $("#card_header_" + category_id + " .badge").addClass(
                     "badge-success"
                   );
@@ -329,6 +331,9 @@ $("document").ready(function () {
 			     key = site_id+'--'+category_id+'--'+itemid+'_savedvalues';
          localStorage.setItem(key, form_data);
          $(showcard(category_id));
+         $("#card_header_" + category_id + " .badge").addClass(
+          "badge-warning" 
+        );
 			 }
 				 
           }
@@ -421,6 +426,7 @@ window.location.href="/inspection/?type=site&site=101004";
 	
 }
 //test
+
 $(document).on("click", ".submitbutton2", function (event) {
   for (i = 0; i < document.getElementsByClassName("submitbutton").length; i++) {
     document.getElementsByClassName("submitbutton")[i].click();

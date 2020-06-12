@@ -317,7 +317,8 @@ $("document").ready(function () {
                   );
                 }
 
-                $("#savebutton_" + category_id).hide();
+                //$("#savebutton_" + category_id).hide();
+                $(showcard(category_id));
                 jQuery("#master_id").val(data);
                 $(".alert").show();
               },

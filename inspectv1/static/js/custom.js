@@ -1,3 +1,17 @@
+var online = false;
+$(document).ready(function(){
+	
+if( online === false  && navigator.onLine == true ){
+	alert("test test");
+}
+	
+if (navigator.onLine == true) {
+	online = true; 
+}
+
+})
+
+
 function myfunction(id) {
   var type = $("#field_" + id)[0].type;
 
@@ -20,6 +34,10 @@ $(document).ready(function () {
           form_data.append("siteid", request.term);
 		  key = request.term+"_searchsitesbyid";
 		  var dataval = localStorage.getItem(key);	
+		  if(online){
+		  	dataval = null;
+		  }	
+			
 		  if(dataval == null){	
           	$.ajax({
             url: "/getsites/",
@@ -43,7 +61,6 @@ $(document).ready(function () {
                   output[output.length] = newstring;
                 }
 
-                console.log(output);
                 responce(output);
               } else {
                 var result = [
@@ -215,7 +232,7 @@ $(document).ready(function () {
 
 $("document").ready(function () {
   $(document).on("click", ".submitbutton", function (event) {
-    //$(".submitbutton").live( "click",function(event){
+   
     event.preventDefault();
     console.log("clicked");
     var throw_error;
@@ -226,7 +243,6 @@ $("document").ready(function () {
       .find("input[type=hidden]")
       .each(function () {
         if ($(this).prop("name") == "item_id") {
-          //alert($(this).html());
           var itemid = $(this).val();
 
           var itemvalue = $("#field_" + itemid).val();
@@ -266,8 +282,7 @@ $("document").ready(function () {
             
 		     if (navigator.onLine == true) {	  
 			  
-			  
-            $.ajax({
+             	$.ajax({
               url: "/add/",
               type: "post",
               data: form_data,
@@ -353,35 +368,35 @@ function updatedata() {
   form_data.append("siteid", siteid);
   //form_data.append("csrfmiddlewaretoken", csrftoken);
 	
-  // Store
-	//localStorage.setItem("sitename", sitename);	
-	//localStorage.setItem("siteid", siteid);
-	
 	var data = localStorage.getItem(siteid+"_data");
-	//localStorage.removeItem(siteid+"_data");
+	
+	if(online){
+		data = null;
+	}
+	
 	if(data == null){
-  	$.ajax({
-    url: "/getcategories/",
-    type: "post",
-    data: form_data,
-    contentType: false,
-    processData: false,
-    success: function (data) {
-      if (data == 0) {
-        $(".createSite").hide();
-        $("#choosesite").html("Entered Site Id doesn't Exist.");
-        $("#choosesite").addClass("error");
-        $("#choosesite").show();
-      } else {
-		  localStorage.setItem(siteid+"_data", data);
-        $(".createsiteclass").html(data);
-      }
-    },
-  });
+		$.ajax({
+		url: "/getcategories/",
+		type: "post",
+		data: form_data,
+		contentType: false,
+		processData: false,
+		success: function (data) {
+		  if (data == 0) {
+			$(".createSite").hide();
+			$("#choosesite").html("Entered Site Id doesn't Exist.");
+			$("#choosesite").addClass("error");
+			$("#choosesite").show();
+		  } else {
+			  localStorage.setItem(siteid+"_data", data);
+			$(".createsiteclass").html(data);
+		  }
+		},
+	  });
   }
-  else{
-  	$(".createsiteclass").html(data);
-  }
+  	else{
+  		$(".createsiteclass").html(data);
+  	}
 	
 }
 

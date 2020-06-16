@@ -31,7 +31,7 @@
         {% for site in sites %}
 		{% if site.show_site %}
             <tr>
-              <td><a href="/inspect/inspection/?type=site&site={{site.site_no}}&id={{site.master_id}}">{{site.name}} </a></td>
+              <td><a href="/inspection/?type=site&site={{site.site_no}}&id={{site.master_id}}">{{site.name}} </a></td>
               <td>{{site.add_date}}</td>
 			  <td>{{site.item_statutory}}</td>
               <td>{{site.item_safety}}</td>

@@ -375,3 +375,41 @@ Sample code: refer distance.py
     dist = 6371.01 * acos(sin(slat) * sin(elat) + cos(slat)
                           * cos(elat) * cos(slon - elon))
     return dist
+
+@csrf_exempt
+def getNearestSite(request):
+    if request.method == 'POST':
+       
+        
+        if request.POST.get('slat',False):
+            slat = request.POST['slat']
+            slon = request.POST['slon']
+            sites = Sites.objects.all()
+            site_dict = {}
+            
+            for site in sites:
+                dist = distance(slat, slon, site.latitude, site.longitude)
+                #print('{}-{:.2f}'.format(site.id, dist))
+                site_dict[site.site_no]=dist
+                x = site_dict
+                sorted_x = sorted(x.items(), key=lambda kv: kv[1])
+
+            # print(sorted_x[:3]) #return closest 3 sites. the values from here are to be passed to UI for selection by the inspector
+            countofsite = 4
+            a_dict = [None]*countofsite
+            countarr = 0
+            for siteloc in sorted_x[:countofsite]:
+                # print(siteloc[0])
+                data = sites.get(site_no=siteloc[0])
+                sitevalue = str(data.site_no) + '-' + str(data.name)
+                b_dict = [None] * 3
+                b_dict[0] = data.site_no
+                b_dict[1] = data.name
+                b_dict[2] = sitevalue
+                a_dict[countarr] = b_dict
+                #a_dict[1] = sitevalue
+                countarr += 1
+            # print(a_dict)
+
+    return HttpResponse(json.dumps(a_dict))
+    

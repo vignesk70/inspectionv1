@@ -16,4 +16,5 @@ urlpatterns = [
     path('runinspection/',views.CreateInspectionForm.as_view(),name='runinspectiondata'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('listsites/',views.ListSitesForInspector.as_view(),name='listsites'),
+    path('getnearestsite/',views.getNearestSite,name='getnearestsite'),
 ]

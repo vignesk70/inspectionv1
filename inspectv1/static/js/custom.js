@@ -1,12 +1,51 @@
 var online = false;
 $(document).ready(function(){
-	
-if( online === false  && navigator.onLine == true ){
-	alert("test test");
-}
-	
 if (navigator.onLine == true) {
-	online = true; 
+	online = true;
+	jQuery("document").ready(function(){
+		 var values = [],
+        keys = Object.keys(localStorage),
+        i = keys.length;
+		 while ( i-- ) {
+
+			 if(keys[i].indexOf("savedvalues") !== -1)
+			 { 
+				 //alert(keys[i]); 
+				 var dataval = localStorage.getItem(keys[i]);
+				 console.log(dataval);
+				 
+				 dataval = JSON.parse(dataval);
+				var form_data = new FormData();
+				form_data.append("category_id", dataval.category_id);
+				form_data.append("item_id", dataval.item_id);
+				form_data.append("site_id", dataval.site_id);
+				form_data.append("item_value", dataval.item_value);
+				form_data.append("master_id", dataval.master_id);
+				//form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+				form_data.append("item_image", dataval.file);
+				 
+				 
+				 $.ajax({
+					  url: "/add/",
+					  type: "post",
+					  data: form_data,
+					  contentType: false,
+					  processData: false,
+					  async: false,
+					  success: function (data) {
+						  localStorage.removeItem(keys[i]);
+					  },
+            });
+				 
+			 }
+			 
+		 }
+	
+	});
+	 
+}
+else{
+	online =false;
 }
 
 })
@@ -26,8 +65,7 @@ function myfunction(id) {
 
 $(document).ready(function () {
   if ($("#siteid").length) {
-    $("#siteid")
-      .autocomplete({
+    $("#siteid").autocomplete({
         minLength: 0,
         source: function (request, responce) {
           var form_data = new FormData();
@@ -36,7 +74,14 @@ $(document).ready(function () {
 		  var dataval = localStorage.getItem(key);	
 		  if(online){
 		  	dataval = null;
-		  }	
+		  }
+		  else{
+		  		if(dataval == null){
+					//alert("You haven't sync the online data, Please try when back online");
+					return false;
+				}
+		  }
+		 // alert(dataval);
 			
 		  if(dataval == null){	
           	$.ajax({
@@ -238,6 +283,9 @@ $("document").ready(function () {
     var throw_error;
     var category_id = $(this).attr("data-id");
     console.log(category_id);
+	  if (navigator.onLine == true) {	  
+			  console.log("still online");
+	  }
     
     $("#category_" + category_id)
       .find("input[type=hidden]")
@@ -276,12 +324,26 @@ $("document").ready(function () {
             form_data.append("master_id", master_id);
             //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
             form_data.append("item_image", file);
+			  
+			  var arr = new Object();
+			 // arr.append("category_id", category_id);
+			  arr["category_id"] = category_id;
+			  arr["item_id"] = itemid;
+			  arr["site_id"] = site_id;
+			  arr["item_value"] = itemvalue;
+			  arr["master_id"] = master_id;
+			  arr["item_image"] = file;
+			  
+			  
+			  
+			 // console.log(arr);
+			 // console.log("-----");
 
-            console.log(form_data);
+            //console.log(form_data);
             //console.log('{{ csrf_token }}'); return;
             
 		     if (navigator.onLine == true) {	  
-			  
+			  console.log("still online");
              	$.ajax({
               url: "/add/",
               type: "post",
@@ -341,7 +403,10 @@ $("document").ready(function () {
 			 }
 			 else{
 			     key = site_id+'--'+category_id+'--'+itemid+'_savedvalues';
-				 localStorage.setItem(key, form_data);
+				 var dataval = localStorage.setItem(key);
+				 if(dataval == null){
+				 	localStorage.setItem(key, JSON.stringify(arr));
+				 }
 			 }
 				 
           }

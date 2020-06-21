@@ -4,73 +4,33 @@ self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(staticCacheName).then(function (cache) {
       return cache.addAll([
-        '/'
+        '/',
       ]);
     })
   );
 });
 
-self.addEventListener('fetch', function (event) {
-  var requestUrl = new URL(event.request.url);
-  if (requestUrl.origin === location.origin) {
-    if ((requestUrl.pathname === '/')) {
-      event.respondWith(caches.match('/'));
-      return;
-    }
-  }
+self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request).then(function (response) {
-      return response || fetch(event.request);
-    })
-  );
-});
-
-self.addEventListener('install', function (event) {
-  event.waitUntil(
-    caches.open(staticCacheName).then(function (cache) {
-      return cache.addAll([
-        '/inspection'
-      ]);
-    })
-  );
-});
-
-self.addEventListener('fetch', function (event) {
-  var requestUrl = new URL(event.request.url);
-  if (requestUrl.origin === location.origin) {
-    if ((requestUrl.pathname === '/inspection')) {
-      event.respondWith(caches.match('/inspection'));
-      return;
-    }
-  }
-  event.respondWith(
-    caches.match(event.request).then(function (response) {
-      return response || fetch(event.request);
-    })
-  );
-});
-
-self.addEventListener('install', function (event) {
-  event.waitUntil(
-    caches.open(staticCacheName).then(function (cache) {
-      return cache.addAll([
-        '/listsites'
-      ]);
-    })
-  );
-});
-
-self.addEventListener('fetch', function (event) {
-  var requestUrl = new URL(event.request.url);
-  if (requestUrl.origin === location.origin) {
-    if ((requestUrl.pathname === '/listsites')) {
-      event.respondWith(caches.match('/listsites'));
-      return;
-    }
-  }
-  event.respondWith(
-    caches.match(event.request).then(function (response) {
-      return response || fetch(event.request);
-    })
-  );
+    caches.match(event.request)
+      .then(function(response) {
+        if (response) {
+          return response;
+        }
+        var fetchRequest = event.request.clone();
+        return fetch(fetchRequest).then(
+          function(response) {
+            if(!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+            var responseToCache = response.clone();
+            caches.open(staticCacheName)
+              .then(function(cache) {
+                cache.put(event.request, responseToCache);
+              });
+            return response;
+          }
+        );
+      })
+    );
 });

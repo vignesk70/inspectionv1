@@ -403,7 +403,7 @@ $("document").ready(function () {
 			 }
 			 else{
 			     key = site_id+'--'+category_id+'--'+itemid+'_savedvalues';
-				 var dataval = localStorage.setItem(key);
+				 var dataval = localStorage.getItem(key);
 				 if(dataval == null){
 				 	localStorage.setItem(key, JSON.stringify(arr));
 				 }

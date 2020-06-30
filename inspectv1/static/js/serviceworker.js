@@ -10,7 +10,39 @@ self.addEventListener('install', function (event) {
   );
 });
 
+const cachNameToKeep = 'myCache';
+
+//Deletion should only occur at the activate event
+self.addEventListener('activate', event => {
+    var cacheKeeplist = [cachNameToKeep];
+	console.log(event.request.url);
+	if ( event.request.url.indexOf( '/accounts/' ) === -1 ) {
+    event.waitUntil(
+        caches.keys().then( keyList => {
+            return Promise.all(keyList.map( key => {
+				console.log(key);
+                if (cacheKeeplist.indexOf(key) === -1) {
+                    return caches.delete(key);
+                }
+            }));
+        })
+.then(self.clients.claim())); //this line is important in some contexts
+	}
+});
+
+
+
 self.addEventListener('fetch', function(event) {
+	
+	if ( event.request.url.match( '^.*(\/accounts\/).*$' ) ) {
+        return false;
+    }
+     // OR
+
+    if ( event.request.url.indexOf( '/accounts/' ) !== -1 ) {
+        return false;
+    }
+	
   event.respondWith(
     caches.match(event.request)
       .then(function(response) {
@@ -34,3 +66,4 @@ self.addEventListener('fetch', function(event) {
       })
     );
 });
+

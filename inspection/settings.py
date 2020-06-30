@@ -174,6 +174,8 @@ MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
 MEDIA_URL= "/media/"
 UPLOAD_PATH = '/media/images/uploads/'
 
+CSRF_COOKIE_HTTPONLY = "True"
+
 try:
     from .local_settings import *
 except ImportError:

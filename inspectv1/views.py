@@ -270,16 +270,20 @@ def Add(request):
         for site in sites:
             siteid = site.id
 
+        master_id = 0
+        inspectionmaster = InspectionMaster.objects.all().filter(
+        	user_id_id=request.user.id, site_id_id=siteid).select_related()
+        for im in inspectionmaster:
+            master_id = im.id
+
+
         if request.POST['master_id'] == '':
-
-            inspectObj = InspectionMaster()
-
-            inspectObj.site_id_id = siteid
-            inspectObj.user_id_id = current_user.id
-
-            inspectObj.save()
-
-            master_id = inspectObj.id
+        	if master_id == 0:
+        		inspectObj = InspectionMaster()
+        		inspectObj.site_id_id = siteid
+        		inspectObj.user_id_id = current_user.id
+        		inspectObj.save()
+        		master_id = inspectObj.id
         else:
             master_id = request.POST['master_id']
 

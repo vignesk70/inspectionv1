@@ -1,52 +1,51 @@
 var online = false;
-$(document).ready(function(){
-if (navigator.onLine == true) {
-	online = true;
-	jQuery("document").ready(function(){
-		 var values = [],
+$(document).ready(function () {
+  if (navigator.onLine == true) {
+    online = true;
+    jQuery("document").ready(function () {
+      var values = [],
         keys = Object.keys(localStorage),
         i = keys.length;
-		 while ( i-- ) {
+      while (i--) {
 
-			 if(keys[i].indexOf("savedvalues") !== -1)
-			 { 
-				 //alert(keys[i]); 
-				 var dataval = localStorage.getItem(keys[i]);
-				 console.log(dataval);
-				 
-				 dataval = JSON.parse(dataval);
-				var form_data = new FormData();
-				form_data.append("category_id", dataval.category_id);
-				form_data.append("item_id", dataval.item_id);
-				form_data.append("site_id", dataval.site_id);
-				form_data.append("item_value", dataval.item_value);
-				form_data.append("master_id", dataval.master_id);
-				//form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
-				form_data.append("item_image", dataval.file);
-				 
-				 
-				 $.ajax({
-					  url: "/add/",
-					  type: "post",
-					  data: form_data,
-					  contentType: false,
-					  processData: false,
-					  async: false,
-					  success: function (data) {
-						  localStorage.removeItem(keys[i]);
-					  },
-            });
-				 
-			 }
-			 
-		 }
-	
-	});
-	 
-}
-else{
-	online =false;
-}
+        if (keys[i].indexOf("savedvalues") !== -1) {
+          //alert(keys[i]); 
+          var dataval = localStorage.getItem(keys[i]);
+          console.log(dataval);
+
+          dataval = JSON.parse(dataval);
+          var form_data = new FormData();
+          form_data.append("category_id", dataval.category_id);
+          form_data.append("item_id", dataval.item_id);
+          form_data.append("site_id", dataval.site_id);
+          form_data.append("item_value", dataval.item_value);
+          form_data.append("master_id", dataval.master_id);
+          //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+          form_data.append("item_image", dataval.file);
+
+
+          $.ajax({
+            url: "/add/",
+            type: "post",
+            data: form_data,
+            contentType: false,
+            processData: false,
+            async: false,
+            success: function (data) {
+              localStorage.removeItem(keys[i]);
+            },
+          });
+
+        }
+
+      }
+
+    });
+
+  }
+  else {
+    online = false;
+  }
 
 })
 
@@ -66,126 +65,24 @@ function myfunction(id) {
 $(document).ready(function () {
   if ($("#siteid").length) {
     $("#siteid").autocomplete({
-        minLength: 0,
-        source: function (request, responce) {
-          var form_data = new FormData();
-          form_data.append("siteid", request.term);
-		  key = request.term+"_searchsitesbyid";
-		  var dataval = localStorage.getItem(key);	
-		  if(online){
-		  	dataval = null;
-		  }
-		  else{
-		  		if(dataval == null){
-					//alert("You haven't sync the online data, Please try when back online");
-					return false;
-				}
-		  }
-		 // alert(dataval);
-			
-		  if(dataval == null){	
-          	$.ajax({
-            url: "/getsites/",
-            type: "post",
-            data: form_data,
-            contentType: false,
-            processData: false,
-            success: function (data) {
-			  localStorage.setItem(key, data);	
-              var obj = JSON.parse(data);
-
-              if (obj.length != 0) {
-                var output = [];
-                for (index = 0; index < obj.length; index++) {
-                  var newstring = {
-                    label: obj[index][0],
-                    value: obj[index][1],
-                    desc: obj[index][2],
-                  };
-
-                  output[output.length] = newstring;
-                }
-
-                responce(output);
-              } else {
-                var result = [
-                  {
-                    label: 0,
-                    value: 0,
-                    desc: "No matches found",
-                  },
-                ];
-                responce(result);
-              }
-            },
-          });
-		  }	
-		  else{
-		  	
-			  data = dataval;  
-			  var obj = JSON.parse(data);
-
-              if (obj.length != 0) {
-                var output = [];
-                for (index = 0; index < obj.length; index++) {
-                  var newstring = {
-                    label: obj[index][0],
-                    value: obj[index][1],
-                    desc: obj[index][2],
-                  };
-
-                  output[output.length] = newstring;
-                }
-
-                console.log(output);
-                responce(output);
-              } else {
-                var result = [
-                  {
-                    label: 0,
-                    value: 0,
-                    desc: "No matches found",
-                  },
-                ];
-                responce(result);
-			  
-			  
-			  
-		  }
-		  }
-			  
-        },
-        focus: function (event, ui) {
-          //$( "#siteid" ).val( ui.item.label );
-          return false;
-        },
-        select: function (event, ui) {
-          if (ui.item.value == 0) {
+      minLength: 0,
+      source: function (request, responce) {
+        var form_data = new FormData();
+        form_data.append("siteid", request.term);
+        key = request.term + "_searchsitesbyid";
+        var dataval = localStorage.getItem(key);
+        if (online) {
+          dataval = null;
+        }
+        else {
+          if (dataval == null) {
+            //alert("You haven't sync the online data, Please try when back online");
             return false;
           }
-          $("#siteid").val(ui.item.label);
-          $("#sitename").val(ui.item.value);
+        }
+        // alert(dataval);
 
-          return false;
-        },
-      })
-      .autocomplete("instance")._renderItem = function (ul, item) {
-      return $("<li>")
-        .append("<div>" + item.desc + "</div>")
-        .appendTo(ul);
-    };
-
-    $("#sitename")
-      .autocomplete({
-        minLength: 0,
-        source: function (request, responce) {
-          var form_data = new FormData();
-          form_data.append("sitename", request.term);
-			
-		  key = request.term+"_searchsitesbyid";
-		  var dataval = localStorage.getItem(key);	
-		  if(dataval == null){		
-			
+        if (dataval == null) {
           $.ajax({
             url: "/getsites/",
             type: "post",
@@ -193,8 +90,9 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function (data) {
-			  localStorage.setItem(key, data);		
+              localStorage.setItem(key, data);
               var obj = JSON.parse(data);
+
               if (obj.length != 0) {
                 var output = [];
                 for (index = 0; index < obj.length; index++) {
@@ -207,7 +105,6 @@ $(document).ready(function () {
                   output[output.length] = newstring;
                 }
 
-                console.log(output);
                 responce(output);
               } else {
                 var result = [
@@ -221,37 +118,139 @@ $(document).ready(function () {
               }
             },
           });
-		  }else{
-		   var data = dataval;
-		  	var obj = JSON.parse(data);
-              if (obj.length != 0) {
-                var output = [];
-                for (index = 0; index < obj.length; index++) {
-                  var newstring = {
-                    label: obj[index][0],
-                    value: obj[index][1],
-                    desc: obj[index][2],
-                  };
+        }
+        else {
 
-                  output[output.length] = newstring;
+          data = dataval;
+          var obj = JSON.parse(data);
+
+          if (obj.length != 0) {
+            var output = [];
+            for (index = 0; index < obj.length; index++) {
+              var newstring = {
+                label: obj[index][0],
+                value: obj[index][1],
+                desc: obj[index][2],
+              };
+
+              output[output.length] = newstring;
+            }
+
+            console.log(output);
+            responce(output);
+          } else {
+            var result = [
+              {
+                label: 0,
+                value: 0,
+                desc: "No matches found",
+              },
+            ];
+            responce(result);
+
+
+
+          }
+        }
+
+      },
+      focus: function (event, ui) {
+        //$( "#siteid" ).val( ui.item.label );
+        return false;
+      },
+      select: function (event, ui) {
+        if (ui.item.value == 0) {
+          return false;
+        }
+        $("#siteid").val(ui.item.label);
+        $("#sitename").val(ui.item.value);
+
+        return false;
+      },
+    })
+      .autocomplete("instance")._renderItem = function (ul, item) {
+        return $("<li>")
+          .append("<div>" + item.desc + "</div>")
+          .appendTo(ul);
+      };
+
+    $("#sitename")
+      .autocomplete({
+        minLength: 0,
+        source: function (request, responce) {
+          var form_data = new FormData();
+          form_data.append("sitename", request.term);
+
+          key = request.term + "_searchsitesbyid";
+          var dataval = localStorage.getItem(key);
+          if (dataval == null) {
+
+            $.ajax({
+              url: "/getsites/",
+              type: "post",
+              data: form_data,
+              contentType: false,
+              processData: false,
+              success: function (data) {
+                localStorage.setItem(key, data);
+                var obj = JSON.parse(data);
+                if (obj.length != 0) {
+                  var output = [];
+                  for (index = 0; index < obj.length; index++) {
+                    var newstring = {
+                      label: obj[index][0],
+                      value: obj[index][1],
+                      desc: obj[index][2],
+                    };
+
+                    output[output.length] = newstring;
+                  }
+
+                  console.log(output);
+                  responce(output);
+                } else {
+                  var result = [
+                    {
+                      label: 0,
+                      value: 0,
+                      desc: "No matches found",
+                    },
+                  ];
+                  responce(result);
                 }
+              },
+            });
+          } else {
+            var data = dataval;
+            var obj = JSON.parse(data);
+            if (obj.length != 0) {
+              var output = [];
+              for (index = 0; index < obj.length; index++) {
+                var newstring = {
+                  label: obj[index][0],
+                  value: obj[index][1],
+                  desc: obj[index][2],
+                };
 
-                console.log(output);
-                responce(output);
-              } else {
-                var result = [
-                  {
-                    label: 0,
-                    value: 0,
-                    desc: "No matches found",
-                  },
-                ];
-                responce(result);
+                output[output.length] = newstring;
               }
-			  
-		  }	  
-			  
-			  
+
+              console.log(output);
+              responce(output);
+            } else {
+              var result = [
+                {
+                  label: 0,
+                  value: 0,
+                  desc: "No matches found",
+                },
+              ];
+              responce(result);
+            }
+
+          }
+
+
         },
         focus: function (event, ui) {
           //$( "#siteid" ).val( ui.item.label );
@@ -268,25 +267,25 @@ $(document).ready(function () {
         },
       })
       .autocomplete("instance")._renderItem = function (ul, item) {
-      return $("<li>")
-        .append("<div>" + item.desc + "</div>")
-        .appendTo(ul);
-    };
+        return $("<li>")
+          .append("<div>" + item.desc + "</div>")
+          .appendTo(ul);
+      };
   }
 });
 
 $("document").ready(function () {
   $(document).on("click", ".submitbutton", function (event) {
-   
+
     event.preventDefault();
     console.log("clicked");
     var throw_error;
     var category_id = $(this).attr("data-id");
     console.log(category_id);
-	  if (navigator.onLine == true) {	  
-			  console.log("still online");
-	  }
-    
+    if (navigator.onLine == true) {
+      console.log("still online");
+    }
+
     $("#category_" + category_id)
       .find("input[type=hidden]")
       .each(function () {
@@ -324,91 +323,99 @@ $("document").ready(function () {
             form_data.append("master_id", master_id);
             //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
             form_data.append("item_image", file);
-			  
-			  var arr = new Object();
-			 // arr.append("category_id", category_id);
-			  arr["category_id"] = category_id;
-			  arr["item_id"] = itemid;
-			  arr["site_id"] = site_id;
-			  arr["item_value"] = itemvalue;
-			  arr["master_id"] = master_id;
-			  arr["item_image"] = file;
-			  
-			  
-			  
-			 // console.log(arr);
-			 // console.log("-----");
+
+            var arr = new Object();
+            // arr.append("category_id", category_id);
+            arr["category_id"] = category_id;
+            arr["item_id"] = itemid;
+            arr["site_id"] = site_id;
+            arr["item_value"] = itemvalue;
+            arr["master_id"] = master_id;
+            arr["item_image"] = file;
+
+
+
+            // console.log(arr);
+            // console.log("-----");
 
             //console.log(form_data);
             //console.log('{{ csrf_token }}'); return;
-            
-		     if (navigator.onLine == true) {	  
-			  console.log("still online");
-             	$.ajax({
-              url: "/add/",
-              type: "post",
-              data: form_data,
-              contentType: false,
-              processData: false,
-              async: false,
-              success: function (data) {
-                if (throw_error) {
-                  /*if (
-                    $("#field_" + itemid).prop("type") == "checkbox" &&
-                    $("#field_" + itemid).is(":checked")
-                  ) { */
-                  $("#card_header_" + category_id + " .badge").addClass(
-                    "badge-danger"
-                  );
-                  $("#card_header_" + category_id + " .badge").removeClass(
-                    "badge-primary"
-                  );
 
-                  $("#card_header_" + category_id + " .fa").addClass(
-                    "fa-exclamation-triangle"
-                  );
-                  $("#card_header_" + category_id + " .fa").removeClass(
-                    "fa-question"
-                  );
+            if (navigator.onLine == true) {
+              console.log("still online");
+              $.ajax({
+                url: "/add/",
+                type: "post",
+                data: form_data,
+                contentType: false,
+                processData: false,
+                async: false,
+                success: function (data) {
+                  if (throw_error) {
+                    /*if (
+                      $("#field_" + itemid).prop("type") == "checkbox" &&
+                      $("#field_" + itemid).is(":checked")
+                    ) { */
+                    $("#card_header_" + category_id + " .badge").removeClass("badge-warning");
 
-                  /* } else {
-                    $("#card_header_" + category_id + " .badge").addClass("badge-success");
-					$("#card_header_" + category_id + " .badge").removeClass("badge-primary");
-					  
-					$("#card_header_" + category_id + " .fa").addClass("fa-check-square");
-                    $("#card_header_" + category_id + " .fa").removeClass("fa-question");  
-                  } */
-                } else {
-                  $("#card_header_" + category_id + " .badge").addClass(
-                    "badge-success"
-                  );
-                  $("#card_header_" + category_id + " .badge").removeClass(
-                    "badge-primary"
-                  );
+                    $("#card_header_" + category_id + " .badge").addClass(
+                      "badge-danger"
+                    );
+                    $("#card_header_" + category_id + " .badge").removeClass(
+                      "badge-primary"
+                    );
 
-                  $("#card_header_" + category_id + " .fa").addClass(
-                    "fa-check-square"
-                  );
-                  $("#card_header_" + category_id + " .fa").removeClass(
-                    "fa-question"
-                  );
-                }
+                    $("#card_header_" + category_id + " .fa").addClass(
+                      "fa-exclamation-triangle"
+                    );
+                    $("#card_header_" + category_id + " .fa").removeClass(
+                      "fa-question"
+                    );
 
-                $("#savebutton_" + category_id).hide();
-                jQuery("#master_id").val(data);
-                $(".alert").show();
-              },
-            });
-				 
-			 }
-			 else{
-			     key = site_id+'--'+category_id+'--'+itemid+'_savedvalues';
-				 var dataval = localStorage.getItem(key);
-				 if(dataval == null){
-				 	localStorage.setItem(key, JSON.stringify(arr));
-				 }
-			 }
-				 
+                    /* } else {
+                      $("#card_header_" + category_id + " .badge").addClass("badge-success");
+            $("#card_header_" + category_id + " .badge").removeClass("badge-primary");
+              
+            $("#card_header_" + category_id + " .fa").addClass("fa-check-square");
+                      $("#card_header_" + category_id + " .fa").removeClass("fa-question");  
+                    } */
+                  } else {
+                    $("#card_header_" + category_id + " .badge").removeClass("badge-warning")
+
+                    $("#card_header_" + category_id + " .badge").addClass(
+                      "badge-success"
+                    );
+                    $("#card_header_" + category_id + " .badge").removeClass(
+                      "badge-primary"
+                    );
+
+                    $("#card_header_" + category_id + " .fa").addClass(
+                      "fa-check-square"
+                    );
+                    $("#card_header_" + category_id + " .fa").removeClass(
+                      "fa-question"
+                    );
+                  }
+
+                  //$("#savebutton_" + category_id).hide();
+                  $(showcard(category_id));
+                  jQuery("#master_id").val(data);
+                  $(".alert").show();
+                },
+              });
+
+            }
+            else {
+              key = site_id + '--' + category_id + '--' + itemid + '_savedvalues';
+              $(showcard(category_id));
+              $("#card_header_" + category_id + " .badge").addClass(
+                "badge-warning");
+              var dataval = localStorage.getItem(key);
+              if (dataval == null) {
+                localStorage.setItem(key, JSON.stringify(arr));
+              }
+            }
+
           }
         }
       });
@@ -417,45 +424,45 @@ $("document").ready(function () {
 
 function updatedata() {
 
-  
-	
+
+
   var siteid = $("#siteid").val();
   var sitename = $("#sitename").val();
   var form_data = new FormData();
   form_data.append("sitename", sitename);
   form_data.append("siteid", siteid);
   //form_data.append("csrfmiddlewaretoken", csrftoken);
-	
-	var data = localStorage.getItem(siteid+"_data");
-	
-	if(online){
-		data = null;
-	}
-	
-	if(data == null){
-		$.ajax({
-		url: "/getcategories/",
-		type: "post",
-		data: form_data,
-		contentType: false,
-		processData: false,
-		success: function (data) {
-		  if (data == 0) {
-			$(".createSite").hide();
-			$("#choosesite").html("Entered Site Id doesn't Exist.");
-			$("#choosesite").addClass("error");
-			$("#choosesite").show();
-		  } else {
-			  localStorage.setItem(siteid+"_data", data);
-			$(".createsiteclass").html(data);
-		  }
-		},
-	  });
+
+  var data = localStorage.getItem(siteid + "_data");
+
+  if (online) {
+    data = null;
   }
-  	else{
-  		$(".createsiteclass").html(data);
-  	}
-	
+
+  if (data == null) {
+    $.ajax({
+      url: "/getcategories/",
+      type: "post",
+      data: form_data,
+      contentType: false,
+      processData: false,
+      success: function (data) {
+        if (data == 0) {
+          $(".createSite").hide();
+          $("#choosesite").html("Entered Site Id doesn't Exist.");
+          $("#choosesite").addClass("error");
+          $("#choosesite").show();
+        } else {
+          localStorage.setItem(siteid + "_data", data);
+          $(".createsiteclass").html(data);
+        }
+      },
+    });
+  }
+  else {
+    $(".createsiteclass").html(data);
+  }
+
 }
 
 function ajaxsubmit() {
@@ -488,15 +495,52 @@ function geolocate() {
       position.coords.latitude +
       "<br>Longitude: " +
       position.coords.longitude;
+    var slat = position.coords.latitude;
+    var slon = position.coords.longitude;
+    var form_data = new FormData();
+    form_data.append("slat", slat);
+    form_data.append("slon", slon);
+    $.ajax(
+      {
+        url: "/getnearestsite/",
+        type: "post",
+        data: form_data,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+          var obj = JSON.parse(data)
+          //alert(obj)
+          if (obj.length != 0) {
+            var output = [];
+            for (index = 0; index < obj.length; index++) {
+              var newstring = {
+                label: obj[index][0],
+                value: obj[index][1],
+                desc: obj[index][2],
+              };
+
+              output[output.length] = newstring;
+            }
+            console.log(output);
+            alert(obj);
+          };
+        }
+      });
+
+
   }
 }
 
-function loaddata(){
+function loaddata() {
 
-var siteid = $("#siteid").val();
-	
-window.location.href="/inspection/?type=site&site=101004";	
-	
+  var siteid = $("#siteid").val();
+
+  window.location.href = "/inspection/?type=site&site=101004";
+
 }
 //test
-
+$(document).on("click", ".submitbutton2", function (event) {
+  for (i = 0; i < document.getElementsByClassName("submitbutton").length; i++) {
+    document.getElementsByClassName("submitbutton")[i].click();
+  }
+});

@@ -5,7 +5,7 @@ DATABASES = {
         'NAME':  'inspection',
         'USER': 'inspection',
         'PASSWORD': 'inspectionadmin',
-        'HOST': 'inspection.grafnet.work',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }

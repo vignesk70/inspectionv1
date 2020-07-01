@@ -15,7 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'inspectv1/static/js', 'serviceworker.js')
+PWA_SERVICE_WORKER_PATH = os.path.join(
+    BASE_DIR, 'inspectv1/static/js', 'serviceworker.js')
 
 
 # Quick-start development settings - unsuitable for production
@@ -33,8 +34,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-	'django_adminlte',
-	'django_adminlte_theme',
+    'django_adminlte',
+    'django_adminlte_theme',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,7 +63,7 @@ ROOT_URLCONF = 'inspection.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,"templates")],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,22 +97,22 @@ PWA_APP_ICONS = [
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-#DATABASES = {
+# DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
 #        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
-#}
+# }
 
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME':  'inspection',
-       'USER' : 'inspection',
-       'PASSWORD' : 'inspectionadmin',
-       'HOST' : 'inspection.grafnet.work',
-       'PORT' : '5432',
-   }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME':  'inspection',
+        'USER': 'inspection',
+        'PASSWORD': 'inspectionadmin',
+        'HOST': 'inspection.grafnet.work',
+        'PORT': '5432',
+    }
 }
 
 
@@ -125,8 +126,6 @@ DATABASES = {
 #         'PORT' : '5432',
 #     }
 # }
-
-
 
 
 # Password validation
@@ -166,17 +165,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT =  os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
-MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
-MEDIA_URL= "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = "/media/"
 UPLOAD_PATH = '/media/images/uploads/'
 
 CSRF_COOKIE_HTTPONLY = "True"
 
 try:
-    from .local_settings import *
+    from .local_settings1 import *
 except ImportError:
     pass

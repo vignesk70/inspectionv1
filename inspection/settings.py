@@ -89,7 +89,7 @@ PWA_APP_DISPLAY = 'standalone'
 PWA_APP_START_URL = '/'
 PWA_APP_ICONS = [
     {
-        'src': '/static/images/download.png',
+        'src': '/static/images/PetronESI_160x160.png',
         'sizes': '160x160'
     }
 ]

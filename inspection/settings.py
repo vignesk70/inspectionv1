@@ -86,7 +86,7 @@ PWA_APP_DESCRIPTION = "Petron ESI"
 PWA_APP_THEME_COLOR = '#0A0302'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'
-PWA_APP_START_URL = '/'
+PWA_APP_START_URL = '/inspection'
 PWA_APP_ICONS = [
     {
         'src': '/static/images/PetronESI_160x160.png',

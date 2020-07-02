@@ -81,8 +81,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'inspection.wsgi.application'
 
 
-PWA_APP_NAME = 'Inspect V1'
-PWA_APP_DESCRIPTION = "Inspect V1"
+PWA_APP_NAME = 'Petron ESI'
+PWA_APP_DESCRIPTION = "Petron ESI"
 PWA_APP_THEME_COLOR = '#0A0302'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'

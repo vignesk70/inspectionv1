@@ -366,10 +366,12 @@ def getCount(masterid, errtype):
     pass
 
 
-def getSum(masterid, errtype):
+def getSum(errtype):
     if not errtype == 'NONE':
-        sum = InspectionDetails.objects.all().filter(
-            master_id=masterid, item_id__errortype=errtype).count()
+        # sum = InspectionDetails.objects.all().filter(
+        #     master_id=masterid, item_id__errortype=errtype).count()
+        sum = InspectionDetails.objects.all().filter(item_id__errortype=errtype,
+                                                     master_id__add_date__range=getstartq()).count()
         return sum
     pass
 
@@ -435,23 +437,15 @@ class ShowDashboard(TemplateView):
         context = super().get_context_data(**kwargs)
         listofsites = InspectionMaster.objects.filter(
             user_id=self.request.user.id, add_date__range=getstartq()).select_related().order_by('-id')
-        sitedata = []
-        for sites in listofsites:
-            data = {}
-            error = {}
-            data['sitename'] = sites.site_id.name
-            data['siteadd'] = sites.add_date
-            data['siteid'] = sites.id
-            data['siteno'] = sites.site_id.site_no
-            for errors in getERRTYPE():
-                error[errors] = getSum(sites.id, errors)
 
-            sitedata.append(data)
+        data = {}
+        error = {}
+        for errors in getERRTYPE():
+            error[errors] = getSum(errors)
             data["errors"] = error
+        print(error)
+        context["errors"] = error
         context['headers'] = getERRTYPE()
-        context["sitedata"] = sitedata
-        print(sitedata)
-        print(getstartq())
         return context
 
 

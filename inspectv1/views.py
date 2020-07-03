@@ -1,7 +1,6 @@
 import os
 import json
 import array as arr
-import pandas as pd
 from datetime import datetime, timedelta
 
 from django.shortcuts import render, redirect

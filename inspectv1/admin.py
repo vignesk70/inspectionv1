@@ -1,40 +1,46 @@
 from django.contrib import admin
 from .models import *
 from import_export.admin import ImportExportModelAdmin
-admin.AdminSite.site_header='Inspect'
+admin.AdminSite.site_header = 'Inspect'
 
 # Register your models here.
+
 
 class CategoryItemInline(admin.TabularInline):
     model = ItemInCategory
     extra = 0
 
 
-
 '''class InspectedInline(admin.TabularInline):
     model = Inspected_Item
     extras = 1'''
+
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('category',)
     inlines = [CategoryItemInline]
     save_as = True
 
+
 class InspectionDetailInline(admin.TabularInline):
     model = InspectionDetails
     extra = 0
 
+
 class InspectionMasterAdmin(admin.ModelAdmin):
     list_display = ('site_id', 'add_date', 'update_date', 'user_id')
-    list_filter = ('site_id', 'user_id')
+    list_filter = ('site_id', 'user_id', 'add_date')
     inlines = [InspectionDetailInline]
     save_as = True
 
+
 class InspectItemAdmin(admin.ModelAdmin):
     #list_display = ('Cat',)
-    list_display=('category_name','site_name','inspector_name','Items','image')
+    list_display = ('category_name', 'site_name',
+                    'inspector_name', 'Items', 'image')
     #inlines = [InspectedInline]
     save_as = True
+
     def has_add_permission(self, request, obj=None):
         return False
 
@@ -52,7 +58,7 @@ class InspectedItemInline(admin.TabularInline):
 
 class InspectedItemAdmin(admin.ModelAdmin):
     view_on_site = True
-   
+
     """list_display = (
         # put all other fields you want to be shown in listing
         'category_name',
@@ -74,10 +80,9 @@ class InspectedItemAdmin(admin.ModelAdmin):
         if request:
             return "/people/%i/" % self.id     
            # use request.GET to construct the link   """
-   
 
-
-    list_display = ('site_id', 'item_value', 'add_date', 'update_date', 'category_id', 'user_id')
+    list_display = ('site_id', 'item_value', 'add_date',
+                    'update_date', 'category_id', 'user_id')
     list_filter = ('category_id', 'user_id')
 
     """def changelist_view(self, request, extra_context=None):
@@ -89,9 +94,9 @@ class InspectedItemAdmin(admin.ModelAdmin):
             request, extra_context=extra_context
         )"""
 
-    #list_select_related = (
+    # list_select_related = (
     #   'category_id', 'user_id',
-    #)
+    # )
     #change_list_template = 'admin/inspecteditemlist.html'
 
     """def get_queryset(self, request):
@@ -101,36 +106,29 @@ class InspectedItemAdmin(admin.ModelAdmin):
         if my_param is None:
             return InspectionCategory.objects.all()"""
 
+    #context_object_name = 'inspecteditem'
+    # return InspectedItem.objects.all()
 
-
-    
-
-        #context_object_name = 'inspecteditem'
-        #return InspectedItem.objects.all()
-    
     #inlines = [InspectedItemInline]
     #save_as = True
 
     #fields = ['category_id', 'site_id', 'user_id', ('date_of_birth', 'date_of_death')]
 
 
-
 #admin.site.register(InspectItem, InspectItemAdmin)
 
 
-
-
-#admin.site.register(InspectionCategory)
-#admin.site.register(ItemInCategory)
-@admin.register(Sites,Stoffice)
+# admin.site.register(InspectionCategory)
+# admin.site.register(ItemInCategory)
+@admin.register(Sites, Stoffice)
 class SitesAdmin(ImportExportModelAdmin):
     pass
 
-admin.site.register(InspectionCategory,CategoryAdmin)
-admin.site.register(InspectionMaster, InspectionMasterAdmin)
-#admin.site.register(Inspected_Item)
-admin.site.register(InspectorDetails)
-#admin.site.register(ItemInCategory)
-admin.site.register(Subsidiary)
-#admin.site.register(Stoffice)
 
+admin.site.register(InspectionCategory, CategoryAdmin)
+admin.site.register(InspectionMaster, InspectionMasterAdmin)
+# admin.site.register(Inspected_Item)
+admin.site.register(InspectorDetails)
+# admin.site.register(ItemInCategory)
+admin.site.register(Subsidiary)
+# admin.site.register(Stoffice)

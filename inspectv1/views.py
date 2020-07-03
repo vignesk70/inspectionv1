@@ -1,6 +1,8 @@
 import os
 import json
 import array as arr
+import pandas as pd
+from datetime import datetime, timedelta
 
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DetailView
@@ -272,18 +274,17 @@ def Add(request):
 
         master_id = 0
         inspectionmaster = InspectionMaster.objects.all().filter(
-        	user_id_id=request.user.id, site_id_id=siteid).select_related()
+            user_id_id=request.user.id, site_id_id=siteid).select_related()
         for im in inspectionmaster:
             master_id = im.id
 
-
         if request.POST['master_id'] == '':
-        	if master_id == 0:
-        		inspectObj = InspectionMaster()
-        		inspectObj.site_id_id = siteid
-        		inspectObj.user_id_id = current_user.id
-        		inspectObj.save()
-        		master_id = inspectObj.id
+            if master_id == 0:
+                inspectObj = InspectionMaster()
+                inspectObj.site_id_id = siteid
+                inspectObj.user_id_id = current_user.id
+                inspectObj.save()
+                master_id = inspectObj.id
         else:
             master_id = request.POST['master_id']
 
@@ -365,6 +366,14 @@ def getCount(masterid, errtype):
     pass
 
 
+def getSum(masterid, errtype):
+    if not errtype == 'NONE':
+        sum = InspectionDetails.objects.all().filter(
+            master_id=masterid, item_id__errortype=errtype).count()
+        return sum
+    pass
+
+
 def distance(slat, slon, elat, elon):
     """
 Function to get distance of 2 points
@@ -380,21 +389,21 @@ Sample code: refer distance.py
                           * cos(elat) * cos(slon - elon))
     return dist
 
+
 @csrf_exempt
 def getNearestSite(request):
     if request.method == 'POST':
-       
-        
-        if request.POST.get('slat',False):
+
+        if request.POST.get('slat', False):
             slat = request.POST['slat']
             slon = request.POST['slon']
             sites = Sites.objects.all()
             site_dict = {}
-            
+
             for site in sites:
                 dist = distance(slat, slon, site.latitude, site.longitude)
                 #print('{}-{:.2f}'.format(site.id, dist))
-                site_dict[site.site_no]=dist
+                site_dict[site.site_no] = dist
                 x = site_dict
                 sorted_x = sorted(x.items(), key=lambda kv: kv[1])
 
@@ -416,4 +425,40 @@ def getNearestSite(request):
             # print(a_dict)
 
     return HttpResponse(json.dumps(a_dict))
-    
+
+
+class ShowDashboard(TemplateView):
+    template_name = 'inspectv1/dashboard_1.html'
+    model = InspectionData
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        listofsites = InspectionMaster.objects.filter(
+            user_id=self.request.user.id, add_date__range=getstartq()).select_related().order_by('-id')
+        sitedata = []
+        for sites in listofsites:
+            data = {}
+            error = {}
+            data['sitename'] = sites.site_id.name
+            data['siteadd'] = sites.add_date
+            data['siteid'] = sites.id
+            data['siteno'] = sites.site_id.site_no
+            for errors in getERRTYPE():
+                error[errors] = getSum(sites.id, errors)
+
+            sitedata.append(data)
+            data["errors"] = error
+        context['headers'] = getERRTYPE()
+        context["sitedata"] = sitedata
+        print(sitedata)
+        print(getstartq())
+        return context
+
+
+def getstartq():
+    current_date = datetime.now()
+    current_quarter = round((current_date.month - 1) / 3 + 1)
+    first_date = datetime(current_date.year, 3 * current_quarter - 2, 1)
+    last_date = datetime(current_date.year, 3 *
+                         current_quarter + 1, 1) + timedelta(days=-1)
+    return (first_date, last_date)

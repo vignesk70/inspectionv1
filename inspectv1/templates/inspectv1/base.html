@@ -2,9 +2,10 @@
 {% load custom_template_tag %}
 <!doctype html>
 <html lang="en">
-   {% load pwa %}
+  {% load pwa %}
+
   <head>
-	  {% progressive_web_app_meta %}
+    {% progressive_web_app_meta %}
     <title>Petron</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -19,12 +20,11 @@
 
     <!-- Custom Font-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
 
 
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
     <script>
 
       $('.close').ready(function () {

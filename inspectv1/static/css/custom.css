@@ -191,3 +191,7 @@ h5:hover {
   border-bottom: 2px solid rgba(0, 123, 255, 0.5) !important;
   margin-bottom: 0.5rem;
 }
+
+.page-title {
+  color: white !important;
+}

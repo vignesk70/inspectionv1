@@ -480,7 +480,7 @@ function showcard(id) {
 }
 
 function geolocate() {
-  alert("GET LOCATION");
+  //alert("GET LOCATION");
   var x = document.getElementById("demo");
 
   if (navigator.geolocation) {
@@ -490,11 +490,11 @@ function geolocate() {
   }
 
   function showPosition(position) {
-    x.innerHTML =
-      "Latitude: " +
-      position.coords.latitude +
-      "<br>Longitude: " +
-      position.coords.longitude;
+    // x.innerHTML =
+    //   "Latitude: " +
+    //   position.coords.latitude +
+    //   "<br>Longitude: " +
+    //   position.coords.longitude;
     var slat = position.coords.latitude;
     var slon = position.coords.longitude;
     var form_data = new FormData();
@@ -522,10 +522,30 @@ function geolocate() {
               output[output.length] = newstring;
             }
             console.log(output);
-            alert(obj);
+            //alert(obj);
+            //jQuery('#locate').append('<select id="' + output.label + '"></select>');
+            var create = '<select id="test" class="form-control"> <option>-Select one- </option>';
+            for (var i = 0; i < output.length; i++) {
+              create += '<option name="' + output[i].value + '" value="' + output[i].label + '">' + output[i].desc + '</option>';
+
+            }
+            create += '</select>'
+            $('#locate').append(create)
+            $('#test').change(function () {
+              var val = $(this).find('option:selected').val();
+              var siten = $(this).find('option:selected[name]').text().split('-')
+              //alert(siten[1])
+              //alert('i selected: ' + val);
+              $('#siteid').val(val);
+              $('#sitename').val(siten[1]);
+              $('#test').remove();
+
+            });
           };
         }
       });
+
+
 
 
   }

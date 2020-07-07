@@ -1,0 +1,10 @@
+{% extends 'inspectv1/base.html' %}
+{% load custom_template_tag %}
+{%load static%}
+{% block content %}
+
+<h5 class='page-title'> This is the dashboard</h5>
+Data:{{errors}}
+Header:{{headers}}
+Sitedata:{{sitedata}}
+{% endblock content %}

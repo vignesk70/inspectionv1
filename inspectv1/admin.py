@@ -120,8 +120,15 @@ class InspectedItemAdmin(admin.ModelAdmin):
 
 # admin.site.register(InspectionCategory)
 # admin.site.register(ItemInCategory)
-@admin.register(Sites, Stoffice)
+
+@admin.register(Sites)
 class SitesAdmin(ImportExportModelAdmin):
+    list_display = ('site_no', 'name')
+    pass
+
+
+@admin.register(Stoffice)
+class StofficeAdmin(ImportExportModelAdmin):
     pass
 
 

@@ -3,8 +3,127 @@
 {%load static%}
 {% block content %}
 
-<h5 class='page-title'> This is the dashboard</h5>
-Data:{{errors}}
-Header:{{headers}}
-Sitedata:{{sitedata}}
+<section>
+    <div class="container">
+        <h5 class='page-title'> Issue Categories</h5>
+    </div>
+</section>
+<!--Section for status-->
+<section class="status">
+    <div class="container">
+        <div class="row">
+
+            {% for key, value in errors.items %}
+            <div class="col">
+                <div class="info-box">
+
+
+                    <span
+                        class="info-box-icon {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' %} elevation-1"><i
+                            class="fa fa-cog"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">{{key}}</span>
+                        <span class="info-box-number">
+                            {{value}}
+                        </span>
+                    </div>
+
+                </div>
+
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+<!-- Section for boxplot -->
+<section class="boxplot">
+    <div class="container">
+        <h5 class='page-title'>Box plot</h5>
+        <div class="row">
+            <div class="col">
+                This section for boxplot
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!--Section for map -->
+<style>
+    /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+    #map {
+        height: 400px;
+    }
+
+    /* Optional: Makes the sample page fill the window. */
+</style>
+<section class="maps">
+    <div class="container">
+        <h5 class='page-title'>Map</h5>
+        <div class="row">
+            <div class="col">
+
+                <!--The div element for the map -->
+                <div id="map"></div>
+                <script>
+                    // Initialize and add the map
+                    function initMap() {
+
+                        var map = new google.maps.Map(document.getElementById('map'), {
+                            zoom: 7,
+                            center: { lat: 3.323234, lng: 100.851527 }
+                        });
+
+                        // Create an array of alphabetical characters used to label the markers.
+                        var labels = {{ names| js}};
+
+
+                    // Add some markers to the map.
+                    // Note: The code uses the JavaScript Array.prototype.map() method to
+                    // create an array of markers based on a given "locations" array.
+                    // The map() method here has nothing to do with the Google Maps API.
+                    var markers = locations.map(function (location, i) {
+                        //alert(i + labels[i])
+                        return new google.maps.Marker({
+                            position: location,
+                            title: labels[i % labels.length],
+
+                        });
+                    });
+
+                    // Add a marker clusterer to manage the markers.
+                    var markerCluster = new MarkerClusterer(map, markers,
+                        { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
+                    }
+                    var locations = {{ locations | js }}
+
+
+
+                </script>
+                <!--Load the API from the specified URL
+                    * The async attribute allows the browser to render the page while the API loads
+                    * The key parameter will contain your own API key (which is not needed for this tutorial)
+                    * The callback parameter executes the initMap() function
+                    -->
+                <script src="{% static 'js/markerclustererplus.min.js'%}">
+                </script>
+                <script async defer
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDD3dF_LP69nIgP4nwVEfpunc0zD8UmRmM&callback=initMap">
+                    </script>
+            </div>
+
+
+
+        </div>
+
+    </div>
+    </div>
+</section>
+
+
 {% endblock content %}

@@ -30,6 +30,7 @@
 					<div class="form-group">
 						<label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
 								aria-hidden="true" onclick="geolocate()"></i></button>
+						<div id="locate"></div>
 						<input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
 							placeholder="" value="">
 						<label for="">Site Name</label>
@@ -37,7 +38,7 @@
 							placeholder="" value="">
 					</div>
 					<button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
-					
+
 					<button type="button" class="btn btn-primary" onclick="loaddata()"> Load Checklist</button>
 					{% endif %}
 					{% endblock %}

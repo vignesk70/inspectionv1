@@ -29,7 +29,7 @@ class InspectionDetailInline(admin.TabularInline):
 
 class InspectionMasterAdmin(admin.ModelAdmin):
     list_display = ('site_id', 'add_date', 'update_date', 'user_id')
-    list_filter = ('site_id', 'user_id')
+    list_filter = ('site_id', 'user_id', 'add_date')
     inlines = [InspectionDetailInline]
     save_as = True
 
@@ -120,6 +120,7 @@ class InspectedItemAdmin(admin.ModelAdmin):
 
 # admin.site.register(InspectionCategory)
 # admin.site.register(ItemInCategory)
+
 @admin.register(Sites)
 class SitesAdmin(ImportExportModelAdmin):
     list_display = ('site_no', 'name')

@@ -439,12 +439,23 @@ class ShowDashboard(TemplateView):
 
         data = {}
         error = {}
+        locations = []
+        names = []
+
+        locationlist = Sites.objects.all()
+        for loc in locationlist:
+            locations.append({'lat': loc.latitude, 'lng': loc.longitude})
+            names.append(loc.name)
+        # print(locations)
         for errors in getERRTYPE():
             error[errors] = getSum(errors)
             data["errors"] = error
-        print(error)
+
         context["errors"] = error
         context['headers'] = getERRTYPE()
+        context['locations'] = locations
+        context['names'] = names
+
         return context
 
 

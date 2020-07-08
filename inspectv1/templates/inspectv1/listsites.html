@@ -24,25 +24,28 @@
                                 <thead>
 
                                     <tr>
+                                        <th> Site Id</th>
                                         <th>Site Name</th>
                                         <th>Date Visited</th>
-                                        {%for x in headers%}
+                                        <!--  {%for x in headers%}
                                         <th>{{x}}</th>
-                                        {%endfor%}
+                                        {%endfor%} -->
 
                                     </tr>
                                 </thead>
                                 {%if sitedata%}
                                 <tbody>
+
                                     {% for x in sitedata %}
                                     <tr>
+                                        <td>{{x.siteno}}</td>
                                         <td><a
                                                 href="{%url 'inspectv1:inspectiondata'%}?type=site&site={{x.siteno}}&id={{x.siteid}}">{{x.sitename}}</a>
                                         </td>
                                         <td>{{x.siteadd}}</td>
-                                        {% for y,val in x.errors.items%}
+                                        <!-- {% for y,val in x.errors.items%}
                                         <td>{{val}}</td>
-                                        {%endfor%}
+                                        {%endfor%} -->
                                     </tr>
                                 </tbody>
                                 {%endfor%}

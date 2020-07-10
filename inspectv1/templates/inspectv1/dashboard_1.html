@@ -3,8 +3,26 @@
 {%load static%}
 {% block content %}
 
+<section class="sitesvisited">
+    <div class="container mb-2">
+        <div class="row">
+            <div class="col">
+                <h5 class='page-title'>Sites Visit Status</h5>
+                <div class="progress-group">
+                    <span class="progress-text">Sites visited</span>
+                    <span class="progress-number"><b>{{countinspected}}</b>/{{countofsites}}</span>
+
+                    <div class="progress sm">
+                      <div class="progress-bar progress-bar-aqua" style="width: {{percentcompleted}}%"></div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section>
-    <div class="container">
+    <div class="container mb-2">
         <h5 class='page-title'> Issue Categories</h5>
     </div>
 </section>

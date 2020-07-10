@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_list_or_404
 from math import radians, acos, sin, cos
+from django.db.models import Max, Min, Avg
 
 # Create your views here.
 
@@ -398,7 +399,7 @@ def getNearestSite(request):
         if request.POST.get('slat', False):
             slat = request.POST['slat']
             slon = request.POST['slon']
-            sites = Sites.objects.all()
+            sites = Sites.objects.filter(active=True)
             site_dict = {}
 
             for site in sites:
@@ -441,20 +442,44 @@ class ShowDashboard(TemplateView):
         error = {}
         locations = []
         names = []
-
+        # location list
         locationlist = Sites.objects.all()
         for loc in locationlist:
             locations.append({'lat': loc.latitude, 'lng': loc.longitude})
             names.append(loc.name)
         # print(locations)
+        # count of types of issues and errors
         for errors in getERRTYPE():
             error[errors] = getSum(errors)
             data["errors"] = error
+
+        # get the list of sites inspected
+        # get count of sites and compare with sites in inspected which have data
+        countofsites = Sites.objects.filter(active=True).count()
+        countinspected = InspectionMaster.objects.filter(
+            add_date__range=getstartq()).count()
+        percentcompleted = (countinspected / countofsites) * 100
+
+        # create boxplot get data for a field B.54 KVH
+        categoryitems = InspectionCategory.objects.get(category='B.4 KWH')
+        print(categoryitems.id)
+        categoryinspected = InspectionDetails.objects.all().select_related().filter(
+            category_id__category='B.4 KWH', item_id__items='KWH')
+        listing = []
+        for item in categoryinspected:
+            listing.append(int(item.item_value))
+
+        print(categoryinspected.aggregate(Max('item_value')))
+        print(categoryinspected.aggregate(Min('item_value')))
+        print(sum(listing) / len(listing))
 
         context["errors"] = error
         context['headers'] = getERRTYPE()
         context['locations'] = locations
         context['names'] = names
+        context['countofsites'] = countofsites
+        context['countinspected'] = countinspected
+        context['percentcompleted'] = percentcompleted
 
         return context
 

@@ -93,7 +93,7 @@ class Sites(models.Model):
     incomer=models.CharField("Incomer",max_length=300,default=' ')
     msbyear=models.CharField("Msb Year",max_length=300,default=' ')
     stoffice = models.ForeignKey("stoffice", on_delete=models.CASCADE,  default=3)
-
+    active = models.BooleanField(default=True)
 
 
     class Meta:

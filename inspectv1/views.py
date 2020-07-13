@@ -429,7 +429,7 @@ def getNearestSite(request):
     return HttpResponse(json.dumps(a_dict))
 
 
-class ShowDashboard(TemplateView):
+class ShowDashboard(LoginRequiredMixin, TemplateView):
     template_name = 'inspectv1/dashboard_1.html'
     model = InspectionData
 

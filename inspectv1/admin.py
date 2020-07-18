@@ -22,12 +22,13 @@ class CategoryAdmin(admin.ModelAdmin):
     save_as = True
 
 
-class InspectionDetailInline(admin.TabularInline):
+class InspectionDetailInline(admin.StackedInline):
     model = InspectionDetails
     extra = 0
 
 
 class InspectionMasterAdmin(admin.ModelAdmin):
+    fields = ('site_id', 'add_date', 'user_id')
     list_display = ('site_id', 'add_date', 'update_date', 'user_id')
     list_filter = ('site_id', 'user_id', 'add_date')
     inlines = [InspectionDetailInline]

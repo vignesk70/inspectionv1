@@ -135,7 +135,8 @@ class InspectionMaster(models.Model):
     user_id = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     add_date = models.DateField("Add Date", auto_now_add=True)
-    update_date = models.DateField("Update Date",  auto_now_add=True)
+    update_date = models.DateField("Update Date", auto_now_add=True)
+    add_date.editable = True
 
     class Meta:
         verbose_name = "Inspection Result"
@@ -161,7 +162,7 @@ class InspectionDetails(models.Model):
         verbose_name_plural = "Details"
 
     def __str__(self):
-        return self.item_value
+        return self.category_id.category
 
 
 class InspectedItem(models.Model):
@@ -186,7 +187,7 @@ class InspectedItem(models.Model):
         verbose_name_plural = "Inspections Result"
 
     def __str__(self):
-        return self.item_value
+        return self.category_id.title
 
 
 class InspectItem(models.Model):

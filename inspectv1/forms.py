@@ -1,24 +1,30 @@
+from django.forms.widgets import TextInput
 from django import forms
 from django.forms import ModelForm
 from .models import *
 from django.forms.models import inlineformset_factory
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.forms import formset_factory
+from datetime import datetime
+
 
 class CategoryForm(forms.ModelForm):
-    
+
     class Meta:
         model = InspectionCategory
         fields = ("category",)
 
-CategoryItemsFormSet = inlineformset_factory(InspectionCategory,ItemInCategory, fields=("items",))
+
+CategoryItemsFormSet = inlineformset_factory(
+    InspectionCategory, ItemInCategory, fields=("items",))
 
 
 class RunInspection(forms.ModelForm):
 
     class Meta:
-      model = InspectedItem
-      fields = [ 'category_id', 'site_id', 'user_id', 'item_id', 'item_value', 'item_image' ]
+        model = InspectedItem
+        fields = ['category_id', 'site_id', 'user_id',
+                  'item_id', 'item_value', 'item_image']
 
 
 class ItemForm(forms.Form):
@@ -29,6 +35,8 @@ class ItemForm(forms.Form):
             'placeholder': 'Enter Item Name here'
         })
     )
+
+
 ItemFormset = formset_factory(ItemForm, extra=1)
 
 
@@ -38,9 +46,9 @@ class InspectionData(forms.ModelForm):
     #site_name = forms.CharField(required=True)
 
     class Meta:
-      model = InspectedItem
-      fields = ['category_id', 'item_id', 'site_id', 'item_value','item_image']
-       
+        model = InspectedItem
+        fields = ['category_id', 'item_id',
+                  'site_id', 'item_value', 'item_image']
 
 
 """class ProfileForm(forms.Form):
@@ -90,10 +98,23 @@ class InspectionData(forms.ModelForm):
            ) """
 
 
-
-
-
 '''class ImageForm(forms.ModelForm):
     class Meta:
         model= Image
         fields= ["name", "imagefile"]'''
+
+
+class DateInputText(TextInput):
+    input_type = 'date'
+
+
+class IntegerInputText(TextInput):
+    input_type = 'number'
+
+
+class DashboardDateFilterForm(forms.Form):
+    QUARTERS = ((1, 'Q1'), (2, 'Q2'), (3, 'Q3'), (4, 'Q4'))
+    start_date = forms.DateField(widget=DateInputText)
+    end_date = forms.DateField(widget=DateInputText)
+    year = forms.CharField(max_length=4, label='Year', widget=IntegerInputText)
+    quarters = forms.ChoiceField(choices=QUARTERS, label='Choose Quarter')

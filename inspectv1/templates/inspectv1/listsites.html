@@ -40,8 +40,7 @@
                                     {% for x in sitedata %}
                                     <tr>
                                         <td>{{x.siteno}}</td>
-                                        <td><a
-                                                href="{%url 'inspectv1:inspectiondata'%}?type=site&site={{x.siteno}}&id={{x.siteid}}">{{x.sitename}}</a>
+                                        <td><a href="{%url 'inspectv1:inspectdetail' pk=x.siteid%}">{{x.sitename}}</a>
                                         </td>
                                         <td>{{x.siteadd}}</td>
                                         <!-- {% for y,val in x.errors.items%}

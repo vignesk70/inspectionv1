@@ -1,7 +1,51 @@
 {% extends 'inspectv1/base.html' %}
 {% load custom_template_tag %}
+{% load bootstrap4%}
 {%load static%}
 {% block content %}
+
+<section class="datefilters">
+    <div class="container mb-2">
+        <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse" href="#collapsefilters"
+                aria-expanded="false" aria-controls="collapsefilters">
+                Date Filters
+            </a></h5>
+        <div class="collapse" id="collapsefilters">
+            <div class="row">
+                <div class="col-sm-6">
+                    <form action="#" method="post" class="form">
+                        {% csrf_token %}
+                        {% bootstrap_field form.start_date%}
+
+                        {% bootstrap_field form.end_date%}
+
+
+                        <button type="submit" class="btn btn-primary" name="dates">
+                            Filter Dates
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-sm-6">
+                    <form action="#" method="post" class="form">
+                        {% csrf_token %}
+
+                        {% bootstrap_field form.year%}
+
+                        {% bootstrap_field form.quarters%}
+
+
+                        <button type="submit" class="btn btn-primary" name="quarter">
+                            Filter Quarter
+                        </button>
+                    </form>
+
+                </div>
+
+
+            </div>
+        </div>
+</section>
 
 <section class="sitesvisited">
     <div class="container mb-2">
@@ -13,23 +57,20 @@
                     <span class="progress-number"><b>{{countinspected}}</b>/{{countofsites}}</span>
 
                     <div class="progress sm">
-                      <div class="progress-bar progress-bar-aqua" style="width: {{percentcompleted}}%"></div>
+                        <div class="progress-bar progress-bar-aqua" style="width: {{percentcompleted}}%"></div>
                     </div>
-                  </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<section>
-    <div class="container mb-2">
-        <h5 class='page-title'> Issue Categories</h5>
-    </div>
-</section>
 <!--Section for status-->
 <section class="status">
     <div class="container">
+        <h5 class='page-title'> Issue Categories</h5>
         <div class="row">
+
 
             {% for key, value in errors.items %}
             <div class="col">
@@ -45,6 +86,8 @@
                         <span class="info-box-number">
                             {{value}}
                         </span>
+
+
                     </div>
 
                 </div>
@@ -98,7 +141,7 @@
                         });
 
                         // Create an array of alphabetical characters used to label the markers.
-                        var labels = {{ names| js}};
+                        var labels = {{ names| js}}; //get from django
 
 
                     // Add some markers to the map.

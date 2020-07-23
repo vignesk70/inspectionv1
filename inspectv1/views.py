@@ -22,6 +22,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_list_or_404
 from math import radians, acos, sin, cos
 from django.db.models import Max, Min, Avg
+from django.urls import reverse_lazy
 
 # Create your views here.
 
@@ -37,7 +38,7 @@ class CreateInspectionForm(CreateView):
 
 class ShowInspectionData(ListView):
     template_name = "inspectv1/updateinspection.html"
-    #form_class = InspectionData
+    # form_class = InspectionData
 
     context_object_name = 'category'
     queryset = InspectionCategory.objects.all()
@@ -48,7 +49,7 @@ class ShowInspectionData(ListView):
     """def get_queryset(self):
         qs1 = InspectionCategory.objects.all() #your first qs
         qs2 = InspectedItem.objects.all()  #your second qs
-        #you can add as many qs as you want
+        # you can add as many qs as you want
         queryset = sorted(chain(qs1,qs2))
         return queryset"""
 
@@ -61,27 +62,27 @@ class ShowInspectionData(ListView):
     queryset = InspectionCategory.objects.all()
 
     def get_object(self):
-        return InspectionCategory.objects.all() 
+        return InspectionCategory.objects.all()
 
     def get(self, request, *args, **kwargs):
-        #self.object = None
+        # self.object = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        #car_form = CarRegistrationFormSet()
-        #receipt_form = PaymentFormSet()
+        # car_form = CarRegistrationFormSet()
+        # receipt_form = PaymentFormSet()
         return self.render_to_response(
             self.get_context_data(form=form)) """
 # def get_queryset(self):
-#user_id = self.request.user.id
+# user_id = self.request.user.id
 # return Sites.objects.all().filter(user_id_id=user_id).select_related()
 
 # def get_context_data(self, **kwargs):
-#context =  super(SCcheckDetailView, self).get_context_data(**kwargs)
-#context['car'] = Car.objects.get(pk=self.kwargs.get('pk',None))
-#context['member'] = Member.objects.get(id=context['car'].member_id.pk)
-#context_object_name = 'sites'
-#user_id = self.get_user();
-#queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
+# context =  super(SCcheckDetailView, self).get_context_data(**kwargs)
+# context['car'] = Car.objects.get(pk=self.kwargs.get('pk',None))
+# context['member'] = Member.objects.get(id=context['car'].member_id.pk)
+# context_object_name = 'sites'
+# user_id = self.get_user();
+# queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
 # return context
 
 
@@ -94,7 +95,7 @@ def ShowInspectionDataFun(request):
     if my_param is None:
         return render(request, 'inspectv1/updateinspection.html', {'category': category})
 
-    #sites = Sites.objects.filter(site_no=request.GET['site'])
+    # sites = Sites.objects.filter(site_no=request.GET['site'])
     sites = get_list_or_404(Sites, site_no=request.GET['site'])
 
     for site in sites:
@@ -111,7 +112,7 @@ def ShowInspectionDataFun(request):
     if master_id == "0":
         return render(request, 'inspectv1/updateinspection.html', {'category': category, 'site_data': sites})
 
-    #posts = InspectedItem.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
+    # posts = InspectedItem.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
     posts = InspectionDetails.objects.all().filter(
         master_id_id=master_id).select_related()
 
@@ -178,12 +179,12 @@ def ShowSiteData(request):
 
         site.show_site = show_site
 
-        #items = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
-        #filleditems = 0
+        # items = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
+        # filleditems = 0
         # for item in items:
         #    filleditems += 1
 
-        #site.filleditems = filleditems;
+        # site.filleditems = filleditems;
 
     return render(request, 'inspectv1/sites.html', {'sites': sites, })
 
@@ -221,7 +222,7 @@ def GetSites(request):
             totalsites = Sites.objects.all().filter(
                 name__contains=str(request.POST['sitename']).upper()).count()
 
-        #a_dict = dict()
+        # a_dict = dict()
         a_dict = [None] * totalsites
 
         countarr = 0
@@ -233,7 +234,7 @@ def GetSites(request):
             b_dict[1] = site.name
             b_dict[2] = sitevalue
             a_dict[countarr] = b_dict
-            #a_dict[1] = sitevalue
+            # a_dict[1] = sitevalue
             countarr += 1
 
         return HttpResponse(json.dumps(a_dict))
@@ -279,6 +280,10 @@ def Add(request):
             master_id = im.id
 
         if request.POST['master_id'] == '':
+            if 'offline' in request.POST:
+                pass
+            else:
+                master_id = 0
             if master_id == 0:
                 inspectObj = InspectionMaster()
                 inspectObj.site_id_id = siteid
@@ -289,14 +294,28 @@ def Add(request):
             master_id = request.POST['master_id']
 
         inspectDetailObj = InspectionDetails()
-
-        inspectDetailObj.master_id_id = master_id
-        inspectDetailObj.category_id_id = request.POST['category_id']
-        inspectDetailObj.item_id_id = request.POST['item_id']
-        inspectDetailObj.item_value = request.POST['item_value']
-        if bool(request.FILES.get('item_image', False)) == True:
-            inspectDetailObj.item_image = request.FILES['item_image']
-        inspectDetailObj.save()
+        try:
+            inspectDetailObj = InspectionDetails.objects.get(
+                master_id_id=master_id, category_id_id=request.POST['category_id'], item_id_id=request.POST['item_id'])
+            inspectDetailObj.item_value = request.POST['item_value']
+            if bool(request.FILES.get('item_image', False)) == True:
+                inspectDetailObj.item_image = request.FILES['item_image']
+            inspectDetailObj.save()
+        except InspectionDetails.DoesNotExist:
+            inspectDetailObj.master_id_id = master_id
+            inspectDetailObj.category_id_id = request.POST['category_id']
+            inspectDetailObj.item_id_id = request.POST['item_id']
+            inspectDetailObj.item_value = request.POST['item_value']
+            if bool(request.FILES.get('item_image', False)) == True:
+                inspectDetailObj.item_image = request.FILES['item_image']
+            inspectDetailObj.save()
+        # inspectDetailObj.master_id_id = master_id
+        # inspectDetailObj.category_id_id = request.POST['category_id']
+        # inspectDetailObj.item_id_id = request.POST['item_id']
+        # inspectDetailObj.item_value = request.POST['item_value']
+        # if bool(request.FILES.get('item_image', False)) == True:
+        #     inspectDetailObj.item_image = request.FILES['item_image']
+        # inspectDetailObj.save()
 
         return HttpResponse(master_id)
 
@@ -345,7 +364,7 @@ class ListSitesForInspector(LoginRequiredMixin, ListView):
         context['headers'] = getERRTYPE()
         context["sitedata"] = sitedata
 
-        #context["details"] = InspectionDetails.objects.all().filter()
+        # context["details"] = InspectionDetails.objects.all().filter()
 
         return context
 
@@ -376,6 +395,105 @@ def getSum(errtype):
     pass
 
 
+class ShowDashboard(LoginRequiredMixin, FormView):
+    template_name = 'inspectv1/dashboard_1.html'
+    model = InspectionData
+    form_class = DashboardDateFilterForm
+
+    def post(self, request, *args, **kwargs):
+        print("post")
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        # print(form.data)
+        if 'dates' in request.POST:
+            print("datefilter")
+
+        else:
+            print("filter quarter")
+
+        if form.is_valid():
+            print(form)
+        return HttpResponseRedirect(reverse_lazy('inspectv1:dashboard'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        listofsites = InspectionMaster.objects.filter(
+            add_date__range=getstartq()).select_related().order_by('-id')
+
+        # load the datefilters with default values
+        initial_dict = {'year': datetime.now().year,
+                        'quarters': round((datetime.now().month - 1) / 3 + 1),
+                        'start_date': getstartq()[0].strftime("%Y-%m-%d"),
+                        'end_date': datetime.now().strftime("%Y-%m-%d")}
+        form = DashboardDateFilterForm(None, initial=initial_dict)
+
+        # variable for location list
+        data = {}
+        error = {}
+        locations = []
+        names = []
+
+        # location list for map markers
+        locationlist = Sites.objects.filter(active=True)
+        for loc in locationlist:
+            locations.append({'lat': loc.latitude, 'lng': loc.longitude})
+            names.append(loc.name)
+
+        # count of types of issues and errors
+        for errors in getERRTYPE():
+            error[errors] = getSum(errors)
+            data["errors"] = error
+
+        # get the list of sites inspected
+        # get count of sites and get percentage against sites in inspected which have data
+        countofsites = Sites.objects.filter(active=True).count()
+        countinspected = InspectionMaster.objects.filter(
+            add_date__range=getstartq()).count()
+        percentcompleted = (countinspected / countofsites) * 100
+
+        # create boxplot get data for a field B.54 KVH
+        categoryitems = InspectionCategory.objects.get(category='B.4 KWH')
+        # print(categoryitems.id)
+        categoryinspected = InspectionDetails.objects.all().select_related().filter(
+            category_id__category='B.4 KWH', item_id__items='KWH')
+        listing = []
+        for item in categoryinspected:
+            listing.append(int(item.item_value))
+
+        # print(categoryinspected.aggregate(Max('item_value')))
+        # print(categoryinspected.aggregate(Min('item_value')))
+        # print(sum(listing) / len(listing))
+
+        context["errors"] = error
+        context['headers'] = getERRTYPE()
+        context['locations'] = locations
+        context['names'] = names
+        context['countofsites'] = countofsites
+        context['countinspected'] = countinspected
+        context['percentcompleted'] = percentcompleted
+        context['form'] = form
+        return context
+
+
+def getstartq(*args):
+    print(args)
+    current_date = datetime.now()
+    current_quarter = round((current_date.month - 1) / 3 + 1)
+    first_date = datetime(current_date.year, 3 * current_quarter - 2, 1)
+    last_date = datetime(current_date.year, 3 *
+                         current_quarter % 12 + 1, 1) + timedelta(days=-1)
+    return (first_date, last_date)
+
+
+def get_quarter_dates(year, quarter):
+
+    selected_quarter = quarter
+    first_date = datetime(year, 3 * quarter - 2, 1)
+    last_date = datetime(year, 3 *
+                         quarter % 12 + 1, 1) + timedelta(days=-1)
+    return (first_date, last_date)
+
+
 def distance(slat, slon, elat, elon):
     """
 Function to get distance of 2 points
@@ -404,7 +522,7 @@ def getNearestSite(request):
 
             for site in sites:
                 dist = distance(slat, slon, site.latitude, site.longitude)
-                #print('{}-{:.2f}'.format(site.id, dist))
+                # print('{}-{:.2f}'.format(site.id, dist))
                 site_dict[site.site_no] = dist
                 x = site_dict
                 sorted_x = sorted(x.items(), key=lambda kv: kv[1])
@@ -422,72 +540,42 @@ def getNearestSite(request):
                 b_dict[1] = data.name
                 b_dict[2] = sitevalue
                 a_dict[countarr] = b_dict
-                #a_dict[1] = sitevalue
+                # a_dict[1] = sitevalue
                 countarr += 1
             # print(a_dict)
 
     return HttpResponse(json.dumps(a_dict))
 
 
-class ShowDashboard(LoginRequiredMixin, TemplateView):
-    template_name = 'inspectv1/dashboard_1.html'
-    model = InspectionData
+class ShowInspectionDetails(LoginRequiredMixin, DetailView):
+    template_name = 'inspectv1/sitedetails.html'
+    model = InspectionMaster
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        listofsites = InspectionMaster.objects.filter(
-            user_id=self.request.user.id, add_date__range=getstartq()).select_related().order_by('-id')
+        category = InspectionCategory.objects.all().select_related()
+        print("masterid", self.kwargs.get('pk', None))
+        details = InspectionDetails.objects.filter(
+            master_id=self.kwargs.get('pk', None)).select_related()
+        siteid = InspectionMaster.objects.filter(
+            id=self.kwargs.get('pk', None)).select_related()
+        sites = Sites.objects.filter(id=siteid[0].site_id_id)
+        for cat in category:
+            for post in details:
+                if cat.id == post.category_id_id:
+                    cat.filled = 1
 
-        data = {}
-        error = {}
-        locations = []
-        names = []
-        # location list
-        locationlist = Sites.objects.all()
-        for loc in locationlist:
-            locations.append({'lat': loc.latitude, 'lng': loc.longitude})
-            names.append(loc.name)
-        # print(locations)
-        # count of types of issues and errors
-        for errors in getERRTYPE():
-            error[errors] = getSum(errors)
-            data["errors"] = error
-
-        # get the list of sites inspected
-        # get count of sites and compare with sites in inspected which have data
-        countofsites = Sites.objects.filter(active=True).count()
-        countinspected = InspectionMaster.objects.filter(
-            add_date__range=getstartq()).count()
-        percentcompleted = (countinspected / countofsites) * 100
-
-        # create boxplot get data for a field B.54 KVH
-        categoryitems = InspectionCategory.objects.get(category='B.4 KWH')
-        print(categoryitems.id)
-        categoryinspected = InspectionDetails.objects.all().select_related().filter(
-            category_id__category='B.4 KWH', item_id__items='KWH')
-        listing = []
-        for item in categoryinspected:
-            listing.append(int(item.item_value))
-
-        print(categoryinspected.aggregate(Max('item_value')))
-        print(categoryinspected.aggregate(Min('item_value')))
-        print(sum(listing) / len(listing))
-
-        context["errors"] = error
-        context['headers'] = getERRTYPE()
-        context['locations'] = locations
-        context['names'] = names
-        context['countofsites'] = countofsites
-        context['countinspected'] = countinspected
-        context['percentcompleted'] = percentcompleted
-
+            for list in cat.items.all():
+                # if list.fieldtype == 'checkbox':
+                for post in details:
+                    if post.item_id_id == list.id:
+                        # if post.item_image:
+                        if list.throw_error:
+                            cat.iserror = 1
+                        # else:
+                        #    cat.iserror = 1
+        context['posts'] = details
+        context['category'] = category
+        context['site_data'] = sites
+        # category = category.union(details)
         return context
-
-
-def getstartq():
-    current_date = datetime.now()
-    current_quarter = round((current_date.month - 1) / 3 + 1)
-    first_date = datetime(current_date.year, 3 * current_quarter - 2, 1)
-    last_date = datetime(current_date.year, 3 *
-                         current_quarter + 1, 1) + timedelta(days=-1)
-    return (first_date, last_date)

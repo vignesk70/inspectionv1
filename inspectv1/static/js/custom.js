@@ -22,6 +22,7 @@ $(document).ready(function () {
           form_data.append("master_id", dataval.master_id);
           //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
           form_data.append("item_image", dataval.file);
+          form_data.append("offline", 1);
 
 
           $.ajax({
@@ -560,6 +561,7 @@ function loaddata() {
 }
 //test
 $(document).on("click", ".submitbutton2", function (event) {
+  event.preventDefault();
   for (i = 0; i < document.getElementsByClassName("submitbutton").length; i++) {
     document.getElementsByClassName("submitbutton")[i].click();
   }

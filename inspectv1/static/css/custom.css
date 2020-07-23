@@ -196,6 +196,18 @@ h5:hover {
   color: white !important;
 }
 
+.sitesvisited,
+.datefilters,
+.status,
+.boxplot,
+.maps {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  background-color: #92929273;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 .info-box {
   display: block;
   min-height: 90px;
@@ -287,4 +299,17 @@ h5:hover {
 }
 .progress-number {
   color: white;
+}
+
+.datefilters label {
+  color: white !important;
+}
+
+.datefilters a {
+  color: white;
+  text-decoration: none;
+}
+.datefilters a:hover {
+  color: white;
+  text-decoration: none;
 }

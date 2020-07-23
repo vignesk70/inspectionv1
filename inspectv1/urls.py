@@ -19,4 +19,7 @@ urlpatterns = [
     path('listsites/', views.ListSitesForInspector.as_view(), name='listsites'),
     path('getnearestsite/', views.getNearestSite, name='getnearestsite'),
     path('dashboard/', views.ShowDashboard.as_view(), name="dashboard"),
+    path('inspectdetail/<int:pk>',
+         views.ShowInspectionDetails.as_view(), name='inspectdetail')
+
 ]

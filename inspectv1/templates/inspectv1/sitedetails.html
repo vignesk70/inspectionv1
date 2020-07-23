@@ -1,0 +1,108 @@
+{% extends 'inspectv1/base.html' %}
+{% load custom_template_tag %}
+{%load static%}
+{% block content %}
+{% load bootstrap4 %}
+
+<div class="inspection">
+
+    <div class="row">
+        <div class="card mt-3">
+            <div class="card-header bg-primary">
+                <h5>Select Location</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title"></h3>
+                {% block site_data %}
+                {% if site_data %}
+                <div class="form-group">
+                    <label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
+                            aria-hidden="true"></i></button>
+                    <input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
+                        placeholder="" value="{{site_data.0.site_no}}">
+                    <label for="">Site Name</label>
+                    <input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
+                        placeholder="" value="{{site_data.0.name}}">
+                </div>
+
+                {% else %}
+                <div class="form-group">
+                    <label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
+                            aria-hidden="true" onclick="geolocate()"></i></button>
+                    <div id="locate"></div>
+                    <input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
+                        placeholder="" value="">
+                    <label for="">Site Name</label>
+                    <input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
+                        placeholder="" value="">
+                </div>
+                <button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
+
+                <button type="button" class="btn btn-primary" onclick="loaddata()"> Load Checklist</button>
+                {% endif %}
+                {% endblock %}
+                <p id="demo"></p>
+            </div>
+        </div>
+        <div class="col-sm-9 createsiteclass" style="padding-top: 1rem;">
+
+            {% for cat in category|dictsort:"sequence" %}
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <div class="card">
+
+
+                        <div class="card-header" id="card_header_{{cat.id}}" onclick="showcard('{{cat.id}}')">
+
+                            <h5><span {% if cat.iserror  %} class="badge badge-danger" {% elif cat.filled  %}
+                                    class="badge badge-success" {% else %} class="badge badge-primary" {% endif %}>
+                                    {%if cat.iserror %}<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                    {%elif cat.filled %}<i class="fa fa-check-square" aria-hidden="true"> </i>
+                                    {%else%}<i class="fa fa-question" aria-hidden="true"></i> {%endif%}</span>
+                                {{cat}}</h5>
+                        </div>
+                        <div class="card-body form-group invisible" id="category_{{cat.id}}">
+                            <input type="hidden" value="{{cat.id}}" name="category_id" id="category_id_{{cat.id}}">
+
+                            {%for list in cat.items.all %}
+
+                            <div class="itembgnd">
+                                <input type="hidden" value="{{list.id}}" name="item_id" id="item_id_{{list.id}}">
+                                <input type="hidden" value="{{list.throw_error}}" name="item_throw_error"
+                                    id="throw_error_{{list.id}}">
+                                <label for="">{{list.items}}</label>
+
+                                {% for post in posts %}
+
+                                {% ifequal post.item_id_id list.id %}
+                                <input class="form-control" type={{list.fieldtype}} value="{{post.item_value}}"
+                                    name="field" id="field_{{list.id}}" readonly {% ifequal list.fieldtype "checkbox"%}
+                                    checked {%endifequal%}>
+                                {% if post.item_image %}
+                                <a href="{{ post.item_image.url }}" target="_blank"><img src="{{ post.item_image.url }}"
+                                        style="width:50px;"></a>
+                                {% endif %}
+                                {% endifequal %}
+                                {%endfor%}
+
+                                <div>
+
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+
+            </div>
+            {%endfor%}
+
+        </div>
+    </div>
+</div>
+{%endblock content%}

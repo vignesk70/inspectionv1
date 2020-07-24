@@ -274,16 +274,18 @@ def Add(request):
             siteid = site.id
 
         master_id = 0
-        inspectionmaster = InspectionMaster.objects.all().filter(
-            user_id_id=request.user.id, site_id_id=siteid).select_related()
+        if 'dataadd' in request.POST:
+            dateadd = request.POST['dataadd']
+            inspectionmaster = InspectionMaster.objects.all().filter(
+                user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+        else:
+            inspectionmaster = InspectionMaster.objects.all().filter(
+                user_id_id=request.user.id, site_id_id=siteid).select_related()
         for im in inspectionmaster:
             master_id = im.id
 
         if request.POST['master_id'] == '':
-            if 'offline' in request.POST:
-                pass
-            else:
-                master_id = 0
+            # master_id = 0
             if master_id == 0:
                 inspectObj = InspectionMaster()
                 inspectObj.site_id_id = siteid

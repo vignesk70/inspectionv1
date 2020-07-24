@@ -7,41 +7,41 @@
 <div class="inspection">
 
     <div class="row">
-        <div class="card mt-3">
-            <div class="card-header bg-primary">
-                <h5>Select Location</h5>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title"></h3>
-                {% block site_data %}
-                {% if site_data %}
-                <div class="form-group">
-                    <label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
-                            aria-hidden="true"></i></button>
-                    <input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
-                        placeholder="" value="{{site_data.0.site_no}}">
-                    <label for="">Site Name</label>
-                    <input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
-                        placeholder="" value="{{site_data.0.name}}">
+        <div class="col-sm-3">
+            <div class="card mt-3">
+                <div class="card-header bg-primary">
+                    <h5>Select Location</h5>
                 </div>
+                <div class="card-body">
+                    <h3 class="card-title"></h3>
+                    {% block site_data %}
+                    {% if site_data %}
+                    <div class="form-group">
+                        <label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
+                                aria-hidden="true"></i></button>
+                        <input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
+                            placeholder="" value="{{site_data.0.site_no}}">
+                        <label for="">Site Name</label>
+                        <input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
+                            placeholder="" value="{{site_data.0.name}}">
+                    </div>
 
-                {% else %}
-                <div class="form-group">
-                    <label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
-                            aria-hidden="true" onclick="geolocate()"></i></button>
-                    <div id="locate"></div>
-                    <input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
-                        placeholder="" value="">
-                    <label for="">Site Name</label>
-                    <input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
-                        placeholder="" value="">
+                    {% else %}
+                    <div class="form-group">
+                        <label for="">Site Id</label> <button class="btn btn-small"><i class="fa fa-location-arrow"
+                                aria-hidden="true" onclick="geolocate()"></i></button>
+                        <div id="locate"></div>
+                        <input type="number" class="form-control" name="siteid" id="siteid" aria-describedby="helpId"
+                            placeholder="" value="">
+                        <label for="">Site Name</label>
+                        <input type="text" class="form-control" name="sitename" id="sitename" aria-describedby="helpId"
+                            placeholder="" value="">
+                    </div>
+
+                    {% endif %}
+                    {% endblock %}
+                    <p id="demo"></p>
                 </div>
-                <button type="button" class="btn btn-primary" onclick="updatedata()"> Get Checklist</button>
-
-                <button type="button" class="btn btn-primary" onclick="loaddata()"> Load Checklist</button>
-                {% endif %}
-                {% endblock %}
-                <p id="demo"></p>
             </div>
         </div>
         <div class="col-sm-9 createsiteclass" style="padding-top: 1rem;">

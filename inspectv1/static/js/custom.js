@@ -22,7 +22,7 @@ $(document).ready(function () {
           form_data.append("master_id", dataval.master_id);
           //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
           form_data.append("item_image", dataval.file);
-          form_data.append("offline", 1);
+          form_data.append("dataadd", dataval.dateadd)
 
 
           $.ajax({
@@ -313,7 +313,7 @@ $("document").ready(function () {
               }
             }
           }
-
+          event = new Date().toISOString()
           if (itemvalue != "") {
             var file = $("#image_" + itemid)[0].files[0];
             var form_data = new FormData();
@@ -324,6 +324,8 @@ $("document").ready(function () {
             form_data.append("master_id", master_id);
             //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
             form_data.append("item_image", file);
+            form_data.append("dateadd", event.split('T')[0]);
+
 
             var arr = new Object();
             // arr.append("category_id", category_id);
@@ -333,6 +335,7 @@ $("document").ready(function () {
             arr["item_value"] = itemvalue;
             arr["master_id"] = master_id;
             arr["item_image"] = file;
+            arr["dateadd"] = event.split('T')[0];
 
 
 
@@ -414,7 +417,7 @@ $("document").ready(function () {
               var dataval = localStorage.getItem(key);
               if (dataval == null) {
                 localStorage.setItem(key, JSON.stringify(arr));
-              }
+              } else { localStorage.setItem(key, JSON.stringify(arr)); }
             }
 
           }

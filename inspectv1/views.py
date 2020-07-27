@@ -450,7 +450,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         # get count of sites and get percentage against sites in inspected which have data
         countofsites = Sites.objects.filter(active=True).count()
         countinspected = InspectionMaster.objects.filter(
-            add_date__range=getstartq()).count()
+            add_date__range=getstartq()).distinct().count()
         percentcompleted = (countinspected / countofsites) * 100
 
         # create boxplot get data for a field B.54 KVH
@@ -460,7 +460,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
             category_id__category='B.4 KWH', item_id__items='KWH')
         listing = []
         for item in categoryinspected:
-            listing.append(int(item.item_value))
+            listing.append(float(item.item_value))
 
         # print(categoryinspected.aggregate(Max('item_value')))
         # print(categoryinspected.aggregate(Min('item_value')))

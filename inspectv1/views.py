@@ -279,8 +279,9 @@ def Add(request):
             inspectionmaster = InspectionMaster.objects.all().filter(
                 user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
         else:
+            dateadd = None
             inspectionmaster = InspectionMaster.objects.all().filter(
-                user_id_id=request.user.id, site_id_id=siteid).select_related()
+                user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
         for im in inspectionmaster:
             master_id = im.id
 

@@ -136,7 +136,7 @@ class InspectionMaster(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     add_date = models.DateField("Add Date", auto_now_add=True)
     update_date = models.DateField("Update Date", auto_now_add=True)
-    add_date.editable = True
+    #add_date.editable = True
 
     class Meta:
         verbose_name = "Inspection Result"
@@ -154,8 +154,8 @@ class InspectionDetails(models.Model):
     # models.CharField("Item Id", max_length = 200)
     item_id = models.ForeignKey("ItemInCategory",  on_delete=models.CASCADE)
     item_value = models.CharField("Item value", max_length=500)
-    item_image = models.ImageField(
-        upload_to=None, height_field=None, width_field=None, max_length=100, blank=True)
+    item_image = models.FileField(
+        upload_to=None, max_length=100, blank=True)
 
     class Meta:
         verbose_name = "Detail"

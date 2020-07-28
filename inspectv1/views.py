@@ -23,6 +23,7 @@ from django.shortcuts import get_list_or_404
 from math import radians, acos, sin, cos
 from django.db.models import Max, Min, Avg
 from django.urls import reverse_lazy
+from django.db.models import Count
 
 # Create your views here.
 
@@ -392,9 +393,19 @@ def getSum(errtype):
     if not errtype == 'NONE':
         # sum = InspectionDetails.objects.all().filter(
         #     master_id=masterid, item_id__errortype=errtype).count()
-        sum = InspectionDetails.objects.all().filter(item_id__errortype=errtype,
-                                                     master_id__add_date__range=getstartq()).count()
-        return sum
+        details = InspectionDetails.objects.all().filter(item_id__errortype=errtype,
+                                                         master_id__add_date__range=getstartq())
+        sum = details.count()
+        distinctsites = details.distinct('master_id').count()
+        try:
+            distinctissue = details.distinct('category_id_id').count()
+            topissue = details.annotate(countissue=Count(
+                'category_id_id')).order_by('-countissue')[0]
+        except IndexError:
+            distinctissue = ''
+            topissue = ''
+        return {'sum': sum, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
+
     pass
 
 
@@ -582,3 +593,16 @@ class ShowInspectionDetails(LoginRequiredMixin, DetailView):
         context['site_data'] = sites
         # category = category.union(details)
         return context
+
+
+class TestForm(FormView):
+    template_name = 'inspectv1/test.html'
+    form_class = TestForm
+
+    def post(self, request, *args, **kwargs):
+        print('In post')
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            print(form)
+        return HttpResponseRedirect(reverse_lazy('inspectv1:test'))

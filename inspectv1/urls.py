@@ -20,6 +20,7 @@ urlpatterns = [
     path('getnearestsite/', views.getNearestSite, name='getnearestsite'),
     path('dashboard/', views.ShowDashboard.as_view(), name="dashboard"),
     path('inspectdetail/<int:pk>',
-         views.ShowInspectionDetails.as_view(), name='inspectdetail')
+         views.ShowInspectionDetails.as_view(), name='inspectdetail'),
+    path('test/', views.TestForm.as_view(), name="test"),
 
 ]

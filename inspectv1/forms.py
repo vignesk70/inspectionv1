@@ -118,3 +118,7 @@ class DashboardDateFilterForm(forms.Form):
     end_date = forms.DateField(widget=DateInputText)
     year = forms.CharField(max_length=4, label='Year', widget=IntegerInputText)
     quarters = forms.ChoiceField(choices=QUARTERS, label='Choose Quarter')
+
+
+class TestForm(forms.Form):
+    imageField = forms.ImageField(allow_empty_file=True)

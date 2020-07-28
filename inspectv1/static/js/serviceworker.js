@@ -15,7 +15,7 @@ const cachNameToKeep = 'myCache';
 //Deletion should only occur at the activate event
 self.addEventListener('activate', event => {
   var cacheKeeplist = [cachNameToKeep];
-  console.log(event.request.url);
+  //console.log(event.request.url);
   if (event.request.url.indexOf('/accounts/') === -1) {
     event.waitUntil(
       caches.keys().then(keyList => {

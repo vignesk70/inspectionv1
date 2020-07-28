@@ -74,9 +74,25 @@
 
             {% for key, value in errors.items %}
             <div class="col">
-                <div class="info-box">
+                <div class="card">
+                    <div class="card-header {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' %}">
+                        <span class="info-box-number">
+                            <i class="fa {% cycle 'fa-gavel' 'fa-life-ring' 'fa-wrench' 'fa-cog' 'fa-power-off' %}"
+                                style='font-size: 1.5rem;'></i>
+                            {{key}}
+                        </span>
 
+                    </div>
+                    <div class="card-body">
 
+                        <p class="card-text">Issues: <strong>{{value.sum}}</strong></p>
+                        <p class="card-text">Sites: <strong>{{value.ds}}</strong></p>
+                        <p class="card-text">Distinct Issue: <strong>{{value.di}}</strong></p>
+                        <p class="card-text">Top Issue: <strong>{{value.top}}</strong></p>
+
+                    </div>
+                </div>
+                <!-- <div class="info-box">
                     <span
                         class="info-box-icon {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' %} elevation-1"><i
                             class="fa fa-cog"></i></span>
@@ -84,19 +100,24 @@
                     <div class="info-box-content">
                         <span class="info-box-text">{{key}}</span>
                         <span class="info-box-number">
-                            {{value}}
+                            {{value.sum}}
+
                         </span>
-
-
+                        <span class="info-box-text">Distinct Sites</span>
+                        <span class="info-box-number">
+                            {{value.ds}}
+                        </span>
+                        <span class="info-box-text">Distinct Issues</span>
+                        <span class="info-box-number">
+                            {{value.di}}
+                        </span>
                     </div>
-
-                </div>
-
-
+                </div> -->
             </div>
             {% endfor %}
         </div>
     </div>
+
 
 </section>
 
@@ -141,7 +162,8 @@
                         });
 
                         // Create an array of alphabetical characters used to label the markers.
-                        var labels = {{ names| js}}; //get from django
+                        var labels = {{ names| js
+                    }}; //get from django
 
 
                     // Add some markers to the map.
@@ -159,8 +181,7 @@
 
                     // Add a marker clusterer to manage the markers.
                     var markerCluster = new MarkerClusterer(map, markers,
-                        { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
-                    }
+                        { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });}
                     var locations = {{ locations | js }}
 
 

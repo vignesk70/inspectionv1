@@ -136,7 +136,7 @@ class InspectionMaster(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     add_date = models.DateField("Add Date", auto_now_add=True)
     update_date = models.DateField("Update Date", auto_now_add=True)
-    add_date.editable = True
+    #add_date.editable = True
 
     class Meta:
         verbose_name = "Inspection Result"

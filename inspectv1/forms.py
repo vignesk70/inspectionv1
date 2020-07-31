@@ -113,11 +113,8 @@ class IntegerInputText(TextInput):
 
 
 class DashboardDateFilterForm(forms.Form):
-    QUARTERS = ((1, 'Q1'), (2, 'Q2'), (3, 'Q3'), (4, 'Q4'))
     start_date = forms.DateField(widget=DateInputText)
     end_date = forms.DateField(widget=DateInputText)
-    year = forms.CharField(max_length=4, label='Year', widget=IntegerInputText)
-    quarters = forms.ChoiceField(choices=QUARTERS, label='Choose Quarter')
 
 
 class TestForm(forms.Form):

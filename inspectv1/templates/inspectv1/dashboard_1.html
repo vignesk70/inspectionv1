@@ -12,34 +12,20 @@
             </a></h5>
         <div class="collapse" id="collapsefilters">
             <div class="row">
-                <div class="col-sm-6">
-                    <form action="#" method="post" class="form">
+                <div class="col">
+                    <form action="#" method="get" class="form">
                         {% csrf_token %}
-                        {% bootstrap_field form.start_date%}
-
-                        {% bootstrap_field form.end_date%}
-
-
-                        <button type="submit" class="btn btn-primary" name="dates">
-                            Filter Dates
-                        </button>
-                    </form>
+                        {% bootstrap_field form.start_date layout='horizontal'%}
                 </div>
+                <div class="col">
+                    {% bootstrap_field form.end_date layout='horizontal'%}
+                </div>
+                <div>
 
-                <div class="col-sm-6">
-                    <form action="#" method="post" class="form">
-                        {% csrf_token %}
-
-                        {% bootstrap_field form.year%}
-
-                        {% bootstrap_field form.quarters%}
-
-
-                        <button type="submit" class="btn btn-primary" name="quarter">
-                            Filter Quarter
-                        </button>
+                    <button type="submit" class="btn btn-primary" name="dates">
+                        Filter Dates
+                    </button>
                     </form>
-
                 </div>
 
 
@@ -74,6 +60,7 @@
 
             {% for key, value in errors.items %}
             <div class="col">
+            <div class="card-deck">
                 <div class="card">
                     <div class="card-header {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' %}">
                         <span class="info-box-number">
@@ -87,8 +74,8 @@
 
                         <p class="card-text">Issues: <strong>{{value.sum}}</strong></p>
                         <p class="card-text">Sites: <strong>{{value.ds}}</strong></p>
-                        <p class="card-text">Distinct Issue: <strong>{{value.di}}</strong></p>
-                        <p class="card-text">Top Issue: <strong>{{value.top}}</strong></p>
+                        <p class="card-text">Distinct Issue: <strong>{%if value.di %}{{value.di}}{% else %}None{% endif %}</strong></p>
+                        <p class="card-text">Top Issue: <strong>{%if value.top %}{{value.top}}{% else %}None{% endif %}</strong></p>
 
                     </div>
                 </div>
@@ -113,6 +100,7 @@
                         </span>
                     </div>
                 </div> -->
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -162,8 +150,7 @@
                         });
 
                         // Create an array of alphabetical characters used to label the markers.
-                        var labels = {{ names| js
-                    }}; //get from django
+                        var labels = {{ names| js}}; //get from django
 
 
                     // Add some markers to the map.

@@ -21,7 +21,7 @@ $(document).ready(function () {
           form_data.append("item_value", dataval.item_value);
           form_data.append("master_id", dataval.master_id);
           //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
-          form_data.append("item_image", dataval.file);
+          form_data.append("item_image", converBase64toBlob(dataval.item_image,'image/png'),dataval.item_image_name);
           form_data.append("dataadd", dataval.dateadd)
 
 
@@ -323,7 +323,8 @@ $("document").ready(function () {
             form_data.append("item_value", itemvalue);
             form_data.append("master_id", master_id);
             //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
-            form_data.append("item_image", file);
+
+            //form_data.append("item_image", file);
             form_data.append("dateadd", event.split('T')[0]);
 
 
@@ -334,10 +335,12 @@ $("document").ready(function () {
             arr["site_id"] = site_id;
             arr["item_value"] = itemvalue;
             arr["master_id"] = master_id;
-            arr["item_image"] = file;
+            //arr["item_image"] = file;
             arr["dateadd"] = event.split('T')[0];
 
 
+            key = site_id + '--' + category_id + '--' + itemid + '_savedvalues';
+            processFile(key, file, arr, form_data);
 
             // console.log(arr);
             // console.log("-----");
@@ -410,14 +413,15 @@ $("document").ready(function () {
 
             }
             else {
-              key = site_id + '--' + category_id + '--' + itemid + '_savedvalues';
+              //key = site_id + '--' + category_id + '--' + itemid + '_savedvalues';
               $(showcard(category_id));
               $("#card_header_" + category_id + " .badge").addClass(
                 "badge-warning");
-              var dataval = localStorage.getItem(key);
-              if (dataval == null) {
-                localStorage.setItem(key, JSON.stringify(arr));
-              } else { localStorage.setItem(key, JSON.stringify(arr)); }
+              saveToLocalStorage(key, arr);
+              // var dataval = localStorage.getItem(key);
+              // if (dataval == null) {
+              //   localStorage.setItem(key, JSON.stringify(arr));
+              // } else { localStorage.setItem(key, JSON.stringify(arr)); }
             }
 
           }
@@ -569,3 +573,74 @@ $(document).on("click", ".submitbutton2", function (event) {
     document.getElementsByClassName("submitbutton")[i].click();
   }
 });
+
+function processFile(siteKey, file, arr, form_data) {
+  if (!file) {
+    return;
+  }
+  arr["item_image_name"] = file.name;
+  form_data.append("item_image_" + file.name, file);
+  convertFileToBase64(siteKey, file, arr);
+}
+function convertFileToBase64(siteKey, file, arr) {
+  // encode the file using the FileReader API
+  const reader = new FileReader();
+
+  //implement what happens after file is read.
+  reader.onloadend = () => {
+
+    // use a regex to remove data url part
+    const arrObj = arr;
+    const base64String = reader.result
+      .replace('data:', '')
+      .replace(/^.+,/, '');
+
+    // log to console
+    //console.log(base64String) // logs wL2dvYWwgbW9yZ...
+
+    //now save to array and save to local storage
+    arrObj["item_image"] = base64String;
+    saveToLocalStorage(siteKey, arrObj);
+
+    //TODO: this is just a test. this line should be moved to when loading the data from localstorage.absent
+    //convertBase64ToFile(key,base64String, file.name);
+
+  };
+  //start reading the file.
+  reader.readAsDataURL(file);
+}
+
+function convertBase64ToFile(key, b64, fileName) {
+  var f;
+  var blob = converBase64toBlob(b64, "application/png");
+  //TODO: this is not working. need to learn how to convert blob to File, or if it can be used as a Blob, since File 'inherits' Blob
+  f = new File(blob, fileName);
+}
+
+function converBase64toBlob(content, contentType) {
+  contentType = contentType || '';
+  var sliceSize = 512;
+  var byteCharacters = window.atob(content); //method which converts base64 to binary
+  var byteArrays = [
+  ];
+  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    var slice = byteCharacters.slice(offset, offset + sliceSize);
+    var byteNumbers = new Array(slice.length);
+    for (var i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+    var byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+  var blob = new Blob(byteArrays, {
+    type: contentType
+  }); //statement which creates the blob
+  return blob;
+}
+
+function saveToLocalStorage(key, arr) {
+  var dataval = localStorage.getItem(key);
+  if (dataval == null) {
+    localStorage.setItem(key, JSON.stringify(arr));
+  } else { localStorage.setItem(key, JSON.stringify(arr)); }
+}

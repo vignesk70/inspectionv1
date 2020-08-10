@@ -399,9 +399,10 @@ def getSum(errtype):
         distinctsites = details.distinct('master_id').count()
         try:
             distinctissue = details.distinct('category_id_id').count()
-            topissue = details.annotate(countissue=Count('item_id_id')).order_by('-countissue')[0]
+            topissue = details.annotate(countissue=Count(
+                'item_id_id')).order_by('-countissue')[0]
             # print(topissue.item_id.items)
-            topissue = topissue.item_id.items
+            topissue = str(topissue.item_id.items)
         except IndexError:
             distinctissue = ''
             topissue = ''
@@ -423,34 +424,39 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         if 'dates' in request.POST:
             print("datefilter")
             print(request.POST['start_date'])
-            
+
         else:
             print("filter quarter")
 
         if form.is_valid():
             print('xx', form)
-        # context['form']=form   
+        # context['form']=form
         return HttpResponseRedirect(reverse_lazy('inspectv1:dashboard'))
 
     def get_context_data(self, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
+        # form_class = self.get_form_class()
+        # form = self.get_form(form_class)
         # print(self.request.GET['start_date'])
+
         context = super().get_context_data(**kwargs)
-        listofsites = InspectionMaster.objects.filter(
-            add_date__range=getstartq()).select_related().order_by('-id')
+        startdate = ''
+        enddate = ''
 
         # load the datefilters with default values
         try:
             if self.request.GET['start_date']:
-                pass
-            
+                startdate = (self.request.GET['start_date'])
+                enddate = (self.request.GET['end_date'])
+
         except:
             initial_dict = {'start_date': getstartq()[0].strftime("%Y-%m-%d"),
-                           'end_date': datetime.now().strftime("%Y-%m-%d")}
+                            'end_date': datetime.now().strftime("%Y-%m-%d")}
             form = DashboardDateFilterForm(None, initial=initial_dict)
-            pass
-       
+            context['form'] = form
+
+        listofsites = InspectionMaster.objects.filter(
+            add_date__range=getstartq()).select_related().order_by('-id')
+
         # variable for location list
         data = {}
         error = {}
@@ -495,18 +501,23 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         context['countofsites'] = countofsites
         context['countinspected'] = countinspected
         context['percentcompleted'] = percentcompleted
-        context['form'] = form
+        # context['form'] = form
         return context
 
 
-def getstartq(*kwargs):
+def getstartq(**kwargs):
     current_date = datetime.now()
     current_quarter = round((current_date.month - 1) / 3 + 1)
 
     first_date = datetime(current_date.year, 3 * current_quarter - 2, 1)
     last_date = datetime(current_date.year, 3 *
                          current_quarter % 12 + 1, 1) + timedelta(days=-1)
-    
+    # print(first_date, last_date)
+    if 'startdate' in kwargs:
+        if kwargs['startdate'] != '':
+            print(kwargs['startdate'])
+            first_date = datetime.strptime(kwargs['startdate'], '%Y-%m-%d')
+            last_date = datetime.strptime(kwargs['enddate'], '%Y-%m-%d')
     return (first_date, last_date)
 
 

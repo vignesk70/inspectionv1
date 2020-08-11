@@ -21,7 +21,9 @@ $(document).ready(function () {
           form_data.append("item_value", dataval.item_value);
           form_data.append("master_id", dataval.master_id);
           //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
-          form_data.append("item_image", converBase64toBlob(dataval.item_image,'image/png'),dataval.item_image_name);
+          if (dataval.item_image){
+          form_data.append("item_image", converBase64toBlob(dataval.item_image,dataval.item_type),dataval.item_image_name);
+        }
           form_data.append("dataadd", dataval.dateadd)
 
 
@@ -34,6 +36,10 @@ $(document).ready(function () {
             async: false,
             success: function (data) {
               localStorage.removeItem(keys[i]);
+              if(localStorage.getItem(keys[i].split("--",1)[0].concat("_data"))){
+                localStorage.removeItem(keys[i].split("--",1)[0].concat("_data"))
+              }
+              
             },
           });
 
@@ -580,9 +586,10 @@ function processFile(siteKey, file, arr, form_data) {
   }
   arr["item_image_name"] = file.name;
   form_data.append("item_image_" + file.name, file);
-  convertFileToBase64(siteKey, file, arr);
+  form_data.append("item_type",file.type);
+  convertFileToBase64(siteKey, file, arr, file.type);
 }
-function convertFileToBase64(siteKey, file, arr) {
+function convertFileToBase64(siteKey, file, arr, filetype) {
   // encode the file using the FileReader API
   const reader = new FileReader();
 
@@ -600,6 +607,7 @@ function convertFileToBase64(siteKey, file, arr) {
 
     //now save to array and save to local storage
     arrObj["item_image"] = base64String;
+    arrObj["item_type"] = filetype;
     saveToLocalStorage(siteKey, arrObj);
 
     //TODO: this is just a test. this line should be moved to when loading the data from localstorage.absent
@@ -621,8 +629,7 @@ function converBase64toBlob(content, contentType) {
   contentType = contentType || '';
   var sliceSize = 512;
   var byteCharacters = window.atob(content); //method which converts base64 to binary
-  var byteArrays = [
-  ];
+  var byteArrays = [];
   for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
     var slice = byteCharacters.slice(offset, offset + sliceSize);
     var byteNumbers = new Array(slice.length);

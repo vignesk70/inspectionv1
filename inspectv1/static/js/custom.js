@@ -15,6 +15,7 @@ navigator.serviceWorker.ready.then(function (registration) {
 $(document).ready(function () {
   if (navigator.onLine == true) {
     online = true;
+
     readItemfromDB();
     // jQuery("document").ready(function () {
     //   var values = [],
@@ -739,70 +740,76 @@ function addToDb(key, arr, file) {
 
 function readItemfromDB() {
   var savedRequests = [];
-  var store = getObjectStore(DB_STORE_NAME, "readwrite");
-  var req;
-  try {
-    req = store.count();
-    req.onsuccess = function (e) {
-      console.log('Count: ', e.target.result)
+  var req = indexedDB.open(DB_NAME, DB_VERSION);
+  req.onsuccess = function (evt) {
+    db = this.result;
+    console.log("Open db done")
+    var store = getObjectStore(DB_STORE_NAME, "readwrite");
+    var req;
+    try {
+      req = store.count();
+      req.onsuccess = function (e) {
+        console.log('Count: ', e.target.result)
+      }
+    } catch (error) {
+      console.log(error.errorCode);
+      throw error
     }
-  } catch (error) {
-    console.log(error.errorCode);
-    throw error
-  }
 
-  req = getObjectStore(DB_STORE_NAME).openCursor();
-  req.onsuccess = function (e) {
-    var cursor = e.target.result;
+    req = getObjectStore(DB_STORE_NAME).openCursor();
+    req.onsuccess = function (e) {
+      var cursor = e.target.result;
 
-    if (cursor) {
-      //console.log("cursor:", cursor.value)
-      savedRequests.push(cursor.value);
-      cursor.continue()
-    } else {
-      for (let savedRequest of savedRequests) {
-        console.log('saved request', savedRequest)
-        var requestUrl = '/add/';
-        var method = 'POST';
-        keys = savedRequest.payload.keys;
-        console.log(savedRequest.payload.item_id)
-        var dataval = savedRequest.payload
-        console.log(dataval);
+      if (cursor) {
+        //console.log("cursor:", cursor.value)
+        savedRequests.push(cursor.value);
+        cursor.continue()
+      } else {
+        for (let savedRequest of savedRequests) {
+          console.log('saved request', savedRequest)
+          var requestUrl = '/add/';
+          var method = 'POST';
+          keys = savedRequest.payload.keys;
+          console.log(savedRequest.payload.item_id)
+          var dataval = savedRequest.payload
+          console.log(dataval);
 
-        //dataval = JSON.parse(dataval);
-        var form_data = new FormData();
-        form_data.append("category_id", dataval.category_id);
-        form_data.append("item_id", dataval.item_id);
-        form_data.append("site_id", dataval.site_id);
-        form_data.append("item_value", dataval.item_value);
-        form_data.append("master_id", dataval.master_id);
-        //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
-        if (dataval.item_image) {
-          form_data.append("item_image", dataval.item_image, dataval.item_image.name);
-        }
-        form_data.append("dataadd", dataval.dateadd)
-        var payload = JSON.stringify(savedRequest.payload);
-        var file = savedRequest.file
-        var headers = {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-        fetch(requestUrl, {
-          //headers: headers,
-          method: method,
-          body: form_data
-        }).then(function (response) {
-          console.log('server resopnse:', response);
-          if (response.status < 400) {
-            getObjectStore(DB_STORE_NAME, 'readwrite').delete(savedRequest.sitekey)
+          //dataval = JSON.parse(dataval);
+          var form_data = new FormData();
+          form_data.append("category_id", dataval.category_id);
+          form_data.append("item_id", dataval.item_id);
+          form_data.append("site_id", dataval.site_id);
+          form_data.append("item_value", dataval.item_value);
+          form_data.append("master_id", dataval.master_id);
+          //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+          if (dataval.item_image) {
+            form_data.append("item_image", dataval.item_image, dataval.item_image.name);
           }
-        }).catch(function (error) {
-          console.log('Send to Server failed:', error)
-          throw error
-        })
+          form_data.append("dataadd", dataval.dateadd)
+          var payload = JSON.stringify(savedRequest.payload);
+          var file = savedRequest.file
+          var headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+          fetch(requestUrl, {
+            //headers: headers,
+            method: method,
+            body: form_data
+          }).then(function (response) {
+            console.log('server resopnse:', response);
+            if (response.status < 400) {
+              getObjectStore(DB_STORE_NAME, 'readwrite').delete(savedRequest.sitekey)
+            }
+          }).catch(function (error) {
+            console.log('Send to Server failed:', error)
+            throw error
+          })
+        }
       }
     }
-  }
+  };
+
 };
 
 

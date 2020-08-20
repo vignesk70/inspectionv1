@@ -1,53 +1,69 @@
 var online = false;
+
+navigator.serviceWorker.ready.then(function (registration) {
+  console.log('Service Worker Ready')
+  return registration.sync.register('sendFormData')
+}).then(function () {
+  console.log('sync event registered')
+}).catch(function () {
+  // system was unable to register for a sync,
+  // this could be an OS-level restriction
+  console.log('sync registration failed')
+});
+
+
 $(document).ready(function () {
   if (navigator.onLine == true) {
     online = true;
-    jQuery("document").ready(function () {
-      var values = [],
-        keys = Object.keys(localStorage),
-        i = keys.length;
-      while (i--) {
+    readItemfromDB();
+    // jQuery("document").ready(function () {
+    //   var values = [],
+    //     keys = Object.keys(localStorage),
+    //     i = keys.length;
 
-        if (keys[i].indexOf("savedvalues") !== -1) {
-          //alert(keys[i]); 
-          var dataval = localStorage.getItem(keys[i]);
-          console.log(dataval);
+    //   while (i--) {
 
-          dataval = JSON.parse(dataval);
-          var form_data = new FormData();
-          form_data.append("category_id", dataval.category_id);
-          form_data.append("item_id", dataval.item_id);
-          form_data.append("site_id", dataval.site_id);
-          form_data.append("item_value", dataval.item_value);
-          form_data.append("master_id", dataval.master_id);
-          //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
-          if (dataval.item_image){
-          form_data.append("item_image", converBase64toBlob(dataval.item_image,dataval.item_type),dataval.item_image_name);
-        }
-          form_data.append("dataadd", dataval.dateadd)
+    //     if (keys[i].indexOf("savedvalues") !== -1) {
+    //       //alert(keys[i]); 
+    //       var dataval = localStorage.getItem(keys[i]);
+    //       console.log(dataval);
 
+    //       dataval = JSON.parse(dataval);
+    //       var form_data = new FormData();
+    //       form_data.append("category_id", dataval.category_id);
+    //       form_data.append("item_id", dataval.item_id);
+    //       form_data.append("site_id", dataval.site_id);
+    //       form_data.append("item_value", dataval.item_value);
+    //       form_data.append("master_id", dataval.master_id);
+    //       //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+    //       if (dataval.item_image) {
+    //         form_data.append("item_image", converBase64toBlob(dataval.item_image, dataval.item_type), dataval.item_image_name);
+    //       }
+    //       form_data.append("dataadd", dataval.dateadd)
 
-          $.ajax({
-            url: "/add/",
-            type: "post",
-            data: form_data,
-            contentType: false,
-            processData: false,
-            async: false,
-            success: function (data) {
-              localStorage.removeItem(keys[i]);
-              if(localStorage.getItem(keys[i].split("--",1)[0].concat("_data"))){
-                localStorage.removeItem(keys[i].split("--",1)[0].concat("_data"))
-              }
-              
-            },
-          });
+    //       readItemfromDB();
 
-        }
+    //       $.ajax({
+    //         url: "/add/",
+    //         type: "post",
+    //         data: form_data,
+    //         contentType: false,
+    //         processData: false,
+    //         async: false,
+    //         success: function (data) {
+    //           localStorage.removeItem(keys[i]);
+    //           if (localStorage.getItem(keys[i].split("--", 1)[0].concat("_data"))) {
+    //             localStorage.removeItem(keys[i].split("--", 1)[0].concat("_data"))
+    //           }
 
-      }
+    //         },
+    //       });
 
-    });
+    //     }
+
+    //   }
+
+    // });
 
   }
   else {
@@ -330,7 +346,7 @@ $("document").ready(function () {
             form_data.append("master_id", master_id);
             //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
 
-            //form_data.append("item_image", file);
+
             form_data.append("dateadd", event.split('T')[0]);
 
 
@@ -341,12 +357,18 @@ $("document").ready(function () {
             arr["site_id"] = site_id;
             arr["item_value"] = itemvalue;
             arr["master_id"] = master_id;
-            //arr["item_image"] = file;
+            if (file) arr["item_image"] = file;
             arr["dateadd"] = event.split('T')[0];
 
 
             key = site_id + '--' + category_id + '--' + itemid + '_savedvalues';
-            processFile(key, file, arr, form_data);
+            if (file) {
+              form_data.append("item_image", file, file.name);
+              //processFile(key, file, arr, form_data);
+            }
+            console.log('arr', arr);
+            console.log("form data", form_data)
+            var msg = { 'form_data': form_data }
 
             // console.log(arr);
             // console.log("-----");
@@ -423,7 +445,9 @@ $("document").ready(function () {
               $(showcard(category_id));
               $("#card_header_" + category_id + " .badge").addClass(
                 "badge-warning");
-              saveToLocalStorage(key, arr);
+              //saveToLocalStorage(key, arr);
+              addToDb(key, arr, file);
+              //readItemfromDB();
               // var dataval = localStorage.getItem(key);
               // if (dataval == null) {
               //   localStorage.setItem(key, JSON.stringify(arr));
@@ -586,8 +610,8 @@ function processFile(siteKey, file, arr, form_data) {
   }
   arr["item_image_name"] = file.name;
   form_data.append("item_image_" + file.name, file);
-  form_data.append("item_type",file.type);
-  convertFileToBase64(siteKey, file, arr, file.type);
+  form_data.append("item_type", file.type);
+  //convertFileToBase64(siteKey, file, arr, file.type);
 }
 function convertFileToBase64(siteKey, file, arr, filetype) {
   // encode the file using the FileReader API
@@ -608,7 +632,10 @@ function convertFileToBase64(siteKey, file, arr, filetype) {
     //now save to array and save to local storage
     arrObj["item_image"] = base64String;
     arrObj["item_type"] = filetype;
+    //arrObj["file"] = file;
     saveToLocalStorage(siteKey, arrObj);
+    //addToDb(siteKey, arrObj, file);
+    //readItemfromDB();
 
     //TODO: this is just a test. this line should be moved to when loading the data from localstorage.absent
     //convertBase64ToFile(key,base64String, file.name);
@@ -651,3 +678,132 @@ function saveToLocalStorage(key, arr) {
     localStorage.setItem(key, JSON.stringify(arr));
   } else { localStorage.setItem(key, JSON.stringify(arr)); }
 }
+
+const DB_NAME = 'images_db';
+const DB_VERSION = 1; // Use a long long for this value (don't use a float
+const DB_STORE_NAME = 'site_images';
+
+var db;
+var current_key;
+
+//initialize the database
+function opendb() {
+  console.log("open db");
+
+  var req = indexedDB.open(DB_NAME, DB_VERSION);
+  req.onsuccess = function (evt) {
+    db = this.result;
+    console.log("Open db done")
+  };
+  req.onerror = function (evt) {
+    console.log("Open DB: ", evt.target.errorCode)
+  };
+
+  req.onupgradeneeded = function (evt) {
+    console.log("openDb upgrade needed");
+    var store = evt.currentTarget.result.createObjectStore(
+      DB_STORE_NAME, { keyPath: 'sitekey' });
+  };
+}
+
+//get the objectstore for transaction
+function getObjectStore(store_name, mode) {
+  var tx = db.transaction(store_name, mode);
+  return tx.objectStore(store_name);
+};
+
+//add the array to the db
+function addToDb(key, arr, file) {
+
+  console.log("addfile arguments:", arguments);
+  obj = { sitekey: key, payload: arr, blob: file };
+  var store = getObjectStore(DB_STORE_NAME, "readwrite");
+  var req;
+  try {
+    req = store.put(obj)
+  } catch (error) {
+    if (error.name == "DataCloneError")
+      console.log("error with this browser");
+    throw error;
+  }
+  req.onsuccess = function (e) {
+    key = e.target.result;
+    current_key = key
+    console.log("adding file", key)
+    //displayFile(current_key, store)
+  }
+  req.onerror = function () {
+    console.log("err with file")
+  }
+};
+
+function readItemfromDB() {
+  var savedRequests = [];
+  var store = getObjectStore(DB_STORE_NAME, "readwrite");
+  var req;
+  try {
+    req = store.count();
+    req.onsuccess = function (e) {
+      console.log('Count: ', e.target.result)
+    }
+  } catch (error) {
+    console.log(error.errorCode);
+    throw error
+  }
+
+  req = getObjectStore(DB_STORE_NAME).openCursor();
+  req.onsuccess = function (e) {
+    var cursor = e.target.result;
+
+    if (cursor) {
+      //console.log("cursor:", cursor.value)
+      savedRequests.push(cursor.value);
+      cursor.continue()
+    } else {
+      for (let savedRequest of savedRequests) {
+        console.log('saved request', savedRequest)
+        var requestUrl = '/add/';
+        var method = 'POST';
+        keys = savedRequest.payload.keys;
+        console.log(savedRequest.payload.item_id)
+        var dataval = savedRequest.payload
+        console.log(dataval);
+
+        //dataval = JSON.parse(dataval);
+        var form_data = new FormData();
+        form_data.append("category_id", dataval.category_id);
+        form_data.append("item_id", dataval.item_id);
+        form_data.append("site_id", dataval.site_id);
+        form_data.append("item_value", dataval.item_value);
+        form_data.append("master_id", dataval.master_id);
+        //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+        if (dataval.item_image) {
+          form_data.append("item_image", dataval.item_image, dataval.item_image.name);
+        }
+        form_data.append("dataadd", dataval.dateadd)
+        var payload = JSON.stringify(savedRequest.payload);
+        var file = savedRequest.file
+        var headers = {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+        fetch(requestUrl, {
+          //headers: headers,
+          method: method,
+          body: form_data
+        }).then(function (response) {
+          console.log('server resopnse:', response);
+          if (response.status < 400) {
+            getObjectStore(DB_STORE_NAME, 'readwrite').delete(savedRequest.sitekey)
+          }
+        }).catch(function (error) {
+          console.log('Send to Server failed:', error)
+          throw error
+        })
+      }
+    }
+  }
+};
+
+
+opendb()

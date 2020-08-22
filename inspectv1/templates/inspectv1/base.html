@@ -58,7 +58,7 @@
         <div class="collapse navbar-collapse" id="collapsibleNavId">
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 
-            <li class="nav-item active dropdown">
+            <!-- <li class="nav-item active dropdown">
 
               {%if user.is_authenticated%}
               {% if request.user|has_group:"inspector"%}
@@ -79,7 +79,16 @@
 
               {% endif %}
               {% endif %}
-            </li>
+
+            </li> -->
+            {%if user.is_authenticated%}
+            {% if request.user|has_group:"inspector"%}
+            <li><a class="nav-link" href="{%url 'inspectv1:listsites'%}">View Completed Sites</a></li>
+            <li> <a class="nav-link" href="{%url 'inspectv1:inspectiondata'%}">Start New Inpsection</a></li>
+
+            {%endif%}
+            {%endif%}
+
             <li class="nav-item">
               {% if request.user|has_group:"dashboard" or request.user|has_group:"administrator"%}
               <a class="nav-link " href="{%url 'inspectv1:dashboard'%}">Dashboard</a>

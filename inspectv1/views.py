@@ -389,12 +389,12 @@ def getCount(masterid, errtype):
     pass
 
 
-def getSum(errtype):
+def getSum(self, errtype):
     if not errtype == 'NONE':
         # sum = InspectionDetails.objects.all().filter(
         #     master_id=masterid, item_id__errortype=errtype).count()
         details = InspectionDetails.objects.all().filter(item_id__errortype=errtype,
-                                                         master_id__add_date__range=getstartq())
+                                                         master_id__add_date__range=getstartq(self))
         sum = details.count()
         distinctsites = details.distinct('master_id').count()
         try:
@@ -415,6 +415,8 @@ class ShowDashboard(LoginRequiredMixin, FormView):
     template_name = 'inspectv1/dashboard_1.html'
     model = InspectionData
     form_class = DashboardDateFilterForm
+    startdate = None
+    enddate = None
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -431,7 +433,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         if form.is_valid():
             print('xx', form)
         # context['form']=form
-        return HttpResponseRedirect(reverse_lazy('inspectv1:dashboard'))
+        return HttpResponse('0')
 
     def get_context_data(self, **kwargs):
         # form_class = self.get_form_class()
@@ -439,23 +441,25 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         # print(self.request.GET['start_date'])
 
         context = super().get_context_data(**kwargs)
-        startdate = ''
-        enddate = ''
 
         # load the datefilters with default values
         try:
             if self.request.GET['start_date']:
-                startdate = (self.request.GET['start_date'])
-                enddate = (self.request.GET['end_date'])
+                self.startdate = (self.request.GET['start_date'])
+                self.enddate = (self.request.GET['end_date'])
+                initial_dict = {'start_date': self.startdate,
+                                'end_date': self.enddate}
+                form = DashboardDateFilterForm(None, initial=initial_dict)
+                context['form'] = form
 
         except:
-            initial_dict = {'start_date': getstartq()[0].strftime("%Y-%m-%d"),
+            initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
                             'end_date': datetime.now().strftime("%Y-%m-%d")}
             form = DashboardDateFilterForm(None, initial=initial_dict)
             context['form'] = form
 
         listofsites = InspectionMaster.objects.filter(
-            add_date__range=getstartq()).select_related().order_by('-id')
+            add_date__range=getstartq(self)).select_related().order_by('-id')
 
         # variable for location list
         data = {}
@@ -471,14 +475,14 @@ class ShowDashboard(LoginRequiredMixin, FormView):
 
         # count of types of issues and errors
         for errors in getERRTYPE():
-            error[errors] = getSum(errors)
+            error[errors] = getSum(self, errors)
             data["errors"] = error
 
         # get the list of sites inspected
         # get count of sites and get percentage against sites in inspected which have data
         countofsites = Sites.objects.filter(active=True).count()
         countinspected = InspectionMaster.objects.filter(
-            add_date__range=getstartq()).distinct().count()
+            add_date__range=getstartq(self)).distinct().count()
         percentcompleted = (countinspected / countofsites) * 100
 
         # create boxplot get data for a field B.54 KVH
@@ -505,7 +509,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         return context
 
 
-def getstartq(**kwargs):
+def getstartq(self, **kwargs):
     current_date = datetime.now()
     current_quarter = round((current_date.month - 1) / 3 + 1)
 
@@ -513,11 +517,16 @@ def getstartq(**kwargs):
     last_date = datetime(current_date.year, 3 *
                          current_quarter % 12 + 1, 1) + timedelta(days=-1)
     # print(first_date, last_date)
+    print(self.startdate)
+    print(self.enddate)
     if 'startdate' in kwargs:
         if kwargs['startdate'] != '':
             print(kwargs['startdate'])
             first_date = datetime.strptime(kwargs['startdate'], '%Y-%m-%d')
             last_date = datetime.strptime(kwargs['enddate'], '%Y-%m-%d')
+    if (self.startdate):
+        first_date = self.startdate
+        last_date = self.enddate
     return (first_date, last_date)
 
 

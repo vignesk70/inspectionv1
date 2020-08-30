@@ -24,6 +24,8 @@ from math import radians, acos, sin, cos
 from django.db.models import Max, Min, Avg
 from django.urls import reverse_lazy
 from django.db.models import Count
+from django.conf import settings
+
 
 # Create your views here.
 
@@ -244,6 +246,7 @@ def GetSites(request):
 @csrf_exempt
 def Add(request):
     print("In Add")
+
     # return HttpResponse(request.POST['category_id'])
 
     if request.method == 'POST':
@@ -269,23 +272,30 @@ def Add(request):
         return HttpResponse(request.POST.items())"""
         # print current_user.id
         # return HttpResponse(request.FILES)
-        sites = Sites.objects.filter(site_no=request.POST['site_id'])
-
-        for site in sites:
-            siteid = site.id
-
+        sites = Sites.objects.get(site_no=request.POST['site_id'])
+        siteid = sites.id
+        # for site in sites:
+        #     siteid = site.id
+        if settings.DEBUG:
+            print("DEBUG:Siteid", siteid)
         master_id = 0
         if 'dataadd' in request.POST:
             dateadd = request.POST['dataadd']
-            inspectionmaster = InspectionMaster.objects.all().filter(
-                user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+            # inspectionmaster = InspectionMaster.objects.all().filter(
+            #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+            inspectionmaster = InspectionMaster.objects.get_or_create(
+                user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
         else:
             dateadd = None
-            inspectionmaster = InspectionMaster.objects.all().filter(
-                user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
-        for im in inspectionmaster:
-            master_id = im.id
-
+            # inspectionmaster = InspectionMaster.objects.all().filter(
+            # user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+            inspectionmaster = InspectionMaster.objects.get_or_create(
+                user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+        # for im in inspectionmaster:
+        #     master_id = im.id
+        master_id = inspectionmaster[0].id
+        if settings.DEBUG:
+            print("DEBUG:masterid", master_id)
         if request.POST['master_id'] == '':
             # master_id = 0
             if master_id == 0:
@@ -296,7 +306,8 @@ def Add(request):
                 master_id = inspectObj.id
         else:
             master_id = request.POST['master_id']
-
+        if settings.DEBUG:
+            print("DEBUG:masterid after save", master_id)
         inspectDetailObj = InspectionDetails()
         try:
             inspectDetailObj = InspectionDetails.objects.get(

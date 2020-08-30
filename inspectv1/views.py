@@ -309,8 +309,8 @@ def Add(request):
                 dateadd = request.POST['dateadd']
             # inspectionmaster = InspectionMaster.objects.all().filter(
             #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
-            inspectionmaster = InspectionMaster.objects.get_or_create(
-                user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+                inspectionmaster = InspectionMaster.objects.get_or_create(
+                    user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
             master_id = inspectionmaster[0].id
             if master_id == 0:
                 inspectObj = InspectionMaster()

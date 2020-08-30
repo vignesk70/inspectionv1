@@ -279,25 +279,39 @@ def Add(request):
         if settings.DEBUG:
             print("DEBUG:Siteid", siteid)
         master_id = 0
-        if 'dataadd' in request.POST:
-            dateadd = request.POST['dataadd']
+        # if 'dateadd' in request.POST:
+        #     dateadd = request.POST['dateadd']
+        #     # inspectionmaster = InspectionMaster.objects.all().filter(
+        #     #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+        #     inspectionmaster = InspectionMaster.objects.get_or_create(
+        #         user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+        # else:
+        #     dateadd = None
+        #     # inspectionmaster = InspectionMaster.objects.all().filter(
+        #     # user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+        #     inspectionmaster = InspectionMaster.objects.get_or_create(
+        #         user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+        # # for im in inspectionmaster:
+        # #     master_id = im.id
+        # master_id = inspectionmaster[0].id
+        if settings.DEBUG:
+            print("DEBUG:masterid", master_id)
+        # if 'dateadd' in request.POST:
+        #     dateadd = request.POST['dateadd']
+        #     # inspectionmaster = InspectionMaster.objects.all().filter(
+        #     #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+        #     inspectionmaster = InspectionMaster.objects.get_or_create(
+        #         user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+        #     master_id = inspectionmaster[0].id
+        if request.POST['master_id'] == '':
+            # master_id = 0
+            if 'dateadd' in request.POST:
+                dateadd = request.POST['dateadd']
             # inspectionmaster = InspectionMaster.objects.all().filter(
             #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
             inspectionmaster = InspectionMaster.objects.get_or_create(
                 user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
-        else:
-            dateadd = None
-            # inspectionmaster = InspectionMaster.objects.all().filter(
-            # user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
-            inspectionmaster = InspectionMaster.objects.get_or_create(
-                user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
-        # for im in inspectionmaster:
-        #     master_id = im.id
-        master_id = inspectionmaster[0].id
-        if settings.DEBUG:
-            print("DEBUG:masterid", master_id)
-        if request.POST['master_id'] == '':
-            # master_id = 0
+            master_id = inspectionmaster[0].id
             if master_id == 0:
                 inspectObj = InspectionMaster()
                 inspectObj.site_id_id = siteid

@@ -785,7 +785,7 @@ function readItemfromDB() {
           if (dataval.item_image) {
             form_data.append("item_image", dataval.item_image, dataval.item_image.name);
           }
-          form_data.append("dataadd", dataval.dateadd)
+          form_data.append("dateadd", dataval.dateadd)
           var payload = JSON.stringify(savedRequest.payload);
           var file = savedRequest.file
           var headers = {

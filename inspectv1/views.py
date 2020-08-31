@@ -311,7 +311,10 @@ def Add(request):
             #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
                 inspectionmaster = InspectionMaster.objects.filter(
                     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
-                master_id = inspectionmaster[0].id
+                # master_id = inspectionmaster[0].id
+                if inspectionmaster:
+                    for im in inspectionmaster:
+                        master_id = im.id
                 if settings.DEBUG:
                     print("DEBUG:masterid in dateadd", master_id)
             if master_id == 0:

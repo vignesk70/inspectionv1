@@ -141,6 +141,7 @@ class InspectionMaster(models.Model):
     class Meta:
         verbose_name = "Inspection Result"
         verbose_name_plural = "Inspections Result"
+        unique_together = (('site_id', 'user_id', 'add_date'))
 
     def __str__(self):
         return str(self.id)

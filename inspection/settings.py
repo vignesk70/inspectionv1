@@ -91,6 +91,10 @@ PWA_APP_ICONS = [
     {
         'src': '/static/images/PetronESI_160x160.png',
         'sizes': '160x160'
+    },
+    {
+        'src': '/static/images/PetronESI_160x160.png',
+        'sizes': '512x512'
     }
 ]
 

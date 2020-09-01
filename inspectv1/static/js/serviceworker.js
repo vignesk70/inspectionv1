@@ -37,6 +37,9 @@ self.addEventListener('fetch', function (event) {
   if (event.request.url.match('^.*(\/accounts\/).*$')) {
     return false;
   }
+  if (event.request.url.match('^.*(\/media\/).*$')) {
+    return false;
+  }
   // OR
   if (event.request.url.match('^.*(\/listsites\/).*$')) {
     return false;

@@ -148,7 +148,7 @@ input[type="checkbox"][readonly] {
 .banner {
   position: absolute;
   display: block;
-  padding-left: 200px;
+  padding-left: 50px;
   padding-top: 160px;
   width: max-content;
   color: white !important;

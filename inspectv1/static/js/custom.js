@@ -434,7 +434,7 @@ $("document").ready(function () {
                   }
 
                   //$("#savebutton_" + category_id).hide();
-                  $(showcard(category_id));
+                  // $(showcard(category_id));
                   jQuery("#master_id").val(data);
                   $(".alert").show();
                 },
@@ -443,7 +443,7 @@ $("document").ready(function () {
             }
             else {
               //key = site_id + '--' + category_id + '--' + itemid + '_savedvalues';
-              $(showcard(category_id));
+              //$(showcard(category_id));
               $("#card_header_" + category_id + " .badge").addClass(
                 "badge-warning");
               //saveToLocalStorage(key, arr);
@@ -458,6 +458,7 @@ $("document").ready(function () {
           }
         }
       });
+    $(showcard(category_id));
   });
 });
 

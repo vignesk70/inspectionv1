@@ -318,11 +318,21 @@ def Add(request):
                 if settings.DEBUG:
                     print("DEBUG:masterid in dateadd", master_id)
             if master_id == 0:
-                inspectObj = InspectionMaster()
-                inspectObj.site_id_id = siteid
-                inspectObj.user_id_id = current_user.id
-                inspectObj.save()
-                master_id = inspectObj.id
+                try:
+                    inspectObj = InspectionMaster()
+                    inspectObj.site_id_id = siteid
+                    inspectObj.user_id_id = current_user.id
+                    inspectObj.save()
+                    master_id = inspectObj.id
+                except Exception as err:
+                    inspectionmaster = InspectionMaster.objects.filter(
+                        user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+                # master_id = inspectionmaster[0].id
+                    if inspectionmaster:
+                        for im in inspectionmaster:
+                            master_id = im.id
+                    print("Integrity Error", err)
+
         else:
             master_id = request.POST['master_id']
         if settings.DEBUG:

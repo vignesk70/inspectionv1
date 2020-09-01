@@ -33,9 +33,9 @@
       })
     </script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
 
 
 
@@ -84,7 +84,7 @@
             {%if user.is_authenticated%}
             {% if request.user|has_group:"inspector"%}
             <li><a class="nav-link" href="{%url 'inspectv1:listsites'%}">View Completed Sites</a></li>
-            <li> <a class="nav-link" href="{%url 'inspectv1:inspectiondata'%}">Start New Inpsection</a></li>
+            <li> <a class="nav-link" href="{%url 'inspectv1:inspectiondata'%}">Start New Inspection</a></li>
 
             {%endif%}
             {%endif%}

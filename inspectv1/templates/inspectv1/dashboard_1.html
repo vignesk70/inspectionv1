@@ -76,7 +76,7 @@
                         <p class="card-text">Sites: <strong>{{value.ds}}</strong></p>
                         <p class="card-text">Distinct Issue: <strong>{%if value.di %}{{value.di}}{% else %}None{% endif %}</strong></p>
                         <p class="card-text">Top Issue: <strong>{%if value.top %}{{value.top}}{% else %}None{% endif %}</strong></p>
-
+                        <a name="" id="" class="btn btn-primary" href="{% url 'inspectv1:dashdetails' key%}" role="button">Details</a>
                     </div>
                 </div>
                 <!-- <div class="info-box">
@@ -110,7 +110,7 @@
 </section>
 
 <!-- Section for boxplot -->
-<section class="boxplot">
+{% comment %} <section class="boxplot">
     <div class="container">
         <h5 class='page-title'>Box plot</h5>
         <div class="row">
@@ -120,7 +120,7 @@
 
         </div>
     </div>
-</section>
+</section> {% endcomment %}
 
 <!--Section for map -->
 <style>

@@ -22,5 +22,7 @@ urlpatterns = [
     path('inspectdetail/<int:pk>',
          views.ShowInspectionDetails.as_view(), name='inspectdetail'),
     path('test/', views.TestForm.as_view(), name="test"),
+    path('dashboarddetails/<key>',
+         views.ShowDashboardDetails.as_view(), name='dashdetails'),
 
 ]

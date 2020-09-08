@@ -549,19 +549,85 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         return context
 
 
+class ShowDashboardDetails(LoginRequiredMixin, FormView):
+    template_name = 'inspectv1/dashboard_2.html'
+    form_class = DashboardDateFilterForm
+    startdate = None
+    enddate = None
+
+    pass
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.kwargs['key']  # get category of the search
+        sitedata = []
+        # set the datefilters
+        try:
+            if self.request.GET['start_date']:
+                self.startdate = (self.request.GET['start_date'])
+                self.enddate = (self.request.GET['end_date'])
+                initial_dict = {'start_date': self.startdate,
+                                'end_date': self.enddate}
+                form = DashboardDateFilterForm(None, initial=initial_dict)
+                context['form'] = form
+
+        except:
+            initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
+                            'end_date': datetime.now().strftime("%Y-%m-%d")}
+            form = DashboardDateFilterForm(None, initial=initial_dict)
+            context['form'] = form
+
+        # get the sites related to the key
+        sitesfound = InspectionDetails.objects.filter(
+            item_id__errortype=category, master_id__add_date__range=getstartq(self))
+
+        for sites in sitesfound:
+            data = {}
+            subsidiary = str(sites.master_id.site_id.subsidiary)
+            category = ' '.join(sites.category_id.category.split(' ')[1:])
+            data["name"] = sites.master_id.site_id.name
+            data["siteno"] = sites.master_id.site_id.site_no
+            data["dateadd"] = sites.master_id.add_date
+            data["category"] = category
+            data["itemname"] = sites.item_id.items
+            data["severity"] = sites.item_id.severity
+            data["state"] = sites.master_id.site_id.state
+            data["subsidiary"] = subsidiary[subsidiary.find(
+                "(")+1:subsidiary.find(")")]
+            data["errortype"] = sites.item_id.errortype
+            sitedata.append(data)
+        context["sitedata"] = sitedata
+
+        return context
+
+
+''' 
+for sites in siteoutput: 
+    ...:     print(sites.master_id.site_id.name) 
+    ...:     print(sites.master_id.site_id.site_no) 
+    ...:     print(sites.master_id.add_date) 
+    ...:     print(sites.category_id.category) 
+    ...:     print(sites.item_id.items) 
+    ...:     print(sites.item_id.severity) 
+    ...:     print(sites.master_id.site_id.state) 
+    ...:     print(sites.master_id.site_id.subsidiary) 
+    ...:     print(sites.item_id.errortype) 
+'''
+
+
 def getstartq(self, **kwargs):
     current_date = datetime.now()
-    current_quarter = round((current_date.month - 1) / 3 + 1)
+    current_quarter = round(((current_date.month - 1) // 3) + 1)
 
     first_date = datetime(current_date.year, 3 * current_quarter - 2, 1)
     last_date = datetime(current_date.year, 3 *
                          current_quarter % 12 + 1, 1) + timedelta(days=-1)
     # print(first_date, last_date)
-    print(self.startdate)
-    print(self.enddate)
+    # print(self.startdate)
+    # print(self.enddate)
     if 'startdate' in kwargs:
         if kwargs['startdate'] != '':
-            print(kwargs['startdate'])
+            # print(kwargs['startdate'])
             first_date = datetime.strptime(kwargs['startdate'], '%Y-%m-%d')
             last_date = datetime.strptime(kwargs['enddate'], '%Y-%m-%d')
     if (self.startdate):

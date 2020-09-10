@@ -59,27 +59,34 @@
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                     <canvas id="issues" style="display: block; position:relative; height:40vh; width: 80vw;"
-                        class="chartjs-render-monitor"></canvas></div>
+                        class="chartjs-render-monitor"></canvas>
+                    {%if not issue_label %}<p>No data found</p> {%endif%}
+                </div>
                 <div class="tab-pane fade show active" id="nav-profile" role="tabpanel"
                     aria-labelledby="nav-profile-tab">
                     <canvas id="site" style="display: block; position:relative; height:40vh; width: 80vw;"
                         class="chartjs-render-monitor"></canvas>
+                    {%if not site_label %}<p>No data found</p> {%endif%}
                 </div>
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
                     <canvas id="field" style="display: block; position:relative; height:40vh; width: 80vw;"
                         class="chartjs-render-monitor"></canvas>
+                    {%if not cat_label %}<p>No data found</p> {%endif%}
                 </div>
                 <div class="tab-pane fade" id="nav-risk" role="tabpanel" aria-labelledby="nav-risk-tab">
                     <canvas id="risk" style="display: block; position:relative; height:40vh; width: 80vw;"
                         class="chartjs-render-monitor"></canvas>
+                    {%if not risk_label %}<p>No data found</p> {%endif%}
                 </div>
                 <div class="tab-pane fade" id="nav-state" role="tabpanel" aria-labelledby="nav-state-tab">
                     <canvas id="state" style="display: block; position:relative; height:40vh; width: 80vw;"
                         class="chartjs-render-monitor"></canvas>
+                    {%if not state_label %}<p>No data found</p> {%endif%}
                 </div>
                 <div class="tab-pane fade" id="nav-subsidiary" role="tabpanel" aria-labelledby="nav-subsidiary-tab">
                     <canvas id="subsidiary" style="display: block; position:relative; height:40vh; width: 80vw;"
                         class="chartjs-render-monitor"></canvas>
+                    {%if not subsidiary_label %}<p>No data found</p> {%endif%}
                 </div>
             </div>
 

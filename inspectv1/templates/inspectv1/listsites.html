@@ -3,7 +3,34 @@
 {% block content %}
 {% load bootstrap4 %}
 
+<section class="datefilters">
+    <div class="container mb-2">
+        <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse" href="#collapsefilters"
+                aria-expanded="false" aria-controls="collapsefilters">
+                Date Filters
+            </a></h5>
+        <div class="collapse" id="collapsefilters">
+            <div class="row">
+                <div class="col">
+                    <form action="#" method="get" class="form">
+                        {% csrf_token %}
+                        {% bootstrap_field form.start_date layout='horizontal'%}
+                </div>
+                <div class="col">
+                    {% bootstrap_field form.end_date layout='horizontal'%}
+                </div>
+                <div>
 
+                    <button type="submit" class="btn btn-primary" name="dates">
+                        Filter Dates
+                    </button>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+</section>
 <div class="inspection">
 
     <div class="row">
@@ -25,7 +52,8 @@
                                     <thead>
 
                                         <tr>
-                                            <th> Site Id</th>
+                                            <th>id</th>
+                                            <th>Site Id</th>
                                             <th>Site Name</th>
                                             <th>Date Visited</th>
                                             <!--  {%for x in headers%}
@@ -39,14 +67,13 @@
 
                                         {% for x in sitedata %}
                                         <tr>
+                                            <td>{{x.siteid}}</td>
                                             <td>{{x.siteno}}</td>
                                             <td><a
                                                     href="{%url 'inspectv1:inspectdetail' pk=x.siteid%}">{{x.sitename}}</a>
                                             </td>
-                                            <td>{{x.siteadd}}</td>
-                                            <!-- {% for y,val in x.errors.items%}
-                                        <td>{{val}}</td>
-                                        {%endfor%} -->
+                                            <td>{{x.siteadd|date:"d/m/Y"}}</td>
+
                                         </tr>
                                         {%endfor%}
 
@@ -69,7 +96,17 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('#mytable').DataTable();
+        $('#mytable').DataTable(
+            {
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ]
+            }
+        );
     });
 </script>
 

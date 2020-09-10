@@ -388,12 +388,30 @@ def Add(request):
 class ListSitesForInspector(LoginRequiredMixin, ListView):
     model = InspectionMaster
     template_name = 'inspectv1/listsites.html'
+    form_class = DashboardDateFilterForm
+    startdate = None
+    enddate = None
 
     def get_context_data(self, **kwargs):
         sitedata = []
         context = super(ListSitesForInspector, self).get_context_data(**kwargs)
+        try:
+            if self.request.GET['start_date']:
+                self.startdate = (self.request.GET['start_date'])
+                self.enddate = (self.request.GET['end_date'])
+                initial_dict = {'start_date': self.startdate,
+                                'end_date': self.enddate}
+                form = DashboardDateFilterForm(None, initial=initial_dict)
+                context['form'] = form
+
+        except:
+            initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
+                            'end_date': datetime.now().strftime("%Y-%m-%d")}
+            form = DashboardDateFilterForm(None, initial=initial_dict)
+            context['form'] = form
+
         listofsites = InspectionMaster.objects.filter(
-            user_id=self.request.user.id).select_related().order_by('-id')
+            user_id=self.request.user.id, add_date__range=getstartq(self)).order_by('-id')
 
         for sites in listofsites:
             data = {}

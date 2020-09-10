@@ -39,6 +39,51 @@
         <h5 class='page-title'>
             Chart
         </h5>
+        <div class="dashtable">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile"
+                        role="tab" aria-controls="nav-profile" aria-selected="false">Station</a>
+                    <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+                        aria-controls="nav-home" aria-selected="true">Issues</a>
+                    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
+                        aria-controls="nav-contact" aria-selected="false">Field</a>
+                    <a class="nav-item nav-link" id="nav-risk-tab" data-toggle="tab" href="#nav-risk" role="tab"
+                        aria-controls="nav-contact" aria-selected="false">Risk</a>
+                    <a class="nav-item nav-link" id="nav-state-tab" data-toggle="tab" href="#nav-state" role="tab"
+                        aria-controls="nav-contact" aria-selected="false">State</a>
+                    <a class="nav-item nav-link" id="nav-subsidiary-tab" data-toggle="tab" href="#nav-subsidiary"
+                        role="tab" aria-controls="nav-contact" aria-selected="false">Subsidiary</a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <canvas id="issues" style="display: block; height: 195px; width: 390px;" width="780" height="390"
+                        class="chartjs-render-monitor"></canvas></div>
+                <div class="tab-pane fade show active" id="nav-profile" role="tabpanel"
+                    aria-labelledby="nav-profile-tab">
+                    <canvas id="site" style="display: block; height: 195px; width: 390px;" width="780" height="390"
+                        class="chartjs-render-monitor"></canvas>
+                </div>
+                <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                    <canvas id="field" style="display: block; height: 195px; width: 390px;" width="780" height="390"
+                        class="chartjs-render-monitor"></canvas>
+                </div>
+                <div class="tab-pane fade" id="nav-risk" role="tabpanel" aria-labelledby="nav-risk-tab">
+                    <canvas id="risk" style="display: block; height: 195px; width: 390px;" width="780" height="390"
+                        class="chartjs-render-monitor"></canvas>
+                </div>
+                <div class="tab-pane fade" id="nav-state" role="tabpanel" aria-labelledby="nav-state-tab">
+                    <canvas id="state" style="display: block; height: 195px; width: 390px;" width="780" height="390"
+                        class="chartjs-render-monitor"></canvas>
+                </div>
+                <div class="tab-pane fade" id="nav-subsidiary" role="tabpanel" aria-labelledby="nav-subsidiary-tab">
+                    <canvas id="subsidiary" style="display: block; height: 195px; width: 390px;" width="780"
+                        height="390" class="chartjs-render-monitor"></canvas>
+                </div>
+            </div>
+
+        </div>
     </div>
 
 </section>
@@ -93,11 +138,105 @@
     </div>
 </section>
 
-
+<script src="https://d3js.org/d3-color.v1.min.js"></script>
+<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script>
+    background = [
+        'rgba(255, 99, 132, 0.5)',
+        'rgba(54, 162, 235, 0.5)',
+        'rgba(255, 206, 86, 0.5)',
+        'rgba(75, 192, 192, 0.5)',
+        'rgba(153, 102, 255, 0.5)',
+        'rgba(255, 159, 64, 0.5)'
+    ]
+    borders = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'
+    ]
+
+    function calculatePoint(i, intervalSize, colorRangeInfo) {
+        var { colorStart, colorEnd, useEndAsStart } = colorRangeInfo;
+        return (useEndAsStart
+            ? (colorEnd - (i * intervalSize))
+            : (colorStart + (i * intervalSize)));
+    }
+
+    function interpolateColors(dataLength, colorScale, colorRangeInfo) {
+        var { colorStart, colorEnd } = colorRangeInfo;
+        var colorRange = colorEnd - colorStart;
+        var intervalSize = colorRange / dataLength;
+        var i, colorPoint;
+        var colorArray = [];
+
+        for (i = 0; i < dataLength; i++) {
+            colorPoint = calculatePoint(i, intervalSize, colorRangeInfo);
+            colorArray.push(colorScale(colorPoint));
+        }
+
+        return colorArray;
+    }
+
     $(document).ready(function () {
         $('#mytable').DataTable();
     });
 </script>
 
+
+
+<script>
+    function createChart(chartId, chartLabel, chartData, colorScale, colorRangeInfo) {
+        /* Grab chart element by id */
+        const chartElement = document.getElementById(chartId);
+
+        const dataLength = chartData.length;
+
+        /* Create color array */
+        var COLORS = interpolateColors(dataLength, colorScale, colorRangeInfo);
+
+
+        /* Create chart */
+        const myChart = new Chart(chartElement, {
+            type: 'doughnut',
+            data: {
+                labels: chartLabel,
+                datasets: [
+                    {
+                        backgroundColor: COLORS,
+                        hoverBackgroundColor: COLORS,
+                        data: chartData
+                    }
+                ],
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    display: true,
+                    position: 'right'
+                },
+
+            }
+        });
+
+        return myChart;
+    }
+    //const colorScale = d3.interpolateInferno;
+    const colorScale = d3.interpolateSpectral
+
+    const colorRangeInfo = {
+        colorStart: 0.1,
+        colorEnd: 0.9,
+        useEndAsStart: false,
+    };
+    createChart('subsidiary', {{ subsidiary_label | js}}, {{ subsidiary_data }}, colorScale, colorRangeInfo)
+    createChart('site', {{ site_label| js}}, {{ site_data }}, colorScale, colorRangeInfo)
+    createChart('field', {{ cat_label| js}}, {{ cat_data }}, colorScale, colorRangeInfo)
+    createChart('state', {{ state_label| js}}, {{ state_data }}, colorScale, colorRangeInfo)
+    createChart('risk', {{ risk_label| js}}, {{ risk_data }}, colorScale, colorRangeInfo)
+    createChart('issues', {{ issue_label| js}}, {{ issue_data }}, colorScale, colorRangeInfo)
+</script>
 {% endblock content %}

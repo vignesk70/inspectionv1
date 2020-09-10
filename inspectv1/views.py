@@ -245,7 +245,8 @@ def GetSites(request):
 
 @csrf_exempt
 def Add(request):
-    print("In Add")
+    if settings.DEBUG:
+        print("In Add")
 
     # return HttpResponse(request.POST['category_id'])
 
@@ -331,7 +332,8 @@ def Add(request):
                     if inspectionmaster:
                         for im in inspectionmaster:
                             master_id = im.id
-                    print("Integrity Error", err)
+                    if settings.DEBUG:
+                        print("Integrity Error", err)
 
         else:
             master_id = request.POST['master_id']
@@ -580,7 +582,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         # get the sites related to the key
         sitesfound = InspectionDetails.objects.filter(
             item_id__errortype=category, master_id__add_date__range=getstartq(self))
-
+        risk = ['None', 'Low', 'Medium', 'High']
         for sites in sitesfound:
             data = {}
             subsidiary = str(sites.master_id.site_id.subsidiary)
@@ -590,7 +592,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             data["dateadd"] = sites.master_id.add_date
             data["category"] = category
             data["itemname"] = sites.item_id.items
-            data["severity"] = sites.item_id.severity
+            data["severity"] = risk[int(sites.item_id.severity)]
             data["state"] = sites.master_id.site_id.state
             data["subsidiary"] = subsidiary[subsidiary.find(
                 "(")+1:subsidiary.find(")")]
@@ -598,21 +600,87 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             sitedata.append(data)
         context["sitedata"] = sitedata
 
+        # get chart issues by site
+        label = []
+        data = []
+
+        # chart data for issues
+        chart_1 = sitesfound.values('item_id__items').annotate(
+            total=Count('item_id')).order_by()
+        for x in chart_1:
+            if settings.DEBUG:
+                print(x['item_id__items'], x['total'])
+            label.append(x['item_id__items'])
+            data.append(x['total'])
+
+        context['issue_label'] = label
+        context['issue_data'] = data
+
+        # chart data for sites
+        label2 = []
+        data2 = []
+        chart_2 = sitesfound.values('master_id__site_id__name').annotate(
+            total=Count('item_id')).order_by()
+        for x in chart_2:
+            if settings.DEBUG:
+                print(x['master_id__site_id__name'], x['total'])
+            label2.append(x['master_id__site_id__name'])
+            data2.append(x['total'])
+        context['site_label'] = label2
+        context['site_data'] = data2
+
+        # chart data for category/field
+        label3 = []
+        data3 = []
+        chart_3 = sitesfound.values('category_id__category').annotate(
+            total=Count('item_id')).order_by()
+        for x in chart_3:
+            if settings.DEBUG:
+                print(x['category_id__category'], x['total'])
+            label3.append(' '.join(x['category_id__category'].split(' ')[1:]))
+            data3.append(x['total'])
+        context['cat_label'] = label3
+        context['cat_data'] = data3
+
+        # chart data for risk
+        label4 = []
+        data4 = []
+        chart_4 = sitesfound.values('item_id__severity').annotate(
+            total=Count('item_id')).order_by()
+        for x in chart_4:
+            if settings.DEBUG:
+                print(x['item_id__severity'], x['total'])
+            label4.append(risk[int(x['item_id__severity'])])
+            data4.append(x['total'])
+        context['risk_label'] = label4
+        context['risk_data'] = data4
+
+        # chart data for state
+        label5 = []
+        data5 = []
+        chart_5 = sitesfound.values('master_id__site_id__state').annotate(
+            total=Count('item_id')).order_by()
+        for x in chart_5:
+            if settings.DEBUG:
+                print(x['master_id__site_id__state'], x['total'])
+            label5.append(x['master_id__site_id__state'])
+            data5.append(x['total'])
+        context['state_label'] = label5
+        context['state_data'] = data5
+
+        # chart data for subsidiary
+        label6 = []
+        data6 = []
+        chart_6 = sitesfound.values('master_id__site_id__subsidiary__name').annotate(
+            total=Count('item_id')).order_by()
+        for x in chart_6:
+            # print(x['master_id__site_id__subsidiary__name'], x['total'])
+            label6.append(x['master_id__site_id__subsidiary__name'])
+            data6.append(x['total'])
+        context['subsidiary_label'] = label6
+        context['subsidiary_data'] = data6
+
         return context
-
-
-''' 
-for sites in siteoutput: 
-    ...:     print(sites.master_id.site_id.name) 
-    ...:     print(sites.master_id.site_id.site_no) 
-    ...:     print(sites.master_id.add_date) 
-    ...:     print(sites.category_id.category) 
-    ...:     print(sites.item_id.items) 
-    ...:     print(sites.item_id.severity) 
-    ...:     print(sites.master_id.site_id.state) 
-    ...:     print(sites.master_id.site_id.subsidiary) 
-    ...:     print(sites.item_id.errortype) 
-'''
 
 
 def getstartq(self, **kwargs):
@@ -705,7 +773,8 @@ class ShowInspectionDetails(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = InspectionCategory.objects.all().select_related()
-        print("masterid", self.kwargs.get('pk', None))
+        if settings.DEBUG:
+            print("masterid", self.kwargs.get('pk', None))
         details = InspectionDetails.objects.filter(
             master_id=self.kwargs.get('pk', None)).select_related()
         siteid = InspectionMaster.objects.filter(

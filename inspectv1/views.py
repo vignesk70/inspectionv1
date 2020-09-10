@@ -412,7 +412,7 @@ class ListSitesForInspector(LoginRequiredMixin, ListView):
 
         listofsites = InspectionMaster.objects.filter(
             user_id=self.request.user.id, add_date__range=getstartq(self)).order_by('-id')
-
+        sitevisited = listofsites.count()
         for sites in listofsites:
             data = {}
             error = {}
@@ -425,6 +425,7 @@ class ListSitesForInspector(LoginRequiredMixin, ListView):
 
             sitedata.append(data)
             data["errors"] = error
+        context['sitevisited'] = sitevisited
         context['headers'] = getERRTYPE()
         context["sitedata"] = sitedata
 

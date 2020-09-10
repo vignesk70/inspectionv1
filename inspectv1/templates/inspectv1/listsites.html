@@ -19,44 +19,45 @@
                             </div>
 
 
+                            <div class="dashtable">
+                                <table id="mytable" class="table display">
 
-                            <table class="table">
+                                    <thead>
 
-                                <thead>
-
-                                    <tr>
-                                        <th> Site Id</th>
-                                        <th>Site Name</th>
-                                        <th>Date Visited</th>
-                                        <!--  {%for x in headers%}
+                                        <tr>
+                                            <th> Site Id</th>
+                                            <th>Site Name</th>
+                                            <th>Date Visited</th>
+                                            <!--  {%for x in headers%}
                                         <th>{{x}}</th>
                                         {%endfor%} -->
 
-                                    </tr>
-                                </thead>
-                                {%if sitedata%}
-                                <tbody>
+                                        </tr>
+                                    </thead>
+                                    {%if sitedata%}
+                                    <tbody>
 
-                                    {% for x in sitedata %}
-                                    <tr>
-                                        <td>{{x.siteno}}</td>
-                                        <td><a href="{%url 'inspectv1:inspectdetail' pk=x.siteid%}">{{x.sitename}}</a>
-                                        </td>
-                                        <td>{{x.siteadd}}</td>
-                                        <!-- {% for y,val in x.errors.items%}
+                                        {% for x in sitedata %}
+                                        <tr>
+                                            <td>{{x.siteno}}</td>
+                                            <td><a
+                                                    href="{%url 'inspectv1:inspectdetail' pk=x.siteid%}">{{x.sitename}}</a>
+                                            </td>
+                                            <td>{{x.siteadd}}</td>
+                                            <!-- {% for y,val in x.errors.items%}
                                         <td>{{val}}</td>
                                         {%endfor%} -->
-                                    </tr>
-                                </tbody>
-                                {%endfor%}
+                                        </tr>
+                                        {%endfor%}
+                                        {%else %}
+                                        <p>No Site Avaiable. </p>
+                                    </tbody>
 
-                            </table>
-                            {%else %}
-                            <p>No Site Avaiable. </p>
-
-
+                                    {%endif%}
+                                </table>
+                            </div>
                         </div>
-                        {%endif%}
+
                     </div>
                 </div>
             </div>
@@ -67,7 +68,11 @@
 
 
 </div>
-
+<script>
+    $(document).ready(function () {
+        $('#mytable').DataTable();
+    });
+</script>
 
 
 {% endblock content %}

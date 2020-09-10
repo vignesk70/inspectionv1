@@ -445,7 +445,7 @@ def getSum(self, errtype):
         details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
                                                          master_id__add_date__range=getstartq(self))
         sum = details.count()
-        distinctsites = details.distinct('master_id__site_id').count()
+        distinctsites = details.distinct('master_id').count()
         try:
             distinctissue = details.distinct('item_id_id').count()
             topissue = details.annotate(countissue=Count(
@@ -596,6 +596,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             category = ' '.join(sites.category_id.category.split(' ')[1:])
             data["name"] = sites.master_id.site_id.name
             data["siteno"] = sites.master_id.site_id.site_no
+            data["masterid"] = sites.master_id
             data["dateadd"] = sites.master_id.add_date
             data["category"] = category
             data["itemname"] = sites.item_id.items

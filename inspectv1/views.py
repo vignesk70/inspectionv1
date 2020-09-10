@@ -435,7 +435,7 @@ def getSum(self, errtype):
     if not errtype == 'NONE':
         # sum = InspectionDetails.objects.all().filter(
         #     master_id=masterid, item_id__errortype=errtype).count()
-        details = InspectionDetails.objects.all().filter(item_id__errortype=errtype,
+        details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
                                                          master_id__add_date__range=getstartq(self))
         sum = details.count()
         distinctsites = details.distinct('master_id').count()
@@ -581,7 +581,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
 
         # get the sites related to the key
         sitesfound = InspectionDetails.objects.filter(
-            item_id__errortype=category, master_id__add_date__range=getstartq(self))
+            item_id__errortype=category, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
         risk = ['None', 'Low', 'Medium', 'High']
         for sites in sitesfound:
             data = {}

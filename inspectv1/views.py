@@ -416,6 +416,9 @@ class ListSitesForInspector(LoginRequiredMixin, ListView):
 
 
 def getERRTYPE():
+    '''
+    Get the list of errorTyples as part of the model for error categories.
+    '''
     list = []
     for x in ItemInCategory.ERRORTYPE:
         if(x[0] != 'NONE'):
@@ -424,6 +427,10 @@ def getERRTYPE():
 
 
 def getCount(masterid, errtype):
+    '''
+    Get the count of issues based on a site visited. 
+    '''
+
     if not errtype == 'NONE':
         count = InspectionDetails.objects.all().filter(
             master_id=masterid, item_id__errortype=errtype).count()
@@ -438,9 +445,9 @@ def getSum(self, errtype):
         details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
                                                          master_id__add_date__range=getstartq(self))
         sum = details.count()
-        distinctsites = details.distinct('master_id').count()
+        distinctsites = details.distinct('master_id__site_id').count()
         try:
-            distinctissue = details.distinct('category_id_id').count()
+            distinctissue = details.distinct('item_id_id').count()
             topissue = details.annotate(countissue=Count(
                 'item_id_id')).order_by('-countissue')[0]
             # print(topissue.item_id.items)

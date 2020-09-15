@@ -25,6 +25,7 @@ from django.db.models import Max, Min, Avg
 from django.urls import reverse_lazy
 from django.db.models import Count
 from django.conf import settings
+import dateutil.relativedelta as delta
 
 
 # Create your views here.
@@ -305,7 +306,7 @@ def Add(request):
         #         user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
         #     master_id = inspectionmaster[0].id
         if request.POST['master_id'] == '':
-            #master_id = 0
+            # master_id = 0
             if 'dateadd' in request.POST:
                 dateadd = request.POST['dateadd']
             # inspectionmaster = InspectionMaster.objects.all().filter(
@@ -447,7 +448,7 @@ def getERRTYPE():
 
 def getCount(masterid, errtype):
     '''
-    Get the count of issues based on a site visited. 
+    Get the count of issues based on a site visited.
     '''
 
     if not errtype == 'NONE':
@@ -461,21 +462,210 @@ def getSum(self, errtype):
     if not errtype == 'NONE':
         # sum = InspectionDetails.objects.all().filter(
         #     master_id=masterid, item_id__errortype=errtype).count()
-        details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
-                                                         master_id__add_date__range=getstartq(self))
-        sum = details.count()
-        distinctsites = details.distinct('master_id').count()
-        try:
-            distinctissue = details.distinct('item_id_id').count()
-            topissue = details.annotate(countissue=Count(
-                'item_id_id')).order_by('-countissue')[0]
-            # print(topissue.item_id.items)
-            topissue = str(topissue.item_id.items)
-        except IndexError:
-            distinctissue = ''
-            topissue = ''
-        return {'sum': sum, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
 
+        if errtype == 'POWER':
+            b1_error_messages = {'BN': 'B-N voltage not within limits - pls report to TNB.',
+                                 'YN': 'Y-N voltage not within limits - pls report to TNB.',
+                                 'RN': 'R-N voltage not within limits - pls report to TNB.'}
+
+            b2_error_messages = {'R': 'Load on R-phase high - pls reduce/rebalance.',
+                                 'Y': 'Load on Y-phase high - pls reduce/rebalance.',
+                                 'B': 'Load on B-phase high - pls reduce/rebalance.'}
+
+            b3_error_messages = {
+                'PF': 'Low p.f. reading - pls rectify to avoid penalty.'}
+            all_errors = [b1_error_messages,
+                          b2_error_messages, b3_error_messages]
+            # register the variables
+            sum = 0
+            distinctsites = set({})
+
+            # issuecount = {key for key in b1_error_messages}
+            issuecount = {}
+            issuetop = []
+            for each in all_errors:
+                for keys in each:
+                    details = InspectionDetails.objects.filter(
+                        master_id__add_date__range=getstartq(self), item_id__items=keys)
+                    if keys in b1_error_messages.keys():
+                        for row in details:
+                            if float(row.item_value) < 216.0 or float(row.item_value) > 253.0:
+                                sum += 1
+                                # print(
+                                #     f"{keys} {row.item_value} - {each[keys]}")
+                                distinctsites.add(row.master_id)
+                                issuecount[keys] = issuecount.get(keys, 0) + 1
+                                issuetop.append(b1_error_messages[keys])
+                    if keys in b2_error_messages:
+                        for row in details:
+                            if float(row.item_value) >= 80:
+                                sum += 1
+                                # print(
+                                #     f"{keys} {row.item_value} - {each[keys]}")
+                                distinctsites.add(row.master_id)
+                                issuecount[keys] = issuecount.get(keys, 0) + 1
+                                issuetop.append(b2_error_messages[keys])
+                    if keys in b3_error_messages:
+                        for row in details:
+                            if float(row.item_value) < 0.85:
+                                sum += 1
+                                # print(
+                                #     f"{keys} {row.item_value} - {each[keys]}")
+                                distinctsites.add(row.master_id)
+                                issuecount[keys] = issuecount.get(keys, 0) + 1
+                                issuetop.append(b3_error_messages[keys])
+                    topissue = max(set(issuetop), key=issuetop.count)
+                    distinctissue = len(issuecount)
+
+            return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+        elif errtype == 'ENGINEERING':
+
+            # item A.3 MSB year of installation - if result > 20 (years), then
+            # MSB age > 20 years. (ENGINEERING, 2)
+            sum = 0
+            distinctsites = set({})
+            issuecount = {}
+            issuetop = []
+            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
+                                                             master_id__add_date__range=getstartq(self))
+            sum = details.count()
+            for each in details:
+                distinctsites.add(each.master_id)
+                issuecount[each.category_id] = issuecount.get(
+                    each.item_id.items, 0) + 1
+                issuetop.append(each.item_id.items)
+            details = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items='MSB year of installation')
+
+            datenow = datetime.now()
+            for each in details:
+                datadate = datetime.strptime(each.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datenow, datadate)
+                if diffdate.years >= 20:
+                    sum += 1
+                    distinctsites.add(each.master_id)
+                    # distinctissue += 1
+                    # distinctsites.add(each.master_id)
+                    issuecount[each.category_id] = issuecount.get(
+                        each.item_id.items, 0) + 1
+                    issuetop.append('MSB age > 20 years')
+            distinctissue = len(issuecount)
+            topissue = max(set(issuetop), key=issuetop.count)
+            return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+        elif errtype == 'STATUTORY':
+
+            sum = 0
+            distinctsites = set({})
+            issuecount = {}
+            issuetop = []
+            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
+                                                             master_id__add_date__range=getstartq(self))
+            sum = details.count()
+            for each in details:
+                distinctsites.add(each.master_id)
+                issuecount[each.category_id] = issuecount.get(
+                    each.item_id.items, 0) + 1
+                issuetop.append(each.item_id.items)
+
+            # item C.4 Due date - if result < 0, then
+            # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
+            datenow = datetime.now()
+            details = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.4')
+            for each in details:
+                datadate = datetime.strptime(
+                    each.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datadate, datenow)
+                if diffdate.days < 0:
+                    sum += 1
+                    distinctsites.add(each.master_id)
+                    # distinctissue += 1
+                    distinctsites.add(each.master_id)
+                    issuecount[each.category_id] = issuecount.get(
+                        each.item_id.items, 0) + 1
+                    issuetop.append(
+                        'MSB relay overdue for calibration - pls arrange.')
+
+            # item c.5 Due date - if result < 0, then
+            # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
+            details = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.5')
+
+            for each in details:
+                datadate = datetime.strptime(
+                    each.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datadate, datenow)
+                if diffdate.days < 0:
+                    sum += 1
+                    distinctsites.add(each.master_id)
+                    # distinctissue += 1
+                    distinctsites.add(each.master_id)
+                    issuecount[each.category_id] = issuecount.get(
+                        each.item_id.items, 0) + 1
+                    issuetop.append(
+                        'Relay overdue for calibration - pls arrange.')
+
+            # item c.10 Due date - if result < 0, then
+            # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
+            details = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.10')
+
+            for each in details:
+                datadate = datetime.strptime(
+                    each.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datadate, datenow)
+                if diffdate.days < 0:
+                    sum += 1
+                    distinctsites.add(each.master_id)
+                    # distinctissue += 1
+                    distinctsites.add(each.master_id)
+                    issuecount[each.category_id] = issuecount.get(
+                        each.item_id.items, 0) + 1
+                    issuetop.append(
+                        'CO2 extinguisher overdue for certification - pls arrange.')
+
+            # item c.17 Due date - if result < 0, then
+            # Genset registration expired - pls renew with ST. (STATUTORY, 3)
+            details = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.17')
+
+            for each in details:
+                datadate = datetime.strptime(
+                    each.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datadate, datenow)
+                if diffdate.days < 0:
+                    sum += 1
+                    distinctsites.add(each.master_id)
+                    # distinctissue += 1
+                    distinctsites.add(each.master_id)
+                    issuecount[each.category_id] = issuecount.get(
+                        each.item_id.items, 0) + 1
+                    issuetop.append(
+                        'Genset registration expired - pls renew with ST.')
+
+            distinctissue = len(issuecount)
+            topissue = max(set(issuetop), key=issuetop.count)
+            return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+        else:
+            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
+                                                             master_id__add_date__range=getstartq(self))
+            sum = details.count()
+            distinctsites = details.distinct('master_id').count()
+            try:
+                distinctissue = details.distinct('item_id_id').count()
+                topissue = details.annotate(countissue=Count(
+                    'item_id_id')).order_by('-countissue')[0]
+                # print(topissue.item_id.items)
+                topissue = str(topissue.item_id.items)
+            except IndexError:
+                distinctissue = ''
+                topissue = ''
+            return {'sum': sum, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
     pass
 
 
@@ -839,3 +1029,10 @@ class TestForm(FormView):
         if form.is_valid():
             print(form)
         return HttpResponseRedirect(reverse_lazy('inspectv1:test'))
+
+
+def PowerDashboardErrors():
+    error_messages = {'BN': 'B-N voltage not within limits - pls report to TNB.',
+                      'YN': 'Y-N voltage not within limits - pls report to TNB.',
+                      'RN': 'R-N voltage not within limits - pls report to TNB.'}
+    data = Inspect

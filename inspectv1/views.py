@@ -21,9 +21,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_list_or_404
 from math import radians, acos, sin, cos
-from django.db.models import Max, Min, Avg
+from django.db.models import Max, Min, Avg, Count, Q, F
 from django.urls import reverse_lazy
-from django.db.models import Count
 from django.conf import settings
 import dateutil.relativedelta as delta
 
@@ -489,7 +488,7 @@ def getSum(self, errtype):
                         master_id__add_date__range=getstartq(self), item_id__items=keys)
                     if keys in b1_error_messages.keys():
                         for row in details:
-                            if float(row.item_value) < 216.0 or float(row.item_value) > 253.0:
+                            if float(row.item_value) < 216 or float(row.item_value) > 253.0:
                                 sum += 1
                                 # print(
                                 #     f"{keys} {row.item_value} - {each[keys]}")
@@ -534,8 +533,9 @@ def getSum(self, errtype):
                 issuecount[each.category_id] = issuecount.get(
                     each.item_id.items, 0) + 1
                 issuetop.append(each.item_id.items)
+
             details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items='MSB year of installation')
+                master_id__add_date__range=getstartq(self), item_id__items__contains='MSB year')
 
             datenow = datetime.now()
             for each in details:
@@ -580,9 +580,9 @@ def getSum(self, errtype):
                     datadate, datenow)
                 if diffdate.days < 0:
                     sum += 1
-                    distinctsites.add(each.master_id)
+                    # distinctsites.add(each.master_id)
                     # distinctissue += 1
-                    distinctsites.add(each.master_id)
+                    distinctsites.add(each.master_id.site_id)
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
@@ -600,9 +600,9 @@ def getSum(self, errtype):
                     datadate, datenow)
                 if diffdate.days < 0:
                     sum += 1
-                    distinctsites.add(each.master_id)
+                    # distinctsites.add(each.master_id)
                     # distinctissue += 1
-                    distinctsites.add(each.master_id)
+                    distinctsites.add(each.master_id.site_id)
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
@@ -620,9 +620,9 @@ def getSum(self, errtype):
                     datadate, datenow)
                 if diffdate.days < 0:
                     sum += 1
-                    distinctsites.add(each.master_id)
+                    # distinctsites.add(each.master_id)
                     # distinctissue += 1
-                    distinctsites.add(each.master_id)
+                    distinctsites.add(each.master_id.site_id)
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
@@ -640,9 +640,9 @@ def getSum(self, errtype):
                     datadate, datenow)
                 if diffdate.days < 0:
                     sum += 1
-                    distinctsites.add(each.master_id)
+                    # distinctsites.add(each.master_id)
                     # distinctissue += 1
-                    distinctsites.add(each.master_id)
+                    distinctsites.add(each.master_id.site_id)
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
@@ -655,7 +655,7 @@ def getSum(self, errtype):
             details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
                                                              master_id__add_date__range=getstartq(self))
             sum = details.count()
-            distinctsites = details.distinct('master_id').count()
+            distinctsites = details.distinct('master_id__site_id').count()
             try:
                 distinctissue = details.distinct('item_id_id').count()
                 topissue = details.annotate(countissue=Count(
@@ -743,19 +743,6 @@ class ShowDashboard(LoginRequiredMixin, FormView):
             add_date__range=getstartq(self)).distinct().count()
         percentcompleted = (countinspected / countofsites) * 100
 
-        # create boxplot get data for a field B.54 KVH
-        categoryitems = InspectionCategory.objects.get(category='B.4 KWH')
-        # print(categoryitems.id)
-        categoryinspected = InspectionDetails.objects.all().select_related().filter(
-            category_id__category='B.4 KWH', item_id__items='KWH')
-        listing = []
-        for item in categoryinspected:
-            listing.append(float(item.item_value))
-
-        # print(categoryinspected.aggregate(Max('item_value')))
-        # print(categoryinspected.aggregate(Min('item_value')))
-        # print(sum(listing) / len(listing))
-
         context["errors"] = error
         context['headers'] = getERRTYPE()
         context['locations'] = locations
@@ -767,18 +754,40 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         return context
 
 
+def addtositedata(sites, *itemname):
+    risk = ['None', 'Low', 'Medium', 'High']
+    data = {}
+    subsidiary = str(sites.master_id.site_id.subsidiary)
+    category = ' '.join(sites.category_id.category.split(' ')[1:])
+    data["name"] = sites.master_id.site_id.name
+    data["siteno"] = sites.master_id.site_id.site_no
+    data["masterid"] = sites.master_id
+    data["dateadd"] = sites.master_id.add_date
+    data["category"] = category
+    if itemname:
+        data["itemname"] = itemname[0]
+    else:
+        data["itemname"] = sites.item_id.items
+    data["severity"] = risk[int(sites.item_id.severity)]
+    data["state"] = sites.master_id.site_id.state
+    data["subsidiary"] = subsidiary[subsidiary.find(
+        "(")+1:subsidiary.find(")")]
+    data["errortype"] = sites.item_id.errortype
+    # sitedata.append(data)
+    return data
+
+
 class ShowDashboardDetails(LoginRequiredMixin, FormView):
     template_name = 'inspectv1/dashboard_2.html'
     form_class = DashboardDateFilterForm
     startdate = None
     enddate = None
 
-    pass
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        category = self.kwargs['key']  # get category of the search
+        checkcategory = self.kwargs['key']  # get category of the search
         sitedata = []
+        risk = ['None', 'Low', 'Medium', 'High']
         # set the datefilters
         try:
             if self.request.GET['start_date']:
@@ -796,39 +805,162 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             context['form'] = form
 
         # get the sites related to the key
-        sitesfound = InspectionDetails.objects.filter(
-            item_id__errortype=category, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
-        risk = ['None', 'Low', 'Medium', 'High']
-        for sites in sitesfound:
-            data = {}
-            subsidiary = str(sites.master_id.site_id.subsidiary)
-            category = ' '.join(sites.category_id.category.split(' ')[1:])
-            data["name"] = sites.master_id.site_id.name
-            data["siteno"] = sites.master_id.site_id.site_no
-            data["masterid"] = sites.master_id
-            data["dateadd"] = sites.master_id.add_date
-            data["category"] = category
-            data["itemname"] = sites.item_id.items
-            data["severity"] = risk[int(sites.item_id.severity)]
-            data["state"] = sites.master_id.site_id.state
-            data["subsidiary"] = subsidiary[subsidiary.find(
-                "(")+1:subsidiary.find(")")]
-            data["errortype"] = sites.item_id.errortype
-            sitedata.append(data)
+        if checkcategory == "POWER":
+            print("power")
+            # filterquery = Q(master_id__add_date__range=getstartq(
+            #     self)) & \
+            #     ((Q(item_id__items__in=['BN', 'RN', 'YN']) & (Q(item_value__lt=216) | Q(item_value__gt=253)))
+            #      | (Q(item_id__items__in=['B', 'Y', 'R']) & Q(item_value__gte=80)))
+            # | (Q(item_id__items__in=['PF']) & Q(item_value__lt=0.85))
+            b1_error_messages = {'BN': 'B-N voltage not within limits - pls report to TNB.',
+                                 'YN': 'Y-N voltage not within limits - pls report to TNB.',
+                                 'RN': 'R-N voltage not within limits - pls report to TNB.'}
+
+            b2_error_messages = {'R': 'Load on R-phase high - pls reduce/rebalance.',
+                                 'Y': 'Load on Y-phase high - pls reduce/rebalance.',
+                                 'B': 'Load on B-phase high - pls reduce/rebalance.'}
+
+            b3_error_messages = {
+                'PF': 'Low p.f. reading - pls rectify to avoid penalty.'}
+            all_errors = [b1_error_messages,
+                          b2_error_messages, b3_error_messages]
+            for each in all_errors:
+                querykey = each.keys()
+                filterquery = Q(master_id__add_date__range=getstartq(
+                    self)) & \
+                    ((Q(item_id__items__in=querykey)))
+                sitesfound = InspectionDetails.objects.filter(filterquery)
+                for sites in sitesfound:
+                    if sites.item_id.items in b2_error_messages.keys():
+                        if float(sites.item_value) > 80:
+                            # print(sites.item_id.items, sites.item_value,
+                            #       sites.master_id.site_id.name)
+                            sitedata.append(addtositedata(sites))
+                    if sites.item_id.items in b1_error_messages.keys():
+                        if float(sites.item_value) < 216 or float(sites.item_value) > 253.0:
+                            # print(sites.item_id.items, sites.item_value,
+                            #       sites.master_id.site_id.name)
+                            sitedata.append(addtositedata(sites))
+                    if sites.item_id.items in b3_error_messages.keys():
+                        if float(sites.item_value) < 0.85:
+                            # print(sites.item_id.items, sites.item_value,
+                            #       sites.master_id.site_id.name)
+                            sitedata.append(addtositedata(sites))
+
+            # data = {}
+            # subsidiary = str(sites.master_id.site_id.subsidiary)
+            # category = ' '.join(sites.category_id.category.split(' ')[1:])
+            # data["name"] = sites.master_id.site_id.name
+            # data["siteno"] = sites.master_id.site_id.site_no
+            # data["masterid"] = sites.master_id
+            # data["dateadd"] = sites.master_id.add_date
+            # data["category"] = category
+            # data["itemname"] = sites.item_id.items
+            # data["severity"] = risk[int(sites.item_id.severity)]
+            # data["state"] = sites.master_id.site_id.state
+            # data["subsidiary"] = subsidiary[subsidiary.find(
+            #     "(")+1:subsidiary.find(")")]
+            # data["errortype"] = sites.item_id.errortype
+            # else:
+            #     sitedata.append(addtositedata(sites))
+        elif checkcategory == 'ENGINEERING':
+            print('engineering')
+            sitesfound = InspectionDetails.objects.filter(
+                item_id__errortype=checkcategory, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+            for sites in sitesfound:
+                sitedata.append(addtositedata(sites))
+
+            # MSB year >20
+            sitesfound = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='MSB year')
+            datenow = datetime.now()
+            for sites in sitesfound:
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datenow, datadate)
+                if diffdate.years >= 20:
+                    sitedata.append(addtositedata(sites, 'MSB age > 20 years'))
+
+        elif checkcategory == 'STATUTORY':
+            print('statutory')
+            sitesfound = InspectionDetails.objects.filter(
+                item_id__errortype=checkcategory, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+            for sites in sitesfound:
+                sitedata.append(addtositedata(sites))
+
+            # # item C.4 Due date - if result < 0, then
+            # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
+            sitesfound = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.4')
+            datenow = datetime.now()
+            for sites in sitesfound:
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datadate, datenow)
+                if diffdate.days < 0:
+                    sitedata.append(addtositedata(
+                        sites, 'MSB relay overdue for calibration - pls arrange.'))
+
+            # item c.5 Due date - if result < 0, then
+            # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
+            sitesfound = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.5')
+            datenow = datetime.now()
+            for sites in sitesfound:
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datadate, datenow)
+                if diffdate.days < 0:
+                    sitedata.append(addtositedata(
+                        sites, 'Relay overdue for calibration - pls arrange.'))
+
+            # item c.10 Due date - if result < 0, then
+            # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
+            sitesfound = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.10')
+            datenow = datetime.now()
+            for sites in sitesfound:
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datadate, datenow)
+                if diffdate.days < 0:
+                    sitedata.append(addtositedata(
+                        sites, 'CO2 extinguisher overdue for certification - pls arrange.'))
+
+            # item c.17 Due date - if result < 0, then
+            # Genset registration expired - pls renew with ST. (STATUTORY, 3)
+            sitesfound = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.17')
+            datenow = datetime.now()
+            for sites in sitesfound:
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
+                diffdate = delta.relativedelta(
+                    datadate, datenow)
+                if diffdate.days < 0:
+                    sitedata.append(addtositedata(
+                        sites, 'Genset registration expired - pls renew with ST.'))
+
+        else:
+            sitesfound = InspectionDetails.objects.filter(
+                item_id__errortype=checkcategory, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+            for sites in sitesfound:
+                sitedata.append(addtositedata(sites))
         context["sitedata"] = sitedata
 
-        # get chart issues by site
+        # chart data for issues
         label = []
         data = []
-
-        # chart data for issues
-        chart_1 = sitesfound.values('item_id__items').annotate(
-            total=Count('item_id')).order_by()
-        for x in chart_1:
-            if settings.DEBUG:
-                print(x['item_id__items'], x['total'])
-            label.append(x['item_id__items'])
-            data.append(x['total'])
+        chart1 = {}
+        # chart_1 = sitesfound.values('item_id__items').annotate(
+        #     total=Count('item_id')).order_by()
+        for item in sitedata:
+            # print(item)
+            chart1[item['itemname']] = chart1.get(item['itemname'], 0)+1
+        for key, val in chart1.items():
+            # if settings.DEBUG:
+            #     print(x['itemname'], x['itemname'].value())
+            label.append(key)
+            data.append(val)
 
         context['issue_label'] = label
         context['issue_data'] = data
@@ -836,64 +968,102 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         # chart data for sites
         label2 = []
         data2 = []
-        chart_2 = sitesfound.values('master_id__site_id__name').annotate(
-            total=Count('item_id')).order_by()
-        for x in chart_2:
-            if settings.DEBUG:
-                print(x['master_id__site_id__name'], x['total'])
-            label2.append(x['master_id__site_id__name'])
-            data2.append(x['total'])
+        chart2 = {}
+        # chart_2 = sitesfound.values('master_id__site_id__name').annotate(
+        #     total=Count('item_id')).order_by()\
+        for item in sitedata:
+            chart2[item['name']] = chart2.get(item['name'], 0)+1
+        for key, val in chart2.items():
+            # if settings.DEBUG:
+            #     print(x['itemname'], x['itemname'].value())
+            label2.append(key)
+            data2.append(val)
+        # for x in chart_2:
+        #     if settings.DEBUG:
+        #         print(x['master_id__site_id__name'], x['total'])
+        #     label2.append(x['master_id__site_id__name'])
+        #     data2.append(x['total'])
         context['site_label'] = label2
         context['site_data'] = data2
 
         # chart data for category/field
         label3 = []
         data3 = []
-        chart_3 = sitesfound.values('category_id__category').annotate(
-            total=Count('item_id')).order_by()
-        for x in chart_3:
-            if settings.DEBUG:
-                print(x['category_id__category'], x['total'])
-            label3.append(' '.join(x['category_id__category'].split(' ')[1:]))
-            data3.append(x['total'])
+        chart3 = {}
+        # chart_3 = sitesfound.values('category_id__category').annotate(
+        #     total=Count('item_id')).order_by()
+        # for x in chart_3:
+        #     if settings.DEBUG:
+        #         print(x['category_id__category'], x['total'])
+        #     label3.append(' '.join(x['category_id__category'].split(' ')[1:]))
+        #     data3.append(x['total'])
+
+        # chart_2 = sitesfound.values('master_id__site_id__name').annotate(
+        #     total=Count('item_id')).order_by()\
+        for item in sitedata:
+            chart3[item['category']] = chart3.get(item['category'], 0)+1
+        for key, val in chart3.items():
+            # if settings.DEBUG:
+            #     print(x['itemname'], x['itemname'].value())
+            label3.append(key)
+            data3.append(val)
         context['cat_label'] = label3
         context['cat_data'] = data3
 
         # chart data for risk
         label4 = []
         data4 = []
-        chart_4 = sitesfound.values('item_id__severity').annotate(
-            total=Count('item_id')).order_by()
-        for x in chart_4:
-            if settings.DEBUG:
-                print(x['item_id__severity'], x['total'])
-            label4.append(risk[int(x['item_id__severity'])])
-            data4.append(x['total'])
+        chart4 = {}
+        # chart_4 = sitesfound.values('item_id__severity').annotate(
+        #     total=Count('item_id')).order_by()
+        # for x in chart_4:
+        #     if settings.DEBUG:
+        #         print(x['item_id__severity'], x['total'])
+        #     label4.append(risk[int(x['item_id__severity'])])
+        #     data4.append(x['total'])
+        for item in sitedata:
+            chart4[item['severity']] = chart4.get(item['severity'], 0)+1
+        for key, val in chart4.items():
+            # if settings.DEBUG:
+            #     print(x['itemname'], x['itemname'].value())
+            label4.append(key)
+            data4.append(val)
         context['risk_label'] = label4
         context['risk_data'] = data4
 
         # chart data for state
         label5 = []
         data5 = []
-        chart_5 = sitesfound.values('master_id__site_id__state').annotate(
-            total=Count('item_id')).order_by()
-        for x in chart_5:
-            if settings.DEBUG:
-                print(x['master_id__site_id__state'], x['total'])
-            label5.append(x['master_id__site_id__state'])
-            data5.append(x['total'])
+        chart5 = {}
+        #
+        for item in sitedata:
+            chart5[item['state']] = chart5.get(item['state'], 0)+1
+        for key, val in chart5.items():
+            # if settings.DEBUG:
+            #     print(x['itemname'], x['itemname'].value())
+            label5.append(key)
+            data5.append(val)
         context['state_label'] = label5
         context['state_data'] = data5
 
         # chart data for subsidiary
         label6 = []
         data6 = []
-        chart_6 = sitesfound.values('master_id__site_id__subsidiary__name').annotate(
-            total=Count('item_id')).order_by()
-        for x in chart_6:
-            # print(x['master_id__site_id__subsidiary__name'], x['total'])
-            label6.append(x['master_id__site_id__subsidiary__name'])
-            data6.append(x['total'])
+        chart6 = {}
+        #
+        for item in sitedata:
+            chart6[item['subsidiary']] = chart6.get(item['subsidiary'], 0)+1
+        for key, val in chart6.items():
+            # if settings.DEBUG:
+            #     print(x['itemname'], x['itemname'].value())
+            label6.append(key)
+            data6.append(val)
+        # chart_6 = sitesfound.values('master_id__site_id__subsidiary__name').annotate(
+        #     total=Count('item_id')).order_by()
+        # for x in chart_6:
+        #     # print(x['master_id__site_id__subsidiary__name'], x['total'])
+        #     label6.append(x['master_id__site_id__subsidiary__name'])
+        #     data6.append(x['total'])
         context['subsidiary_label'] = label6
         context['subsidiary_data'] = data6
 
@@ -1029,10 +1199,3 @@ class TestForm(FormView):
         if form.is_valid():
             print(form)
         return HttpResponseRedirect(reverse_lazy('inspectv1:test'))
-
-
-def PowerDashboardErrors():
-    error_messages = {'BN': 'B-N voltage not within limits - pls report to TNB.',
-                      'YN': 'Y-N voltage not within limits - pls report to TNB.',
-                      'RN': 'R-N voltage not within limits - pls report to TNB.'}
-    data = Inspect

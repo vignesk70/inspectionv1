@@ -213,7 +213,7 @@ def GetCategories(request):
 @csrf_exempt
 def GetSites(request):
     if request.method == 'POST':
-
+        totalsites = 0
         if request.POST.get('siteid', False):
             sites = Sites.objects.all().filter(
                 site_no__contains=request.POST['siteid']).order_by('site_no')
@@ -835,17 +835,20 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                         if float(sites.item_value) > 80:
                             # print(sites.item_id.items, sites.item_value,
                             #       sites.master_id.site_id.name)
-                            sitedata.append(addtositedata(sites))
+                            sitedata.append(addtositedata(
+                                sites, b2_error_messages[sites.item_id.items]))
                     if sites.item_id.items in b1_error_messages.keys():
                         if float(sites.item_value) < 216 or float(sites.item_value) > 253.0:
                             # print(sites.item_id.items, sites.item_value,
                             #       sites.master_id.site_id.name)
-                            sitedata.append(addtositedata(sites))
+                            sitedata.append(addtositedata(
+                                sites, b1_error_messages[sites.item_id.items]))
                     if sites.item_id.items in b3_error_messages.keys():
                         if float(sites.item_value) < 0.85:
                             # print(sites.item_id.items, sites.item_value,
                             #       sites.master_id.site_id.name)
-                            sitedata.append(addtositedata(sites))
+                            sitedata.append(addtositedata(
+                                sites, b3_error_messages[sites.item_id.items]))
 
             # data = {}
             # subsidiary = str(sites.master_id.site_id.subsidiary)

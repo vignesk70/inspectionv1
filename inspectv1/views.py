@@ -25,7 +25,8 @@ from django.db.models import Max, Min, Avg, Count, Q, F
 from django.urls import reverse_lazy
 from django.conf import settings
 import dateutil.relativedelta as delta
-
+from mailmerge import MailMerge
+import io
 
 # Create your views here.
 
@@ -463,16 +464,16 @@ def getSum(self, errtype):
         #     master_id=masterid, item_id__errortype=errtype).count()
 
         if errtype == 'POWER':
-            b1_error_messages = {'BN': 'B-N voltage not within limits - pls report to TNB.',
-                                 'YN': 'Y-N voltage not within limits - pls report to TNB.',
-                                 'RN': 'R-N voltage not within limits - pls report to TNB.'}
+            b1_error_messages = {'BN': 'B-N voltage outside limits - report to TNB/SESB.',
+                                 'YN': 'Y-N voltage outside limits - report to TNB/SESB.',
+                                 'RN': 'R-N voltage outside limits - report to TNB/SESB.'}
 
-            b2_error_messages = {'R': 'Load on R-phase high - pls reduce/rebalance.',
-                                 'Y': 'Load on Y-phase high - pls reduce/rebalance.',
-                                 'B': 'Load on B-phase high - pls reduce/rebalance.'}
+            b2_error_messages = {'R': 'R-phase load high - reduce/rebalance.',
+                                 'Y': 'Y-phase load high - reduce/rebalance.',
+                                 'B': 'B-phase load high - reduce/rebalance.'}
 
             b3_error_messages = {
-                'PF': 'Low p.f. reading - pls rectify to avoid penalty.'}
+                'PF': 'Low PF reading - rectify to avoid penalty.'}
             all_errors = [b1_error_messages,
                           b2_error_messages, b3_error_messages]
             # register the variables
@@ -586,7 +587,7 @@ def getSum(self, errtype):
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
-                        'MSB relay overdue for calibration - pls arrange.')
+                        'MSB relay calibration expired - calibrate ASAP.')
 
             # item c.5 Due date - if result < 0, then
             # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
@@ -606,7 +607,7 @@ def getSum(self, errtype):
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
-                        'Relay overdue for calibration - pls arrange.')
+                        'Relay calibration expired - calibrate ASAP.')
 
             # item c.10 Due date - if result < 0, then
             # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
@@ -626,7 +627,7 @@ def getSum(self, errtype):
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
-                        'CO2 extinguisher overdue for certification - pls arrange.')
+                        'CO2 extinguisher cert. expired - to recertify.')
 
             # item c.17 Due date - if result < 0, then
             # Genset registration expired - pls renew with ST. (STATUTORY, 3)
@@ -646,7 +647,7 @@ def getSum(self, errtype):
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
-                        'Genset registration expired - pls renew with ST.')
+                        'Genset ST registration expired - to renew.')
 
             distinctissue = len(issuecount)
             topissue = max(set(issuetop), key=issuetop.count)
@@ -1202,3 +1203,57 @@ class TestForm(FormView):
         if form.is_valid():
             print(form)
         return HttpResponseRedirect(reverse_lazy('inspectv1:test'))
+
+
+class PrintForm(LoginRequiredMixin, TemplateView):
+
+    template_name = 'inspectv1/test.html'
+
+    def get(self, request, *args, **kwargs):
+        master_id = kwargs['key']
+        template = os.path.join(settings.STATIC_ROOT,
+                                'images/Blank_Form_I_template.docx')
+        data = InspectionDetails.objects.filter(master_id=master_id)
+        inspector = InspectorDetails.objects.get(
+            users=data[0].master_id.user_id)
+
+        address = data[0].master_id.site_id.address
+        certcompetency = inspector.com_lev
+        certnumber = inspector.com_cert
+        inspectiondate = data[0].master_id.add_date.strftime("%d / %m / %Y")
+        inspectorname = inspector.users.first_name+' '+inspector.users.last_name
+        siteaddress = data[0].master_id.site_id.address
+        sitename = data[0].master_id.site_id.name
+        stateauth = data[0].master_id.site_id.stoffice.location
+        sitenum = data[0].master_id.site_id.site_no
+        clientname = data[0].master_id.site_id.subsidiary.name
+        section1issues = 'section1'
+        section2issues = 'section2'
+        section3issues = 'section3'
+
+        document = MailMerge(template)
+
+        document.merge(address=address,
+                       certcompetency=certcompetency,
+                       certnumber=certnumber,
+                       inspectiondate=inspectiondate,
+                       inspectorname=inspectorname,
+                       siteaddress=siteaddress,
+                       sitename=sitename,
+                       stateauth=stateauth,
+                       clientname=clientname,
+                       section1issue=section1issues,
+                       section2issue=section2issues,
+                       section3issue=section3issues)
+        date = datetime.now().strftime("%Y%m%d")
+        filename = 'Form_I_' + str(sitenum) + '_' + date+'.docx'
+        f = io.BytesIO()
+        document.write(f)
+        length = f.tell()
+        f.seek(0)
+        response = HttpResponse(
+            f.getvalue(),
+            content_type='application/vnd.openxmlformats -officedocument.wordprocessingml.document')
+        response['Content-Disposition'] = 'attachment; filename='+filename
+        response['Content-Length'] = length
+        return response

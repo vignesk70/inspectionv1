@@ -24,5 +24,6 @@ urlpatterns = [
     path('test/', views.TestForm.as_view(), name="test"),
     path('dashboarddetails/<key>',
          views.ShowDashboardDetails.as_view(), name='dashdetails'),
+    path('printform/<key>', views.PrintForm.as_view(), name='printform'),
 
 ]

@@ -60,8 +60,9 @@
 
             {% for key, value in errors.items %}
             <div class="col">
-            <div class="card-deck">
-                <div class="card">
+            <div class="card-deck h-100">
+                
+                <div class="card" onclick="location.href='{% url 'inspectv1:dashdetails' key%}'">
                     <div class="card-header {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' %}">
                         <span class="info-box-number">
                             <i class="fa {% cycle 'fa-gavel' 'fa-life-ring' 'fa-wrench' 'fa-cog' 'fa-power-off' %}"
@@ -76,9 +77,9 @@
                         <p class="card-text">Sites: <strong>{{value.ds}}</strong></p>
                         <p class="card-text">Distinct Issue: <strong>{%if value.di %}{{value.di}}{% else %}None{% endif %}</strong></p>
                         <p class="card-text">Top Issue: <strong>{%if value.top %}{{value.top}}{% else %}None{% endif %}</strong></p>
-                        <a name="" id="" class="btn btn-primary" href="{% url 'inspectv1:dashdetails' key%}" role="button">Details</a>
+                        
                     </div>
-                </div>
+                </div> 
                 <!-- <div class="info-box">
                     <span
                         class="info-box-icon {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' %} elevation-1"><i

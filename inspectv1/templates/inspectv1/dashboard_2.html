@@ -125,7 +125,9 @@
                             <tr>
                                 <td>{{x.siteno}}</td>
                                 <td><a href="{%url 'inspectv1:inspectdetail' pk=x.masterid%}">{{x.name}}</a></td>
-                                <td>{{x.dateadd|date:"d/m/Y"}}</td>
+                                <td><span
+                                        style="display: none;">{{x.dateadd|date:"Ymd"}}</span>{{x.dateadd|date:"d/m/Y"}}
+                                </td>
                                 <td>{{x.category}}</td>
                                 <td>{{x.itemname}}</td>
                                 <td>{{x.severity}}</td>

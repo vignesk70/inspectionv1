@@ -73,7 +73,9 @@
                                             <td><a
                                                     href="{%url 'inspectv1:inspectdetail' pk=x.siteid%}">{{x.sitename}}</a>
                                             </td>
-                                            <td>{{x.siteadd|date:"d/m/Y"}}</td>
+                                            <td><span
+                                                    style="display: none;">{{x.siteadd|date:"Ymd"}}</span>{{x.siteadd|date:"d/m/Y"}}
+                                            </td>
 
                                         </tr>
                                         {%endfor%}

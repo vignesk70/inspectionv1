@@ -813,16 +813,16 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             #     ((Q(item_id__items__in=['BN', 'RN', 'YN']) & (Q(item_value__lt=216) | Q(item_value__gt=253)))
             #      | (Q(item_id__items__in=['B', 'Y', 'R']) & Q(item_value__gte=80)))
             # | (Q(item_id__items__in=['PF']) & Q(item_value__lt=0.85))
-            b1_error_messages = {'BN': 'B-N voltage not within limits - pls report to TNB.',
-                                 'YN': 'Y-N voltage not within limits - pls report to TNB.',
-                                 'RN': 'R-N voltage not within limits - pls report to TNB.'}
+            b1_error_messages = {'BN': 'B-N voltage outside limits - report to TNB/SESB.',
+                                 'YN': 'Y-N voltage outside limits - report to TNB/SESB.',
+                                 'RN': 'R-N voltage outside limits - report to TNB/SESB.'}
 
-            b2_error_messages = {'R': 'Load on R-phase high - pls reduce/rebalance.',
-                                 'Y': 'Load on Y-phase high - pls reduce/rebalance.',
-                                 'B': 'Load on B-phase high - pls reduce/rebalance.'}
+            b2_error_messages = {'R': 'R-phase load high - reduce/rebalance.',
+                                 'Y': 'Y-phase load high - reduce/rebalance.',
+                                 'B': 'B-phase load high - reduce/rebalance.'}
 
             b3_error_messages = {
-                'PF': 'Low p.f. reading - pls rectify to avoid penalty.'}
+                'PF': 'Low PF reading - rectify to avoid penalty.'}
             all_errors = [b1_error_messages,
                           b2_error_messages, b3_error_messages]
             for each in all_errors:
@@ -903,7 +903,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                     datadate, datenow)
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
-                        sites, 'MSB relay overdue for calibration - pls arrange.'))
+                        sites, 'MSB relay calibration expired - calibrate ASAP.'))
 
             # item c.5 Due date - if result < 0, then
             # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
@@ -916,7 +916,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                     datadate, datenow)
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
-                        sites, 'Relay overdue for calibration - pls arrange.'))
+                        sites, 'Relay calibration expired - calibrate ASAP.'))
 
             # item c.10 Due date - if result < 0, then
             # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
@@ -929,7 +929,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                     datadate, datenow)
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
-                        sites, 'CO2 extinguisher overdue for certification - pls arrange.'))
+                        sites, 'CO2 extinguisher cert. expired - to recertify.'))
 
             # item c.17 Due date - if result < 0, then
             # Genset registration expired - pls renew with ST. (STATUTORY, 3)
@@ -942,7 +942,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                     datadate, datenow)
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
-                        sites, 'Genset registration expired - pls renew with ST.'))
+                        sites, 'Genset ST registration expired - to renew.'))
 
         else:
             sitesfound = InspectionDetails.objects.filter(

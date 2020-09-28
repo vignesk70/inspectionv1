@@ -502,7 +502,7 @@ def getSum(self, errtype):
                                 sum += 1
                                 # print(
                                 #     f"{keys} {row.item_value} - {each[keys]}")
-                                distinctsites.add(row.master_id)
+                                distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b2_error_messages[keys])
                     if keys in b3_error_messages:
@@ -511,7 +511,7 @@ def getSum(self, errtype):
                                 sum += 1
                                 # print(
                                 #     f"{keys} {row.item_value} - {each[keys]}")
-                                distinctsites.add(row.master_id)
+                                distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b3_error_messages[keys])
                     topissue = max(set(issuetop), key=issuetop.count)
@@ -530,7 +530,7 @@ def getSum(self, errtype):
                                                              master_id__add_date__range=getstartq(self))
             sum = details.count()
             for each in details:
-                distinctsites.add(each.master_id)
+                distinctsites.add(each.master_id.site_id)
                 issuecount[each.category_id] = issuecount.get(
                     each.item_id.items, 0) + 1
                 issuetop.append(each.item_id.items)
@@ -545,7 +545,7 @@ def getSum(self, errtype):
                     datenow, datadate)
                 if diffdate.years >= 20:
                     sum += 1
-                    distinctsites.add(each.master_id)
+                    distinctsites.add(each.master_id.site_id)
                     # distinctissue += 1
                     # distinctsites.add(each.master_id)
                     issuecount[each.category_id] = issuecount.get(
@@ -564,7 +564,7 @@ def getSum(self, errtype):
                                                              master_id__add_date__range=getstartq(self))
             sum = details.count()
             for each in details:
-                distinctsites.add(each.master_id)
+                distinctsites.add(each.master_id.site_id)
                 issuecount[each.category_id] = issuecount.get(
                     each.item_id.items, 0) + 1
                 issuetop.append(each.item_id.items)
@@ -717,8 +717,8 @@ class ShowDashboard(LoginRequiredMixin, FormView):
             form = DashboardDateFilterForm(None, initial=initial_dict)
             context['form'] = form
 
-        listofsites = InspectionMaster.objects.filter(
-            add_date__range=getstartq(self)).select_related().order_by('-id')
+        # listofsites = InspectionMaster.objects.filter(
+        #     add_date__range=getstartq(self)).select_related().order_by('-id')
 
         # variable for location list
         data = {}

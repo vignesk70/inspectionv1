@@ -493,7 +493,7 @@ def getSum(self, errtype):
                                 sum += 1
                                 # print(
                                 #     f"{keys} {row.item_value} - {each[keys]}")
-                                distinctsites.add(row.master_id)
+                                distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b1_error_messages[keys])
                     if keys in b2_error_messages:

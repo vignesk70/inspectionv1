@@ -1,9 +1,9 @@
 import os
 import json
-import array as arr
+# import array as arr
 from datetime import datetime, timedelta
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render #, redirect
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DetailView
 from django import forms
 from .models import *
@@ -652,6 +652,21 @@ def getSum(self, errtype):
             distinctissue = len(issuecount)
             topissue = max(set(issuetop), key=issuetop.count)
             return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+        elif errtype == 'RISK':
+            details = InspectionDetails.objects.all().filter(item_id__severity__gt=0,
+                                                            master_id__add_date__range=getstartq(self))
+            sum = details.count()
+            distinctsites = details.distinct('master_id__site_id').count()
+            try:
+                distinctissue = details.distinct('item_id_id').count()
+                topissue = details.annotate(countissue=Count(
+                    'item_id_id')).order_by('-countissue')[0]
+                # print(topissue.item_id.items)
+                topissue = str(topissue.item_id.items)
+            except IndexError:
+                distinctissue = ''
+                topissue = ''
+            return {'sum': sum, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
         else:
             details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
                                                              master_id__add_date__range=getstartq(self))
@@ -682,17 +697,18 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         form = self.get_form(form_class)
         # context = super().get_context_data(**kwargs)
         # print(context)
-        if 'dates' in request.POST:
-            print("datefilter")
-            print(request.POST['start_date'])
+        # if 'dates' in request.POST:
+        #     print("datefilter")
+        #     print(request.POST['start_date'])
 
-        else:
-            print("filter quarter")
+        # else:
+        #     print("filter quarter")
 
         if form.is_valid():
-            print('xx', form)
+            pass
+            # print('xx', form)
         # context['form']=form
-        return HttpResponse('0')
+            return HttpResponse('0')
 
     def get_context_data(self, **kwargs):
         # form_class = self.get_form_class()
@@ -736,6 +752,9 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         for errors in getERRTYPE():
             error[errors] = getSum(self, errors)
             data["errors"] = error
+        
+        risk = ""
+        error['RISK'] = getSum(self,'RISK')
 
         # get the list of sites inspected
         # get count of sites and get percentage against sites in inspected which have data

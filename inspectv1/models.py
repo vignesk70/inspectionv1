@@ -28,7 +28,7 @@ class ItemInCategory(models.Model):
     FIELDTYPE = (('checkbox', 'CheckBox'),
                  ('text', 'Textfield'), ('number', 'NumberField'), ('date', 'DateField'))
     ERRORTYPE = [('NONE', 'None'), ('STATUTORY', 'Statutory'),
-                 ('SAFETY', 'Safety'), ('ENGINEERING', 'Engineering'), ('OPERATIONS', 'Operations'), ('POWER', 'Power'), ('CORRECTIVE', 'Corrective')]
+                 ('SAFETY', 'Safety'), ('ENGINEERING', 'Engineering'), ('CORRECTIVE', 'Corrective'), ('POWER', 'Power'), ('OPERATIONS', 'Operations') ]
 
     category = models.ForeignKey("InspectionCategory", verbose_name="Category",
                                  on_delete=models.CASCADE, related_name='items', default=3)

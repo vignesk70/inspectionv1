@@ -319,3 +319,7 @@ h5:hover {
   border-radius: 5px;
   padding: 0.5rem;
 }
+
+.card-deck .card:hover {
+  box-shadow: 0 0 10px ffc107;
+}

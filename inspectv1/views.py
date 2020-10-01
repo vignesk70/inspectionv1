@@ -514,7 +514,10 @@ def getSum(self, errtype):
                                 distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b3_error_messages[keys])
-                    topissue = max(set(issuetop), key=issuetop.count)
+                    if len(issuetop)>0:
+                        topissue = max(set(issuetop), key=issuetop.count)
+                    else:
+                        topissue = None
                     distinctissue = len(issuecount)
 
             return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
@@ -552,7 +555,10 @@ def getSum(self, errtype):
                         each.item_id.items, 0) + 1
                     issuetop.append('MSB age > 20 years')
             distinctissue = len(issuecount)
-            topissue = max(set(issuetop), key=issuetop.count)
+            if len(issuetop)>0:
+                topissue = max(set(issuetop), key=issuetop.count)
+            else:
+                topissue = None
             return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
         elif errtype == 'STATUTORY':
 
@@ -650,7 +656,10 @@ def getSum(self, errtype):
                         'Genset ST registration expired - to renew.')
 
             distinctissue = len(issuecount)
-            topissue = max(set(issuetop), key=issuetop.count)
+            if len(issuetop)>0:
+                topissue = max(set(issuetop), key=issuetop.count)
+            else:
+                 topissue = ''  
             return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
         elif errtype == 'RISK':
             details = InspectionDetails.objects.all().filter(item_id__severity__gt=0,
@@ -659,6 +668,7 @@ def getSum(self, errtype):
             distinctsites = details.distinct('master_id__site_id').count()
             try:
                 distinctissue = details.distinct('item_id_id').count()
+                
                 topissue = details.annotate(countissue=Count(
                     'item_id_id')).order_by('-countissue')[0]
                 # print(topissue.item_id.items)
@@ -753,7 +763,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
             error[errors] = getSum(self, errors)
             data["errors"] = error
         
-        risk = ""
+        #get risk errors.
         error['RISK'] = getSum(self,'RISK')
 
         # get the list of sites inspected

@@ -1,110 +1,78 @@
 import os
+import io
 import json
+from math import radians, acos, sin, cos
 # import array as arr
 from datetime import datetime, timedelta
-
-from django.shortcuts import render #, redirect
-from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DetailView
-from django import forms
-from .models import *
-from django.http import HttpResponse, HttpResponseRedirect
-from .forms import *
-from django.contrib import messages
-from django.views.generic.edit import FormView
-from django.views.generic.edit import FormMixin
-from .forms import InspectionData
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
+import dateutil.relativedelta as delta
+from mailmerge import MailMerge
+from django.conf import settings
+from django.http import HttpResponse  # HttpResponseRedirect
+from django.shortcuts import render  # , redirect
+from django.views.generic import TemplateView, ListView, DetailView
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_list_or_404
-from math import radians, acos, sin, cos
-from django.db.models import Max, Min, Avg, Count, Q, F
-from django.urls import reverse_lazy
-from django.conf import settings
-import dateutil.relativedelta as delta
-from mailmerge import MailMerge
-import io
+from django.db.models import Q, Count  # Max, Min, Avg, , ,F
+from django.views.generic.edit import FormView
+from .models import InspectionCategory, InspectionDetails, InspectionMaster,\
+    Sites, ItemInCategory, InspectorDetails
+from .forms import DashboardDateFilterForm, InspectionData
+# from django.contrib import messages
+# from django.views.generic.edit import FormMixin
+# from django.core.files.storage import default_storage
+# from django.core.files.base import ContentFile
+
+# from django.urls import reverse_lazy
+
 
 # Create your views here.
 
 
 class IndexView(TemplateView):
+    '''
+    Display the landing page
+    '''
     template_name = "inspectv1/index.html"
 
 
-class CreateInspectionForm(CreateView):
-    template_name = "inspectv1/inspection.html"
-    form_class = RunInspection
+# class CreateInspectionForm(CreateView):
+#     template_name = "inspectv1/inspection.html"
+#     form_class = RunInspection
 
 
 class ShowInspectionData(ListView):
+    '''
+    Display inspection data
+    '''
     template_name = "inspectv1/updateinspection.html"
     # form_class = InspectionData
 
     context_object_name = 'category'
     queryset = InspectionCategory.objects.all()
 
-    def get_submit_status(self):
-        return "testtest"
-
-    """def get_queryset(self):
-        qs1 = InspectionCategory.objects.all() #your first qs
-        qs2 = InspectedItem.objects.all()  #your second qs
-        # you can add as many qs as you want
-        queryset = sorted(chain(qs1,qs2))
-        return queryset"""
-
-
-"""class ShowInspectionDataText(ListView):
-    template_name = "inspectv1/updateinspectiontest.html"
-    model = Profile
-    form_class=ProfileForm
-    context_object_name = 'category'
-    queryset = InspectionCategory.objects.all()
-
-    def get_object(self):
-        return InspectionCategory.objects.all()
-
-    def get(self, request, *args, **kwargs):
-        # self.object = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        # car_form = CarRegistrationFormSet()
-        # receipt_form = PaymentFormSet()
-        return self.render_to_response(
-            self.get_context_data(form=form)) """
-# def get_queryset(self):
-# user_id = self.request.user.id
-# return Sites.objects.all().filter(user_id_id=user_id).select_related()
-
-# def get_context_data(self, **kwargs):
-# context =  super(SCcheckDetailView, self).get_context_data(**kwargs)
-# context['car'] = Car.objects.get(pk=self.kwargs.get('pk',None))
-# context['member'] = Member.objects.get(id=context['car'].member_id.pk)
-# context_object_name = 'sites'
-# user_id = self.get_user();
-# queryset = Sites.objects.all().filter(user_id_id=user_id).select_related()
-# return context
-
 
 @login_required
 def ShowInspectionDataFun(request):
-
+    '''
+    This is used to display the objects that are to bedisplayed in the
+    checklist
+    '''
     category = InspectionCategory.objects.all().select_related()
 
     my_param = request.GET.get('site')
     if my_param is None:
-        return render(request, 'inspectv1/updateinspection.html', {'category': category})
+        return render(request, 'inspectv1/updateinspection.html',
+                      {'category': category})
 
     # sites = Sites.objects.filter(site_no=request.GET['site'])
     sites = get_list_or_404(Sites, site_no=request.GET['site'])
 
     for site in sites:
         siteid = site.id
-        sitename = site.name
+        # sitename = site.name
 
     inspectionmaster = InspectionMaster.objects.all().filter(
         user_id_id=request.user.id, site_id_id=siteid).select_related()
@@ -114,9 +82,11 @@ def ShowInspectionDataFun(request):
         master_id = im.id
 
     if master_id == "0":
-        return render(request, 'inspectv1/updateinspection.html', {'category': category, 'site_data': sites})
+        return render(request, 'inspectv1/updateinspection.html',
+                      {'category': category, 'site_data': sites})
 
-    # posts = InspectedItem.objects.all().filter(user_id_id=request.user.id, site_id_id = siteid ).select_related()
+    # posts = InspectedItem.objects.all().filter(user_id_id=request.user.id,
+    # site_id_id = siteid ).select_related()
     posts = InspectionDetails.objects.all().filter(
         master_id_id=master_id).select_related()
 
@@ -125,78 +95,24 @@ def ShowInspectionDataFun(request):
             if cat.id == post.category_id_id:
                 cat.filled = 1
 
-        for list in cat.items.all():
+        for lists in cat.items.all():
             # if list.fieldtype == 'checkbox':
             for post in posts:
-                if post.item_id_id == list.id:
+                if post.item_id_id == lists.id:
                     # if post.item_image:
-                    if list.throw_error:
+                    if lists.throw_error:
                         cat.iserror = 1
                     # else:
                     #    cat.iserror = 1
 
-    return render(request, 'inspectv1/updateinspection.html', {'category': category, 'posts': posts, 'site_data': sites})
-
-
-@login_required
-def ShowSiteData(request):
-
-    sites = Sites.objects.all()
-    for site in sites:
-
-        inspectionmaster = InspectionMaster.objects.all().filter(
-            user_id_id=request.user.id, site_id_id=site.id).select_related()
-        master_id = 0
-        for im in inspectionmaster:
-            master_id = im.id
-
-        site.master_id = master_id
-        item_safety = ItemInCategory.objects.filter(
-            errortype="SAFETY").values_list('id', flat=True)
-        site.item_safety = InspectionDetails.objects.distinct("item_id_id").all().filter(
-            master_id_id=master_id,  item_id_id__in=item_safety).select_related().count()
-
-        item_statutory = ItemInCategory.objects.filter(
-            errortype="STATUTORY").values_list('id', flat=True)
-        site.item_statutory = InspectionDetails.objects.distinct("item_id_id").all().filter(
-            master_id_id=master_id, item_id_id__in=item_statutory).select_related().count()
-
-        item_engineering = ItemInCategory.objects.filter(
-            errortype="ENGINEERING").values_list('id', flat=True)
-        site.item_engineering = InspectionDetails.objects.distinct("item_id_id").all().filter(
-            master_id_id=master_id, item_id_id__in=item_engineering).select_related().count()
-
-        item_operations = ItemInCategory.objects.filter(
-            errortype="OPERATIONS").values_list('id', flat=True)
-        site.item_operations = InspectionDetails.objects.distinct("item_id_id").all().filter(
-            master_id_id=master_id, item_id_id__in=item_operations).select_related().count()
-
-        show_site = 0
-        if site.item_safety != 0:
-            show_site = 1
-        elif site.item_statutory != 0:
-            show_site = 1
-        elif site.item_engineering != 0:
-            show_site = 1
-        elif site.item_operations != 0:
-            show_site = 1
-
-        site.show_site = show_site
-
-        # items = InspectedItem.objects.distinct("item_id_id").all().filter(user_id_id=request.user.id, site_id_id = site.id ).select_related()
-        # filleditems = 0
-        # for item in items:
-        #    filleditems += 1
-
-        # site.filleditems = filleditems;
-
-    return render(request, 'inspectv1/sites.html', {'sites': sites, })
+    return render(request, 'inspectv1/updateinspection.html',
+                  {'category': category, 'posts': posts, 'site_data': sites})
 
 
 @csrf_exempt
 def GetCategories(request):
     if request.method == 'POST':
-        sites = Sites.objects.all().filter(site_no=request.POST['siteid'])
+        # sites = Sites.objects.all().filter(site_no=request.POST['siteid'])
         site_count = Sites.objects.all().filter(
             site_no=request.POST['siteid']).count()
         category = InspectionCategory.objects.all()
@@ -205,7 +121,8 @@ def GetCategories(request):
             return HttpResponse(site_count)
         else:
             html = render_to_string(
-                'inspectv1/createsite.html', {'sites': request.POST['siteid'], 'category': category})
+                'inspectv1/createsite.html', {'sites': request.POST['siteid'],
+                                              'category': category})
             return HttpResponse(html)
     else:
         return HttpResponse(0)
@@ -253,27 +170,6 @@ def Add(request):
 
     if request.method == 'POST':
         current_user = request.user
-
-        """image = request.FILES['item_image']
-        image_types = [
-            'image/png', 'image/jpg',
-            'image/jpeg', 'image/pjpeg', 'image/gif'
-        ]
-        if image.content_type not in image_types:
-            data = json.dumps({
-                'status': 405,
-                'error': _('Bad image format.')
-            })
-            return HttpResponse(
-                data, content_type="application/json", status=405)
-
-        tmp_file = os.path.join(settings.MEDIA_ROOT, image.name)
-        path = default_storage.save(tmp_file, ContentFile(image.read()))
-        img_url = os.path.join(settings.MEDIA_URL, path)
-
-        return HttpResponse(request.POST.items())"""
-        # print current_user.id
-        # return HttpResponse(request.FILES)
         sites = Sites.objects.get(site_no=request.POST['site_id'])
         siteid = sites.id
         # for site in sites:
@@ -284,15 +180,18 @@ def Add(request):
         # if 'dateadd' in request.POST:
         #     dateadd = request.POST['dateadd']
         #     # inspectionmaster = InspectionMaster.objects.all().filter(
-        #     #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+        #     #     user_id_id=request.user.id, site_id_id=siteid,
+        # add_date=dateadd).select_related()
         #     inspectionmaster = InspectionMaster.objects.get_or_create(
         #         user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
         # else:
         #     dateadd = None
         #     # inspectionmaster = InspectionMaster.objects.all().filter(
-        #     # user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+        #     # user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+        # .select_related()
         #     inspectionmaster = InspectionMaster.objects.get_or_create(
-        #         user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+        #         user_id_id=request.user.id, site_id_id=siteid,
+        #  add_date=dateadd)
         # # for im in inspectionmaster:
         # #     master_id = im.id
         # master_id = inspectionmaster[0].id
@@ -301,7 +200,8 @@ def Add(request):
         # if 'dateadd' in request.POST:
         #     dateadd = request.POST['dateadd']
         #     # inspectionmaster = InspectionMaster.objects.all().filter(
-        #     #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+        #     #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+        # .select_related()
         #     inspectionmaster = InspectionMaster.objects.get_or_create(
         #         user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
         #     master_id = inspectionmaster[0].id
@@ -310,7 +210,8 @@ def Add(request):
             if 'dateadd' in request.POST:
                 dateadd = request.POST['dateadd']
             # inspectionmaster = InspectionMaster.objects.all().filter(
-            #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd).select_related()
+            #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
+            # .select_related()
                 inspectionmaster = InspectionMaster.objects.filter(
                     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
                 # master_id = inspectionmaster[0].id
@@ -343,9 +244,11 @@ def Add(request):
         inspectDetailObj = InspectionDetails()
         try:
             inspectDetailObj = InspectionDetails.objects.get(
-                master_id_id=master_id, category_id_id=request.POST['category_id'], item_id_id=request.POST['item_id'])
+
+                master_id_id=master_id, category_id_id=request.POST['category_id'],
+                item_id_id=request.POST['item_id'])
             inspectDetailObj.item_value = request.POST['item_value']
-            if bool(request.FILES.get('item_image', False)) == True:
+            if bool(request.FILES.get('item_image', False)):
                 inspectDetailObj.item_image = request.FILES['item_image']
             inspectDetailObj.save()
         except InspectionDetails.DoesNotExist:
@@ -353,7 +256,7 @@ def Add(request):
             inspectDetailObj.category_id_id = request.POST['category_id']
             inspectDetailObj.item_id_id = request.POST['item_id']
             inspectDetailObj.item_value = request.POST['item_value']
-            if bool(request.FILES.get('item_image', False)) == True:
+            if bool(request.FILES.get('item_image', False)):
                 inspectDetailObj.item_image = request.FILES['item_image']
             inspectDetailObj.save()
         # inspectDetailObj.master_id_id = master_id
@@ -368,22 +271,6 @@ def Add(request):
 
     else:
         return HttpResponse("0")
-
-        """inspectObj = InspectedItem()
-
-        inspectObj.category_id_id = request.POST['category_id']
-        inspectObj.site_id_id = siteid
-        inspectObj.user_id_id = current_user.id
-        inspectObj.item_id_id = request.POST['item_id']
-        inspectObj.item_value = request.POST['item_value']
-        if bool(request.FILES.get('item_image', False)) == True:
-            inspectObj.item_image = request.FILES['item_image']
-        inspectObj.save()
-
-        return HttpResponse(request.POST.items())
-
-    else:
-        return HttpResponse("0")  """
 
 
 class ListSitesForInspector(LoginRequiredMixin, ListView):
@@ -439,11 +326,11 @@ def getERRTYPE():
     '''
     Get the list of errorTyples as part of the model for error categories.
     '''
-    list = []
+    lists = []
     for x in ItemInCategory.ERRORTYPE:
-        if(x[0] != 'NONE'):
-            list.append(x[0])
-    return list
+        if x[0] != 'NONE':
+            lists.append(x[0])
+    return lists
 
 
 def getCount(masterid, errtype):
@@ -455,7 +342,6 @@ def getCount(masterid, errtype):
         count = InspectionDetails.objects.all().filter(
             master_id=masterid, item_id__errortype=errtype).count()
         return count
-    pass
 
 
 def getSum(self, errtype):
@@ -477,7 +363,7 @@ def getSum(self, errtype):
             all_errors = [b1_error_messages,
                           b2_error_messages, b3_error_messages]
             # register the variables
-            sum = 0
+            sums = 0
             distinctsites = set({})
 
             # issuecount = {key for key in b1_error_messages}
@@ -490,7 +376,7 @@ def getSum(self, errtype):
                     if keys in b1_error_messages.keys():
                         for row in details:
                             if float(row.item_value) < 216 or float(row.item_value) > 253.0:
-                                sum += 1
+                                sums += 1
                                 # print(
                                 #     f"{keys} {row.item_value} - {each[keys]}")
                                 distinctsites.add(row.master_id.site_id)
@@ -499,7 +385,7 @@ def getSum(self, errtype):
                     if keys in b2_error_messages:
                         for row in details:
                             if float(row.item_value) >= 80:
-                                sum += 1
+                                sums += 1
                                 # print(
                                 #     f"{keys} {row.item_value} - {each[keys]}")
                                 distinctsites.add(row.master_id.site_id)
@@ -508,30 +394,31 @@ def getSum(self, errtype):
                     if keys in b3_error_messages:
                         for row in details:
                             if float(row.item_value) < 0.85:
-                                sum += 1
+                                sums += 1
                                 # print(
                                 #     f"{keys} {row.item_value} - {each[keys]}")
                                 distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b3_error_messages[keys])
-                    if len(issuetop)>0:
+                    if len(issuetop) > 0:
                         topissue = max(set(issuetop), key=issuetop.count)
                     else:
                         topissue = None
                     distinctissue = len(issuecount)
 
-            return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
         elif errtype == 'ENGINEERING':
 
             # item A.3 MSB year of installation - if result > 20 (years), then
             # MSB age > 20 years. (ENGINEERING, 2)
-            sum = 0
+            sums = 0
             distinctsites = set({})
             issuecount = {}
             issuetop = []
-            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
-                                                             master_id__add_date__range=getstartq(self))
-            sum = details.count()
+            details = InspectionDetails.objects.all()\
+                .filter(item_id__errortype=errtype,
+                        item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+            sums = details.count()
             for each in details:
                 distinctsites.add(each.master_id.site_id)
                 issuecount[each.category_id] = issuecount.get(
@@ -547,7 +434,7 @@ def getSum(self, errtype):
                 diffdate = delta.relativedelta(
                     datenow, datadate)
                 if diffdate.years >= 20:
-                    sum += 1
+                    sums += 1
                     distinctsites.add(each.master_id.site_id)
                     # distinctissue += 1
                     # distinctsites.add(each.master_id)
@@ -555,20 +442,21 @@ def getSum(self, errtype):
                         each.item_id.items, 0) + 1
                     issuetop.append('MSB age > 20 years')
             distinctissue = len(issuecount)
-            if len(issuetop)>0:
+            if len(issuetop) > 0:
                 topissue = max(set(issuetop), key=issuetop.count)
             else:
                 topissue = None
-            return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
         elif errtype == 'STATUTORY':
 
-            sum = 0
+            sums = 0
             distinctsites = set({})
             issuecount = {}
             issuetop = []
-            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
-                                                             master_id__add_date__range=getstartq(self))
-            sum = details.count()
+            details = InspectionDetails.objects.all()\
+                .filter(item_id__errortype=errtype, item_id__throw_error=True,
+                        master_id__add_date__range=getstartq(self))
+            sums = details.count()
             for each in details:
                 distinctsites.add(each.master_id.site_id)
                 issuecount[each.category_id] = issuecount.get(
@@ -579,14 +467,15 @@ def getSum(self, errtype):
             # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
             datenow = datetime.now()
             details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.4')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='Due', category_id__category__contains='C.4')
             for each in details:
                 datadate = datetime.strptime(
                     each.item_value, "%Y-%m-%d")
                 diffdate = delta.relativedelta(
                     datadate, datenow)
                 if diffdate.days < 0:
-                    sum += 1
+                    sums += 1
                     # distinctsites.add(each.master_id)
                     # distinctissue += 1
                     distinctsites.add(each.master_id.site_id)
@@ -598,7 +487,8 @@ def getSum(self, errtype):
             # item c.5 Due date - if result < 0, then
             # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
             details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.5')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='Due', category_id__category__contains='C.5')
 
             for each in details:
                 datadate = datetime.strptime(
@@ -606,7 +496,7 @@ def getSum(self, errtype):
                 diffdate = delta.relativedelta(
                     datadate, datenow)
                 if diffdate.days < 0:
-                    sum += 1
+                    sums += 1
                     # distinctsites.add(each.master_id)
                     # distinctissue += 1
                     distinctsites.add(each.master_id.site_id)
@@ -618,7 +508,8 @@ def getSum(self, errtype):
             # item c.10 Due date - if result < 0, then
             # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
             details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.10')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='Due', category_id__category__contains='C.10')
 
             for each in details:
                 datadate = datetime.strptime(
@@ -626,7 +517,7 @@ def getSum(self, errtype):
                 diffdate = delta.relativedelta(
                     datadate, datenow)
                 if diffdate.days < 0:
-                    sum += 1
+                    sums += 1
                     # distinctsites.add(each.master_id)
                     # distinctissue += 1
                     distinctsites.add(each.master_id.site_id)
@@ -638,7 +529,8 @@ def getSum(self, errtype):
             # item c.17 Due date - if result < 0, then
             # Genset registration expired - pls renew with ST. (STATUTORY, 3)
             details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.17')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='Due', category_id__category__contains='C.17')
 
             for each in details:
                 datadate = datetime.strptime(
@@ -646,7 +538,7 @@ def getSum(self, errtype):
                 diffdate = delta.relativedelta(
                     datadate, datenow)
                 if diffdate.days < 0:
-                    sum += 1
+                    sums += 1
                     # distinctsites.add(each.master_id)
                     # distinctissue += 1
                     distinctsites.add(each.master_id.site_id)
@@ -656,19 +548,20 @@ def getSum(self, errtype):
                         'Genset ST registration expired - to renew.')
 
             distinctissue = len(issuecount)
-            if len(issuetop)>0:
+            if len(issuetop) > 0:
                 topissue = max(set(issuetop), key=issuetop.count)
             else:
-                 topissue = ''  
-            return {'sum': sum, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+                topissue = ''
+            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
         elif errtype == 'RISK':
-            details = InspectionDetails.objects.all().filter(item_id__severity__gt=0,
-                                                            master_id__add_date__range=getstartq(self))
-            sum = details.count()
+            details = InspectionDetails.objects.all()\
+                .filter(item_id__severity__gt=0,
+                        master_id__add_date__range=getstartq(self))
+            sums = details.count()
             distinctsites = details.distinct('master_id__site_id').count()
             try:
                 distinctissue = details.distinct('item_id_id').count()
-                
+
                 topissue = details.annotate(countissue=Count(
                     'item_id_id')).order_by('-countissue')[0]
                 # print(topissue.item_id.items)
@@ -676,11 +569,12 @@ def getSum(self, errtype):
             except IndexError:
                 distinctissue = ''
                 topissue = ''
-            return {'sum': sum, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
+            return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
         else:
-            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
-                                                             master_id__add_date__range=getstartq(self))
-            sum = details.count()
+            details = InspectionDetails.objects.all()\
+                .filter(item_id__errortype=errtype, item_id__throw_error=True,
+                        master_id__add_date__range=getstartq(self))
+            sums = details.count()
             distinctsites = details.distinct('master_id__site_id').count()
             try:
                 distinctissue = details.distinct('item_id_id').count()
@@ -691,8 +585,7 @@ def getSum(self, errtype):
             except IndexError:
                 distinctissue = ''
                 topissue = ''
-            return {'sum': sum, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
-    pass
+            return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
 
 
 class ShowDashboard(LoginRequiredMixin, FormView):
@@ -715,9 +608,9 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         #     print("filter quarter")
 
         if form.is_valid():
-            pass
+
             # print('xx', form)
-        # context['form']=form
+            # context['form']=form
             return HttpResponse('0')
 
     def get_context_data(self, **kwargs):
@@ -762,9 +655,9 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         for errors in getERRTYPE():
             error[errors] = getSum(self, errors)
             data["errors"] = error
-        
-        #get risk errors.
-        error['RISK'] = getSum(self,'RISK')
+
+        # get risk errors.
+        error['RISK'] = getSum(self, 'RISK')
 
         # get the list of sites inspected
         # get count of sites and get percentage against sites in inspected which have data
@@ -817,7 +710,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         checkcategory = self.kwargs['key']  # get category of the search
         sitedata = []
-        risk = ['None', 'Low', 'Medium', 'High']
+        # risk = ['None', 'Low', 'Medium', 'High']
         # set the datefilters
         try:
             if self.request.GET['start_date']:
@@ -827,7 +720,6 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                                 'end_date': self.enddate}
                 form = DashboardDateFilterForm(None, initial=initial_dict)
                 context['form'] = form
-
         except:
             initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
                             'end_date': datetime.now().strftime("%Y-%m-%d")}
@@ -837,11 +729,6 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         # get the sites related to the key
         if checkcategory == "POWER":
             print("power")
-            # filterquery = Q(master_id__add_date__range=getstartq(
-            #     self)) & \
-            #     ((Q(item_id__items__in=['BN', 'RN', 'YN']) & (Q(item_value__lt=216) | Q(item_value__gt=253)))
-            #      | (Q(item_id__items__in=['B', 'Y', 'R']) & Q(item_value__gte=80)))
-            # | (Q(item_id__items__in=['PF']) & Q(item_value__lt=0.85))
             b1_error_messages = {'BN': 'B-N voltage outside limits - report to TNB/SESB.',
                                  'YN': 'Y-N voltage outside limits - report to TNB/SESB.',
                                  'RN': 'R-N voltage outside limits - report to TNB/SESB.'}
@@ -899,13 +786,15 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         elif checkcategory == 'ENGINEERING':
             print('engineering')
             sitesfound = InspectionDetails.objects.filter(
-                item_id__errortype=checkcategory, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+                item_id__errortype=checkcategory,
+                item_id__throw_error=True, master_id__add_date__range=getstartq(self))
             for sites in sitesfound:
                 sitedata.append(addtositedata(sites))
 
             # MSB year >20
             sitesfound = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='MSB year')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='MSB year')
             datenow = datetime.now()
             for sites in sitesfound:
                 datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
@@ -917,14 +806,16 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         elif checkcategory == 'STATUTORY':
             print('statutory')
             sitesfound = InspectionDetails.objects.filter(
-                item_id__errortype=checkcategory, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+                item_id__errortype=checkcategory,
+                item_id__throw_error=True, master_id__add_date__range=getstartq(self))
             for sites in sitesfound:
                 sitedata.append(addtositedata(sites))
 
             # # item C.4 Due date - if result < 0, then
             # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
             sitesfound = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.4')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='Due', category_id__category__contains='C.4')
             datenow = datetime.now()
             for sites in sitesfound:
                 datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
@@ -937,7 +828,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             # item c.5 Due date - if result < 0, then
             # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
             sitesfound = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.5')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='Due', category_id__category__contains='C.5')
             datenow = datetime.now()
             for sites in sitesfound:
                 datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
@@ -950,7 +842,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             # item c.10 Due date - if result < 0, then
             # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
             sitesfound = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.10')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='Due', category_id__category__contains='C.10')
             datenow = datetime.now()
             for sites in sitesfound:
                 datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
@@ -963,7 +856,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             # item c.17 Due date - if result < 0, then
             # Genset registration expired - pls renew with ST. (STATUTORY, 3)
             sitesfound = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='Due', category_id__category__contains='C.17')
+                master_id__add_date__range=getstartq(self),
+                item_id__items__contains='Due', category_id__category__contains='C.17')
             datenow = datetime.now()
             for sites in sitesfound:
                 datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
@@ -975,7 +869,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
 
         else:
             sitesfound = InspectionDetails.objects.filter(
-                item_id__errortype=checkcategory, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+                item_id__errortype=checkcategory,
+                item_id__throw_error=True, master_id__add_date__range=getstartq(self))
             for sites in sitesfound:
                 sitedata.append(addtositedata(sites))
         context["sitedata"] = sitedata
@@ -1118,7 +1013,7 @@ def getstartq(self, **kwargs):
             # print(kwargs['startdate'])
             first_date = datetime.strptime(kwargs['startdate'], '%Y-%m-%d')
             last_date = datetime.strptime(kwargs['enddate'], '%Y-%m-%d')
-    if (self.startdate):
+    if self.startdate:
         first_date = self.startdate
         last_date = self.enddate
     return (first_date, last_date)
@@ -1126,7 +1021,7 @@ def getstartq(self, **kwargs):
 
 def get_quarter_dates(year, quarter):
 
-    selected_quarter = quarter
+    # selected_quarter = quarter
     first_date = datetime(year, 3 * quarter - 2, 1)
     last_date = datetime(year, 3 *
                          quarter % 12 + 1, 1) + timedelta(days=-1)
@@ -1166,7 +1061,8 @@ def getNearestSite(request):
                 x = site_dict
                 sorted_x = sorted(x.items(), key=lambda kv: kv[1])
 
-            # print(sorted_x[:3]) #return closest 3 sites. the values from here are to be passed to UI for selection by the inspector
+            # print(sorted_x[:3]) #return closest 3 sites. the values from here are
+            # to be passed to UI for selection by the inspector
             countofsite = 4
             a_dict = [None]*countofsite
             countarr = 0
@@ -1205,12 +1101,12 @@ class ShowInspectionDetails(LoginRequiredMixin, DetailView):
                 if cat.id == post.category_id_id:
                     cat.filled = 1
 
-            for list in cat.items.all():
+            for lists in cat.items.all():
                 # if list.fieldtype == 'checkbox':
                 for post in details:
-                    if post.item_id_id == list.id:
+                    if post.item_id_id == lists.id:
                         # if post.item_image:
-                        if list.throw_error:
+                        if lists.throw_error:
                             cat.iserror = 1
                         # else:
                         #    cat.iserror = 1
@@ -1221,21 +1117,20 @@ class ShowInspectionDetails(LoginRequiredMixin, DetailView):
         return context
 
 
-class TestForm(FormView):
-    template_name = 'inspectv1/test.html'
-    form_class = TestForm
+# class TestForm(FormView):
+#     template_name = 'inspectv1/test.html'
+#     form_class = TestForm
 
-    def post(self, request, *args, **kwargs):
-        print('In post')
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            print(form)
-        return HttpResponseRedirect(reverse_lazy('inspectv1:test'))
+#     def post(self, request, *args, **kwargs):
+#         print('In post')
+#         form_class = self.get_form_class()
+#         form = self.get_form(form_class)
+#         if form.is_valid():
+#             print(form)
+#         return HttpResponseRedirect(reverse_lazy('inspectv1:test'))
 
 
 class PrintForm(LoginRequiredMixin, TemplateView):
-
     template_name = 'inspectv1/test.html'
 
     def get(self, request, *args, **kwargs):

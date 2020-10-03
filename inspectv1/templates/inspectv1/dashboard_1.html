@@ -60,27 +60,31 @@
 
             {% for key, value in errors.items %}
             <div class="col-sm-3 mb-2">
-            <div class="card-deck h-100">
-                
-                <div class="card" onclick="location.href='{% url 'inspectv1:dashdetails' key%}'">
-                    <div class="card-header {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' %}">
-                        <span class="info-box-number">
-                            <i class="fa {% cycle 'fa-gavel' 'fa-life-ring' 'fa-wrench' 'fa-cog' 'fa-power-off' %}"
-                                style='font-size: 1.5rem;'></i>
-                            {{key}}
-                        </span>
+                <div class="card-deck h-100">
 
-                    </div>
-                    <div class="card-body">
+                    <div class="card"
+                        onclick="location.href='{% url 'inspectv1:dashdetails' key %}?start_date={{form.initial.start_date}}&end_date={{form.initial.end_date}}'">
+                        <div
+                            class="card-header {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' %}">
+                            <span class="info-box-number">
+                                <i class="fa {% cycle 'fa-gavel' 'fa-life-ring' 'fa-wrench' 'fa-cog' 'fa-power-off' %}"
+                                    style='font-size: 1.5rem;'></i>
+                                {{key}}
+                            </span>
 
-                        <p class="card-text">Issues: <strong>{{value.sum}}</strong></p>
-                        <p class="card-text">Sites: <strong>{{value.ds}}</strong></p>
-                        <p class="card-text">Distinct Issue: <strong>{%if value.di %}{{value.di}}{% else %}None{% endif %}</strong></p>
-                        <p class="card-text">Top Issue: <strong>{%if value.top %}{{value.top}}{% else %}None{% endif %}</strong></p>
-                        
+                        </div>
+                        <div class="card-body">
+
+                            <p class="card-text">Issues: <strong>{{value.sum}}</strong></p>
+                            <p class="card-text">Sites: <strong>{{value.ds}}</strong></p>
+                            <p class="card-text">Distinct Issue:
+                                <strong>{%if value.di %}{{value.di}}{% else %}None{% endif %}</strong></p>
+                            <p class="card-text">Top Issue:
+                                <strong>{%if value.top %}{{value.top}}{% else %}None{% endif %}</strong></p>
+
+                        </div>
                     </div>
-                </div> 
-                
+
                 </div>
             </div>
             {% endfor %}
@@ -127,33 +131,43 @@
 
                         var map = new google.maps.Map(document.getElementById('map'), {
                             zoom: 7,
-                            center: { lat: 3.323234, lng: 100.851527 }
+                            center: {
+                                lat: 3.323234,
+                                lng: 100.851527
+                            }
                         });
 
                         // Create an array of alphabetical characters used to label the markers.
-                        var labels = {{ names| js}}; //get from django
+                        var labels = {
+                            {
+                                names | js
+                            }
+                        }; //get from django
 
 
-                    // Add some markers to the map.
-                    // Note: The code uses the JavaScript Array.prototype.map() method to
-                    // create an array of markers based on a given "locations" array.
-                    // The map() method here has nothing to do with the Google Maps API.
-                    var markers = locations.map(function (location, i) {
-                        //alert(i + labels[i])
-                        return new google.maps.Marker({
-                            position: location,
-                            title: labels[i % labels.length],
+                        // Add some markers to the map.
+                        // Note: The code uses the JavaScript Array.prototype.map() method to
+                        // create an array of markers based on a given "locations" array.
+                        // The map() method here has nothing to do with the Google Maps API.
+                        var markers = locations.map(function (location, i) {
+                            //alert(i + labels[i])
+                            return new google.maps.Marker({
+                                position: location,
+                                title: labels[i % labels.length],
 
+                            });
                         });
-                    });
 
-                    // Add a marker clusterer to manage the markers.
-                    var markerCluster = new MarkerClusterer(map, markers,
-                        { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });}
-                    var locations = {{ locations | js }}
-
-
-
+                        // Add a marker clusterer to manage the markers.
+                        var markerCluster = new MarkerClusterer(map, markers, {
+                            imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+                        });
+                    }
+                    var locations = {
+                        {
+                            locations | js
+                        }
+                    }
                 </script>
                 <!--Load the API from the specified URL
                     * The async attribute allows the browser to render the page while the API loads
@@ -164,7 +178,7 @@
                 </script>
                 <script async defer
                     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEml-6NZm26rmoaZgPvu-LQpzN4gsNAzA&callback=initMap">
-                    </script>
+                </script>
             </div>
 
 

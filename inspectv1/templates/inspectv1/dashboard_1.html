@@ -138,11 +138,7 @@
                         });
 
                         // Create an array of alphabetical characters used to label the markers.
-                        var labels = {
-                            {
-                                names | js
-                            }
-                        }; //get from django
+                        var labels = {{names | js}}; //get from django
 
 
                         // Add some markers to the map.
@@ -163,11 +159,7 @@
                             imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
                         });
                     }
-                    var locations = {
-                        {
-                            locations | js
-                        }
-                    }
+                    var locations = {{locations | js}}
                 </script>
                 <!--Load the API from the specified URL
                     * The async attribute allows the browser to render the page while the API loads

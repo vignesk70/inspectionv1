@@ -113,8 +113,8 @@ class IntegerInputText(TextInput):
 
 
 class DashboardDateFilterForm(forms.Form):
-    start_date = forms.DateField(widget=DateInputText)
-    end_date = forms.DateField(widget=DateInputText)
+    start_date = forms.DateField(widget=DateInputText, label='View From')
+    end_date = forms.DateField(widget=DateInputText, label='To')
 
 
 class TestForm(forms.Form):

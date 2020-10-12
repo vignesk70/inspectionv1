@@ -453,9 +453,8 @@ def getSum(self, errtype):
             distinctsites = set({})
             issuecount = {}
             issuetop = []
-            details = InspectionDetails.objects.all()\
-                .filter(item_id__errortype=errtype, item_id__throw_error=True,
-                        master_id__add_date__range=getstartq(self))
+            details = InspectionDetails.objects.filter(
+                item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
             sums = details.count()
             for each in details:
                 distinctsites.add(each.master_id.site_id)
@@ -632,7 +631,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
 
         except:
             initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
-                            'end_date': datetime.now().strftime("%Y-%m-%d")}
+                            'end_date': getstartq(self)[1].strftime("%Y-%m-%d")}  # 'end_date': datetime.now().strftime("%Y-%m-%d")
             form = DashboardDateFilterForm(None, initial=initial_dict)
             context['form'] = form
 
@@ -784,7 +783,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             # else:
             #     sitedata.append(addtositedata(sites))
         elif checkcategory == 'ENGINEERING':
-            print('engineering')
+            # print('engineering')
             sitesfound = InspectionDetails.objects.filter(
                 item_id__errortype=checkcategory,
                 item_id__throw_error=True, master_id__add_date__range=getstartq(self))
@@ -867,6 +866,11 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                     sitedata.append(addtositedata(
                         sites, 'Genset ST registration expired - to renew.'))
 
+        elif checkcategory == 'RISK':
+            sitesfound = InspectionDetails.objects.filter(
+                master_id__add_date__range=getstartq(self), item_id__severity__gt=0)
+            for sites in sitesfound:
+                sitedata.append(addtositedata(sites))
         else:
             sitesfound = InspectionDetails.objects.filter(
                 item_id__errortype=checkcategory,
@@ -1003,8 +1007,9 @@ def getstartq(self, **kwargs):
     current_quarter = round(((current_date.month - 1) // 3) + 1)
 
     first_date = datetime(current_date.year, 3 * current_quarter - 2, 1)
-    last_date = datetime(current_date.year, 3 *
-                         current_quarter % 12 + 1, 1) + timedelta(days=-1)
+    # last_date = datetime(current_date.year, 3 *
+    #                      current_quarter % 12 + 1, 1) + timedelta(days=-1)
+    last_date = first_date + delta.relativedelta(months=3, days=-1)
     # print(first_date, last_date)
     # print(self.startdate)
     # print(self.enddate)
@@ -1019,13 +1024,13 @@ def getstartq(self, **kwargs):
     return (first_date, last_date)
 
 
-def get_quarter_dates(year, quarter):
+# def get_quarter_dates(year, quarter):
 
-    # selected_quarter = quarter
-    first_date = datetime(year, 3 * quarter - 2, 1)
-    last_date = datetime(year, 3 *
-                         quarter % 12 + 1, 1) + timedelta(days=-1)
-    return (first_date, last_date)
+#     # selected_quarter = quarter
+#     first_date = datetime(year, 3 * quarter - 2, 1)
+#     last_date = datetime(year, 3 *
+#                          quarter % 12 + 1, 1) + timedelta(days=-1)
+#     return (first_date, last_date)
 
 
 def distance(slat, slon, elat, elon):
@@ -1117,17 +1122,8 @@ class ShowInspectionDetails(LoginRequiredMixin, DetailView):
         return context
 
 
-# class TestForm(FormView):
-#     template_name = 'inspectv1/test.html'
-#     form_class = TestForm
-
-#     def post(self, request, *args, **kwargs):
-#         print('In post')
-#         form_class = self.get_form_class()
-#         form = self.get_form(form_class)
-#         if form.is_valid():
-#             print(form)
-#         return HttpResponseRedirect(reverse_lazy('inspectv1:test'))
+class TestForm(TemplateView):
+    template_name = 'inspectv1/dashboard_2 copy.html'
 
 
 class PrintForm(LoginRequiredMixin, TemplateView):
@@ -1189,3 +1185,17 @@ class PrintForm(LoginRequiredMixin, TemplateView):
         response['Content-Disposition'] = 'attachment; filename='+filename
         response['Content-Length'] = length
         return response
+
+
+@csrf_exempt
+def DisplayIssueDetails(request):
+    if request:
+        print('request:', request)
+        ids = request.POST['id']
+        details = InspectionDetails.objects.filter(master_id=ids)
+        for x in details:
+            print(x.category_id.category.split(' ')[
+                  1], x.item_id.items, x.item_value, x.item_id, x.item_id.errortype, x.item_id.severity)
+        return HttpResponse(json.dumps(details))
+
+    return None

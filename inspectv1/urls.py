@@ -22,10 +22,11 @@ urlpatterns = [
     path('dashboard/', views.ShowDashboard.as_view(), name="dashboard"),
     path('inspectdetail/<int:pk>',
          views.ShowInspectionDetails.as_view(), name='inspectdetail'),
-    #     path('test/', views.TestForm.as_view(), name="test"),
+    path('test/', views.TestForm.as_view(), name="test"),
     path('dashboarddetails/<key>',
          views.ShowDashboardDetails.as_view(), name='dashdetails'),
     path('printform/<key>', views.PrintForm.as_view(), name='printform'),
     #     path('runinspection/', views.CreateInspectionForm.as_view(),
     #          name='runinspectiondata'),
+    path('displayissuedetail/', views.DisplayIssueDetails, name='issuedetails')
 ]

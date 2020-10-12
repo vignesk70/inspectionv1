@@ -28,7 +28,8 @@ class ItemInCategory(models.Model):
     FIELDTYPE = (('checkbox', 'CheckBox'),
                  ('text', 'Textfield'), ('number', 'NumberField'), ('date', 'DateField'))
     ERRORTYPE = [('NONE', 'None'), ('STATUTORY', 'Statutory'),
-                 ('SAFETY', 'Safety'), ('ENGINEERING', 'Engineering'), ('CORRECTIVE', 'Corrective'), ('POWER', 'Power'), ('OPERATIONS', 'Operations') ]
+                 ('SAFETY', 'Safety'), ('ENGINEERING', 'Engineering'),
+                 ('CORRECTIVE', 'Corrective'), ('POWER', 'Power'), ('OPERATIONS', 'Operations')]
 
     category = models.ForeignKey("InspectionCategory", verbose_name="Category",
                                  on_delete=models.CASCADE, related_name='items', default=3)
@@ -188,7 +189,7 @@ class InspectedItem(models.Model):
         verbose_name_plural = "Inspections Result"
 
     def __str__(self):
-        return self.category_id.title
+        return self.item_id.items
 
 
 class InspectItem(models.Model):

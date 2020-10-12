@@ -631,7 +631,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
 
         except:
             initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
-                            'end_date': getstartq(self)[1].strftime("%Y-%m-%d")}  # 'end_date': datetime.now().strftime("%Y-%m-%d")
+                            'end_date': datetime.now().strftime("%Y-%m-%d")}  # 'end_date': datetime.now().strftime("%Y-%m-%d")
             form = DashboardDateFilterForm(None, initial=initial_dict)
             context['form'] = form
 

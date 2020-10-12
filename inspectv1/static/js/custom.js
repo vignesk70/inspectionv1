@@ -25,7 +25,7 @@ $(document).ready(function () {
     //   while (i--) {
 
     //     if (keys[i].indexOf("savedvalues") !== -1) {
-    //       //alert(keys[i]); 
+    //       //alert(keys[i]);
     //       var dataval = localStorage.getItem(keys[i]);
     //       console.log(dataval);
 
@@ -66,8 +66,7 @@ $(document).ready(function () {
 
     // });
 
-  }
-  else {
+  } else {
     online = false;
   }
 
@@ -89,109 +88,103 @@ function myfunction(id) {
 $(document).ready(function () {
   if ($("#siteid").length) {
     $("#siteid").autocomplete({
-      minLength: 0,
-      source: function (request, responce) {
-        var form_data = new FormData();
-        form_data.append("siteid", request.term);
-        key = request.term + "_searchsitesbyid";
-        var dataval = localStorage.getItem(key);
-        if (online) {
-          dataval = null;
-        }
-        else {
-          if (dataval == null) {
-            //alert("You haven't sync the online data, Please try when back online");
-            return false;
+        minLength: 0,
+        source: function (request, responce) {
+          var form_data = new FormData();
+          form_data.append("siteid", request.term);
+          key = request.term + "_searchsitesbyid";
+          var dataval = localStorage.getItem(key);
+          if (online) {
+            dataval = null;
+          } else {
+            if (dataval == null) {
+              //alert("You haven't sync the online data, Please try when back online");
+              return false;
+            }
           }
-        }
-        // alert(dataval);
+          // alert(dataval);
 
-        if (dataval == null) {
-          $.ajax({
-            url: "/getsites/",
-            type: "post",
-            data: form_data,
-            contentType: false,
-            processData: false,
-            success: function (data) {
-              localStorage.setItem(key, data);
-              var obj = JSON.parse(data);
+          if (dataval == null) {
+            $.ajax({
+              url: "/getsites/",
+              type: "post",
+              data: form_data,
+              contentType: false,
+              processData: false,
+              success: function (data) {
+                localStorage.setItem(key, data);
+                var obj = JSON.parse(data);
 
-              if (obj.length != 0) {
-                var output = [];
-                for (index = 0; index < obj.length; index++) {
-                  var newstring = {
-                    label: obj[index][0],
-                    value: obj[index][1],
-                    desc: obj[index][2],
-                  };
+                if (obj.length != 0) {
+                  var output = [];
+                  for (index = 0; index < obj.length; index++) {
+                    var newstring = {
+                      label: obj[index][0],
+                      value: obj[index][1],
+                      desc: obj[index][2],
+                    };
 
-                  output[output.length] = newstring;
-                }
+                    output[output.length] = newstring;
+                  }
 
-                responce(output);
-              } else {
-                var result = [
-                  {
+                  responce(output);
+                } else {
+                  var result = [{
                     label: 0,
                     value: 0,
                     desc: "No matches found",
-                  },
-                ];
-                responce(result);
-              }
-            },
-          });
-        }
-        else {
-
-          data = dataval;
-          var obj = JSON.parse(data);
-
-          if (obj.length != 0) {
-            var output = [];
-            for (index = 0; index < obj.length; index++) {
-              var newstring = {
-                label: obj[index][0],
-                value: obj[index][1],
-                desc: obj[index][2],
-              };
-
-              output[output.length] = newstring;
-            }
-
-            console.log(output);
-            responce(output);
+                  }, ];
+                  responce(result);
+                }
+              },
+            });
           } else {
-            var result = [
-              {
+
+            data = dataval;
+            var obj = JSON.parse(data);
+
+            if (obj.length != 0) {
+              var output = [];
+              for (index = 0; index < obj.length; index++) {
+                var newstring = {
+                  label: obj[index][0],
+                  value: obj[index][1],
+                  desc: obj[index][2],
+                };
+
+                output[output.length] = newstring;
+              }
+
+              console.log(output);
+              responce(output);
+            } else {
+              var result = [{
                 label: 0,
                 value: 0,
                 desc: "No matches found",
-              },
-            ];
-            responce(result);
+              }, ];
+              responce(result);
 
 
 
+            }
           }
-        }
 
-      },
-      focus: function (event, ui) {
-        //$( "#siteid" ).val( ui.item.label );
-        return false;
-      },
-      select: function (event, ui) {
-        if (ui.item.value == 0) {
+        },
+        focus: function (event, ui) {
+          //$( "#siteid" ).val( ui.item.label );
           return false;
-        }
-        $("#siteid").val(ui.item.label);
-        $("#sitename").val(ui.item.value);
+        },
+        select: function (event, ui) {
+          if (ui.item.value == 0) {
+            return false;
+          }
+          $("#siteid").val(ui.item.label);
+          $("#sitename").val(ui.item.value);
 
-        return false;
-      },
-    })
+          return false;
+        },
+      })
       .autocomplete("instance")._renderItem = function (ul, item) {
         return $("<li>")
           .append("<div>" + item.desc + "</div>")
@@ -233,13 +226,11 @@ $(document).ready(function () {
                   console.log(output);
                   responce(output);
                 } else {
-                  var result = [
-                    {
-                      label: 0,
-                      value: 0,
-                      desc: "No matches found",
-                    },
-                  ];
+                  var result = [{
+                    label: 0,
+                    value: 0,
+                    desc: "No matches found",
+                  }, ];
                   responce(result);
                 }
               },
@@ -262,13 +253,11 @@ $(document).ready(function () {
               console.log(output);
               responce(output);
             } else {
-              var result = [
-                {
-                  label: 0,
-                  value: 0,
-                  desc: "No matches found",
-                },
-              ];
+              var result = [{
+                label: 0,
+                value: 0,
+                desc: "No matches found",
+              }, ];
               responce(result);
             }
 
@@ -369,7 +358,9 @@ $("document").ready(function () {
             }
             console.log('arr', arr);
             console.log("form data", form_data)
-            var msg = { 'form_data': form_data }
+            var msg = {
+              'form_data': form_data
+            }
 
             // console.log(arr);
             // console.log("-----");
@@ -411,9 +402,9 @@ $("document").ready(function () {
                     /* } else {
                       $("#card_header_" + category_id + " .badge").addClass("badge-success");
             $("#card_header_" + category_id + " .badge").removeClass("badge-primary");
-              
+
             $("#card_header_" + category_id + " .fa").addClass("fa-check-square");
-                      $("#card_header_" + category_id + " .fa").removeClass("fa-question");  
+                      $("#card_header_" + category_id + " .fa").removeClass("fa-question");
                     } */
                   } else {
                     $("#card_header_" + category_id + " .badge").removeClass("badge-warning")
@@ -440,8 +431,7 @@ $("document").ready(function () {
                 },
               });
 
-            }
-            else {
+            } else {
               //key = site_id + '--' + category_id + '--' + itemid + '_savedvalues';
               //$(showcard(category_id));
               $("#card_header_" + category_id + " .badge").addClass(
@@ -498,8 +488,7 @@ function updatedata() {
         }
       },
     });
-  }
-  else {
+  } else {
     $(".createsiteclass").html(data);
   }
 
@@ -540,50 +529,49 @@ function geolocate() {
     var form_data = new FormData();
     form_data.append("slat", slat);
     form_data.append("slon", slon);
-    $.ajax(
-      {
-        url: "/getnearestsite/",
-        type: "post",
-        data: form_data,
-        contentType: false,
-        processData: false,
-        success: function (data) {
-          var obj = JSON.parse(data)
-          //alert(obj)
-          if (obj.length != 0) {
-            var output = [];
-            for (index = 0; index < obj.length; index++) {
-              var newstring = {
-                label: obj[index][0],
-                value: obj[index][1],
-                desc: obj[index][2],
-              };
+    $.ajax({
+      url: "/getnearestsite/",
+      type: "post",
+      data: form_data,
+      contentType: false,
+      processData: false,
+      success: function (data) {
+        var obj = JSON.parse(data)
+        //alert(obj)
+        if (obj.length != 0) {
+          var output = [];
+          for (index = 0; index < obj.length; index++) {
+            var newstring = {
+              label: obj[index][0],
+              value: obj[index][1],
+              desc: obj[index][2],
+            };
 
-              output[output.length] = newstring;
-            }
-            console.log(output);
-            //alert(obj);
-            //jQuery('#locate').append('<select id="' + output.label + '"></select>');
-            var create = '<select id="test" class="form-control"> <option>-Select one- </option>';
-            for (var i = 0; i < output.length; i++) {
-              create += '<option name="' + output[i].value + '" value="' + output[i].label + '">' + output[i].desc + '</option>';
+            output[output.length] = newstring;
+          }
+          console.log(output);
+          //alert(obj);
+          //jQuery('#locate').append('<select id="' + output.label + '"></select>');
+          var create = '<select id="test" class="form-control"> <option>-Select one- </option>';
+          for (var i = 0; i < output.length; i++) {
+            create += '<option name="' + output[i].value + '" value="' + output[i].label + '">' + output[i].desc + '</option>';
 
-            }
-            create += '</select>'
-            $('#locate').append(create)
-            $('#test').change(function () {
-              var val = $(this).find('option:selected').val();
-              var siten = $(this).find('option:selected[name]').text().split('-')
-              //alert(siten[1])
-              //alert('i selected: ' + val);
-              $('#siteid').val(val);
-              $('#sitename').val(siten[1]);
-              $('#test').remove();
+          }
+          create += '</select>'
+          $('#locate').append(create)
+          $('#test').change(function () {
+            var val = $(this).find('option:selected').val();
+            var siten = $(this).find('option:selected[name]').text().split('-')
+            //alert(siten[1])
+            //alert('i selected: ' + val);
+            $('#siteid').val(val);
+            $('#sitename').val(siten[1]);
+            $('#test').remove();
 
-            });
-          };
-        }
-      });
+          });
+        };
+      }
+    });
 
 
 
@@ -615,6 +603,7 @@ function processFile(siteKey, file, arr, form_data) {
   form_data.append("item_type", file.type);
   //convertFileToBase64(siteKey, file, arr, file.type);
 }
+
 function convertFileToBase64(siteKey, file, arr, filetype) {
   // encode the file using the FileReader API
   const reader = new FileReader();
@@ -678,7 +667,9 @@ function saveToLocalStorage(key, arr) {
   var dataval = localStorage.getItem(key);
   if (dataval == null) {
     localStorage.setItem(key, JSON.stringify(arr));
-  } else { localStorage.setItem(key, JSON.stringify(arr)); }
+  } else {
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
 }
 
 const DB_NAME = 'images_db';
@@ -704,7 +695,9 @@ function opendb() {
   req.onupgradeneeded = function (evt) {
     console.log("openDb upgrade needed");
     var store = evt.currentTarget.result.createObjectStore(
-      DB_STORE_NAME, { keyPath: 'sitekey' });
+      DB_STORE_NAME, {
+        keyPath: 'sitekey'
+      });
   };
 }
 
@@ -718,7 +711,11 @@ function getObjectStore(store_name, mode) {
 function addToDb(key, arr, file) {
 
   console.log("addfile arguments:", arguments);
-  obj = { sitekey: key, payload: arr, blob: file };
+  obj = {
+    sitekey: key,
+    payload: arr,
+    blob: file
+  };
   var store = getObjectStore(DB_STORE_NAME, "readwrite");
   var req;
   try {
@@ -813,5 +810,21 @@ function readItemfromDB() {
 
 };
 
+function getissuedetails(id) {
+  alert('called function with value' + id)
+  var form_data = new FormData();
+  form_data.append("id", id);
+  $.ajax({
+    url: "/displayissuedetail/",
+    type: "post",
+    data: form_data,
+    contentType: false,
+    processData: false,
+    success: function (data) {
+      var obj = JSON.parse(data)
+      alert(obj)
+    }
+  });
 
+};
 opendb()

@@ -106,7 +106,30 @@
         </div>
     </div>
 </section> {% endcomment %}
+<!-- Section for Risks -->
+<section class='risks'>
+    <div class="container">
+        <h5 class='page-title'>Risk</h5>
 
+        <div class="riskitems">
+            <div class="row">
+                <div class="col-sm">
+                    <p class=" ml-2 mt-2 inline"><strong>{{RISK.sum}}</strong> issues</p>
+                    <p class=" ml-2 inline"><strong>{{RISK.ds}} </strong>sites</p>
+
+                </div>
+                <div class="col-sm">
+                    <p class=" ml-2"><strong>{%if RISK.di %}{{RISK.di}}{% else %}0{% endif %}</strong>
+                        distinct issues</p>
+                    <p class=" ml-2 mb-2" style="line-height: 1.3rem; font-size:small"><em>Top Issue</em><br>
+                        <strong>{%if RISK.top %}{{RISK.top}}{% else %}None{% endif %}</strong></p>
+                </div>
+
+            </div>
+        </div>
+</section>
+
+<!-- end section for risk-->
 <!--Section for map -->
 <style>
     /* Always set the map height explicitly to define the size of the div
@@ -141,6 +164,7 @@
                         var labels = {{names | js}}; //get from django
 
 
+
                         // Add some markers to the map.
                         // Note: The code uses the JavaScript Array.prototype.map() method to
                         // create an array of markers based on a given "locations" array.
@@ -159,8 +183,7 @@
                             imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
                         });
                     }
-                    var locations = {{locations | js}}
-                </script>
+                    var locations = {{locations | js}}                </script>
                 <!--Load the API from the specified URL
                     * The async attribute allows the browser to render the page while the API loads
                     * The key parameter will contain your own API key (which is not needed for this tutorial)

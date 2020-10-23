@@ -28,5 +28,6 @@ urlpatterns = [
     path('printform/<key>', views.PrintForm.as_view(), name='printform'),
     #     path('runinspection/', views.CreateInspectionForm.as_view(),
     #          name='runinspectiondata'),
-    path('displayissuedetail/', views.DisplayIssueDetails, name='issuedetails')
+    path('displayissuedetail/', views.DisplayIssueDetails, name='issuedetails'),
+    path('dashdetails/<int:pk>', views.ShowInspectionDashboardTypeDetails.as_view(), name='dash2detail')
 ]

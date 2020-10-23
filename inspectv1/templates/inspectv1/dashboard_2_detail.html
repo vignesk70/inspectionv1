@@ -1,0 +1,252 @@
+{% extends 'inspectv1/base.html' %}
+{% load custom_template_tag %}
+{% load bootstrap4%}
+{%load static%}
+{% block content %}
+
+
+
+<!--Section for charts based on previous selection-->
+
+
+<!--Section for table listing of all sites and issues -->
+<section class="sitesvisited">
+    <div class="container mb-2">
+        <div class="row">
+            <div class="col">
+                {{sitedata.0.siteno}}
+            </div>
+            <div class="col">
+
+                {{sitedata.0.name}}
+            </div>
+            <div class="col">
+                {{sitedata.0.state}}({{sitedata.0.subsidiary}})
+            </div>
+            <div class="col">
+                {{sitedata.0.dateadd}}
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="dashtable">
+                    <table id="mytable" class="table  display">
+
+                        <thead>
+
+                            <tr>
+                                <th>Field</th>
+                                <th>Issue</th>
+                                <th>Value</th>
+                                <th>Category</th>
+                                <th>Risk</th>
+                            </tr>
+                        </thead>
+                        {%if sitedata%}
+                        <tbody>
+
+                            {% for x in sitedata %}
+                            <tr>
+
+                                <td>{{x.category}}</td>
+                                <td>{{x.itemname}}</td>
+                                <td>{{x.itemvalue}}</td>
+                                <td>{{x.errortype}}</td>
+                                <td>{{x.severity}}</td>
+
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+
+                        {%endif%}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section to display the modal dialog for clicking on Details -->
+<section class="modaldisplay">
+    <div class="container-fluid">
+        <div class="modal fade" id="SiteDetailModalCenter" tabindex="-1" role="dialog"
+            aria-labelledby="SiteDetailModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="SiteDetailModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        This is where table goes - need to add org and paging
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+<script src="https://d3js.org/d3-color.v1.min.js"></script>
+<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script>
+    background = [
+        'rgba(255, 99, 132, 0.5)',
+        'rgba(54, 162, 235, 0.5)',
+        'rgba(255, 206, 86, 0.5)',
+        'rgba(75, 192, 192, 0.5)',
+        'rgba(153, 102, 255, 0.5)',
+        'rgba(255, 159, 64, 0.5)'
+    ]
+    borders = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'
+    ]
+
+    function calculatePoint(i, intervalSize, colorRangeInfo) {
+        var {
+            colorStart,
+            colorEnd,
+            useEndAsStart
+        } = colorRangeInfo;
+        return (useEndAsStart ?
+            (colorEnd - (i * intervalSize)) :
+            (colorStart + (i * intervalSize)));
+    }
+
+    function interpolateColors(dataLength, colorScale, colorRangeInfo) {
+        var {
+            colorStart,
+            colorEnd
+        } = colorRangeInfo;
+        var colorRange = colorEnd - colorStart;
+        var intervalSize = colorRange / dataLength;
+        var i, colorPoint;
+        var colorArray = [];
+
+        for (i = 0; i < dataLength; i++) {
+            colorPoint = calculatePoint(i, intervalSize, colorRangeInfo);
+            colorArray.push(colorScale(colorPoint));
+        }
+
+        return colorArray;
+    }
+
+    $(document).ready(function () {
+        $('#mytable').DataTable();
+    });
+</script>
+
+
+
+<script>
+    function createChart(chartId, chartLabel, chartData, colorScale, colorRangeInfo) {
+        /* Grab chart element by id */
+        const chartElement = document.getElementById(chartId);
+
+        const dataLength = chartData.length;
+
+        /* Create color array */
+        var COLORS = interpolateColors(dataLength, colorScale, colorRangeInfo);
+
+
+        /* Create chart */
+        const myChart = new Chart(chartElement, {
+            type: 'doughnut',
+            data: {
+                labels: chartLabel,
+                datasets: [{
+                    backgroundColor: COLORS,
+                    hoverBackgroundColor: COLORS,
+                    data: chartData
+                }],
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                },
+
+            }
+        });
+
+        return myChart;
+    }
+    //const colorScale = d3.interpolateInferno;
+    const colorScale = d3.interpolateSpectral
+
+    const colorRangeInfo = {
+        colorStart: 0.1,
+        colorEnd: 0.9,
+        useEndAsStart: false,
+    };
+    createChart('subsidiary', {
+            {
+                subsidiary_label | js
+            }
+        }, {
+            {
+                subsidiary_data
+            }
+        }, colorScale, colorRangeInfo) <
+        !--createChart('site', {
+            {
+                site_label | js
+            }
+        }, {
+            {
+                site_data
+            }
+        }, colorScale, colorRangeInfo) -- >
+        createChart('field', {
+            {
+                cat_label | js
+            }
+        }, {
+            {
+                cat_data
+            }
+        }, colorScale, colorRangeInfo)
+    createChart('state', {
+        {
+            state_label | js
+        }
+    }, {
+        {
+            state_data
+        }
+    }, colorScale, colorRangeInfo)
+    createChart('risk', {
+        {
+            risk_label | js
+        }
+    }, {
+        {
+            risk_data
+        }
+    }, colorScale, colorRangeInfo)
+    createChart('issues', {
+        {
+            issue_label | js
+        }
+    }, {
+        {
+            issue_data
+        }
+    }, colorScale, colorRangeInfo)
+</script>
+{% endblock content %}

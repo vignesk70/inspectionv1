@@ -1,12 +1,12 @@
 body {
-  background-color: rgba(0, 0, 0, 0.76) !important;
+  background-color: rgba(176, 196, 222) !important;
   font-family: "Open Sans", sans-serif;
   background-image: url(/static/images/background-photo.jpg);
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
   background-repeat: no-repeat;
-  background-blend-mode: multiply;
+  background-blend-mode: screen;
 }
 
 .first {
@@ -70,6 +70,11 @@ li .nocircle {
 
 .card {
   background-clip: content-box !important;
+  border: none !important;
+}
+
+.card-body:hover {
+  color: #0018A8;
 }
 
 .card-header {
@@ -199,12 +204,13 @@ h5:hover {
 .form-control {
   border: 0px !important;
   border-radius: 0px !important;
-  border-bottom: 2px solid rgba(0, 123, 255, 0.5) !important;
+  border: 1px solid rgba(169, 169, 169) !important;
   margin-bottom: 0.5rem;
+  cursor: pointer;
 }
 
 .page-title {
-  color: white !important;
+  color: #2F4F4F !important;
 }
 
 .sitesvisited,
@@ -214,7 +220,7 @@ h5:hover {
 .maps {
   margin-top: 10px;
   margin-bottom: 20px;
-  background-color: #92929273;
+  background-color: #94a0b073;
   padding-top: 10px;
   padding-bottom: 10px;
 }
@@ -279,12 +285,13 @@ h5:hover {
   transition: width 0.6s ease;
 }
 
+/*
 .progress,
 .progress>.progress-bar,
 .progress .progress-bar,
 .progress>.progress-bar .progress-bar {
   border-radius: 1px;
-}
+}*/
 
 .progress,
 .progress>.progress-bar {
@@ -297,11 +304,19 @@ h5:hover {
   background-color: #00a65a;
 }
 
-.progress,
+.progress {
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+  height: 0.5rem !important;
+  /*background: #696969 !important;*/
+  /*border: 1px solid #696969;*/
+}
+
 .progress>.progress-bar,
 .progress .progress-bar,
 .progress>.progress-bar .progress-bar {
-  border-radius: 1px;
+
+  background: #1E90FF !important;
 }
 
 .progress-group .progress-number {
@@ -310,15 +325,16 @@ h5:hover {
 
 .progress-group .progress-text {
   font-weight: 600;
-  color: white;
+  color: #2F4F4F;
 }
 
 .progress-number {
-  color: white;
+  color: #2F4F4F;
 }
 
 .datefilters label {
-  color: white !important;
+  font-weight: 600;
+  color: #2F4F4F !important;
 }
 
 .datefilters a {
@@ -338,7 +354,7 @@ h5:hover {
 }
 
 .card-deck .card:hover {
-  box-shadow: 0 0 10px #ffc107;
+  box-shadow: 0 0 10px #323245;
   cursor: pointer;
 }
 
@@ -348,4 +364,17 @@ h5:hover {
 
 .bg-risk {
   background-color: #ff8c00 !important;
+}
+
+.riskitems {
+  background-color: white;
+  width: 100%;
+}
+
+.risks {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  background-color: #94a0b073;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }

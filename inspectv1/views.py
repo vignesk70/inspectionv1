@@ -3,7 +3,7 @@ import io
 import json
 from math import radians, acos, sin, cos
 # import array as arr
-from datetime import datetime, timedelta
+from datetime import datetime
 import dateutil.relativedelta as delta
 from mailmerge import MailMerge
 from django.conf import settings
@@ -369,6 +369,7 @@ def getSum(self, errtype):
             # issuecount = {key for key in b1_error_messages}
             issuecount = {}
             issuetop = []
+            riskids = []
             for each in all_errors:
                 for keys in each:
                     details = InspectionDetails.objects.filter(
@@ -382,6 +383,8 @@ def getSum(self, errtype):
                                 distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b1_error_messages[keys])
+                                riskids.append([row.master_id.site_id.id, row.item_id.id,
+                                                row.item_id.severity, issuetop[-1]])
                     if keys in b2_error_messages:
                         for row in details:
                             if float(row.item_value) >= 80:
@@ -391,6 +394,8 @@ def getSum(self, errtype):
                                 distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b2_error_messages[keys])
+                                riskids.append([row.master_id.site_id.id, row.item_id.id,
+                                                row.item_id.severity, issuetop[-1]])
                     if keys in b3_error_messages:
                         for row in details:
                             if float(row.item_value) < 0.85:
@@ -400,13 +405,15 @@ def getSum(self, errtype):
                                 distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b3_error_messages[keys])
+                                riskids.append([row.master_id.site_id.id, row.item_id.id,
+                                                row.item_id.severity, issuetop[-1]])
                     if len(issuetop) > 0:
                         topissue = max(set(issuetop), key=issuetop.count)
                     else:
                         topissue = None
                     distinctissue = len(issuecount)
 
-            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
         elif errtype == 'ENGINEERING':
 
             # item A.3 MSB year of installation - if result > 20 (years), then
@@ -415,15 +422,19 @@ def getSum(self, errtype):
             distinctsites = set({})
             issuecount = {}
             issuetop = []
+            riskids = []
             details = InspectionDetails.objects.all()\
                 .filter(item_id__errortype=errtype,
                         item_id__throw_error=True, master_id__add_date__range=getstartq(self))
-            sums = details.count()
+            # sums = details.count()
             for each in details:
                 distinctsites.add(each.master_id.site_id)
                 issuecount[each.category_id] = issuecount.get(
                     each.item_id.items, 0) + 1
+                sums += 1
                 issuetop.append(each.item_id.items)
+                riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                each.item_id.severity, issuetop[-1]])
 
             details = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self), item_id__items__contains='MSB year')
@@ -441,26 +452,34 @@ def getSum(self, errtype):
                     issuecount[each.category_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append('MSB age > 20 years')
+                    riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                    each.item_id.severity, issuetop[-1]])
+
             distinctissue = len(issuecount)
+
             if len(issuetop) > 0:
                 topissue = max(set(issuetop), key=issuetop.count)
             else:
                 topissue = None
-            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
         elif errtype == 'STATUTORY':
 
             sums = 0
             distinctsites = set({})
             issuecount = {}
             issuetop = []
+            riskids = []
             details = InspectionDetails.objects.filter(
                 item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
-            sums = details.count()
+            # sums = details.count()
             for each in details:
                 distinctsites.add(each.master_id.site_id)
                 issuecount[each.category_id] = issuecount.get(
                     each.item_id.items, 0) + 1
+                sums += 1
                 issuetop.append(each.item_id.items)
+                riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                each.item_id.severity, issuetop[-1]])
 
             # item C.4 Due date - if result < 0, then
             # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
@@ -482,6 +501,8 @@ def getSum(self, errtype):
                         each.item_id.items, 0) + 1
                     issuetop.append(
                         'MSB relay calibration expired - calibrate ASAP.')
+                    riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                    each.item_id.severity, issuetop[-1]])
 
             # item c.5 Due date - if result < 0, then
             # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
@@ -503,6 +524,8 @@ def getSum(self, errtype):
                         each.item_id.items, 0) + 1
                     issuetop.append(
                         'Relay calibration expired - calibrate ASAP.')
+                    riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                    each.item_id.severity, issuetop[-1]])
 
             # item c.10 Due date - if result < 0, then
             # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
@@ -524,6 +547,8 @@ def getSum(self, errtype):
                         each.item_id.items, 0) + 1
                     issuetop.append(
                         'CO2 extinguisher cert. expired - to recertify.')
+                    riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                    each.item_id.severity, issuetop[-1]])
 
             # item c.17 Due date - if result < 0, then
             # Genset registration expired - pls renew with ST. (STATUTORY, 3)
@@ -545,14 +570,17 @@ def getSum(self, errtype):
                         each.item_id.items, 0) + 1
                     issuetop.append(
                         'Genset ST registration expired - to renew.')
+                    riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                    each.item_id.severity, issuetop[-1]])
 
             distinctissue = len(issuecount)
             if len(issuetop) > 0:
                 topissue = max(set(issuetop), key=issuetop.count)
             else:
                 topissue = ''
-            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue}
+            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
         elif errtype == 'RISK':
+            riskids = []
             details = InspectionDetails.objects.all()\
                 .filter(item_id__severity__gt=0,
                         master_id__add_date__range=getstartq(self))
@@ -565,26 +593,49 @@ def getSum(self, errtype):
                     'item_id_id')).order_by('-countissue')[0]
                 # print(topissue.item_id.items)
                 topissue = str(topissue.item_id.items)
+
             except IndexError:
                 distinctissue = ''
                 topissue = ''
-            return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
+            return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue, 'risk': riskids}
         else:
-            details = InspectionDetails.objects.all()\
-                .filter(item_id__errortype=errtype, item_id__throw_error=True,
-                        master_id__add_date__range=getstartq(self))
-            sums = details.count()
-            distinctsites = details.distinct('master_id__site_id').count()
-            try:
-                distinctissue = details.distinct('item_id_id').count()
-                topissue = details.annotate(countissue=Count(
-                    'item_id_id')).order_by('-countissue')[0]
-                # print(topissue.item_id.items)
-                topissue = str(topissue.item_id.items)
-            except IndexError:
-                distinctissue = ''
+            sums = 0
+            distinctsites = set({})
+            issuecount = {}
+            issuetop = []
+            riskids = []
+            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
+                                                             master_id__add_date__range=getstartq(self))
+            # sums = details.count()
+            # distinctsites = details.distinct('master_id__site_id').count()
+            for each in details:
+                distinctsites.add(each.master_id.site_id)
+                issuecount[each.category_id] = issuecount.get(
+                    each.item_id.items, 0) + 1
+                sums += 1
+                issuetop.append(each.item_id.items)
+                riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                each.item_id.severity, issuetop[-1]])
+            # try:
+            #     distinctissue = details.distinct('item_id_id').count()
+            #     topissue = details.annotate(countissue=Count(
+            #         'item_id_id')).order_by('-countissue')[0]
+            #     # print(topissue.item_id.items)
+            #     topissue = str(topissue.item_id.items)
+            #     for each in details:
+            #         riskids.append(riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #                                    each.item_id.severity, issuetop[-1]]))
+            # except IndexError:
+            #     distinctissue = ''
+            #     topissue = ''
+            distinctissue = len(issuecount)
+
+            if len(issuetop) > 0:
+                topissue = max(set(issuetop), key=issuetop.count)
+            else:
                 topissue = ''
-            return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue}
+            # return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue, 'risks': riskids}
+            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
 
 
 class ShowDashboard(LoginRequiredMixin, FormView):
@@ -656,7 +707,27 @@ class ShowDashboard(LoginRequiredMixin, FormView):
             data["errors"] = error
 
         # get risk errors.
-        error['RISK'] = getSum(self, 'RISK')
+        sums = 0
+        totalissue = []
+        distinctsites = set({})
+        for key, value in data['errors'].items():
+            if value.get('risk') is not None:
+                if len(value['risk']) > 0:
+                    totalissue.extend(value['risk'])
+                # print(f"***RISK*** {key} {value['risk']} {len(value['risk'])}")
+
+        issuetop = [issue[3] for issue in totalissue if issue[2] > 0]
+        sums = len(issuetop)
+        distinctissue = len(set(issuetop))
+        distinctsites = len(set([issue[0] for issue in totalissue]))
+
+        if len(issuetop) > 0:
+            topissue = max(set(issuetop), key=issuetop.count)
+        else:
+            topissue = ''
+
+        context['RISK'] = {
+            'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue, 'risk': ''}
 
         # get the list of sites inspected
         # get count of sites and get percentage against sites in inspected which have data
@@ -672,6 +743,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         context['countofsites'] = countofsites
         context['countinspected'] = countinspected
         context['percentcompleted'] = percentcompleted
+
         # context['form'] = form
         return context
 
@@ -685,6 +757,7 @@ def addtositedata(sites, *itemname):
     data["siteno"] = sites.master_id.site_id.site_no
     data["masterid"] = sites.master_id
     data["dateadd"] = sites.master_id.add_date
+    data['itemvalue'] = sites.item_value
     data["category"] = category
     if itemname:
         data["itemname"] = itemname[0]
@@ -727,7 +800,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
 
         # get the sites related to the key
         if checkcategory == "POWER":
-            print("power")
+            # print("power")
             b1_error_messages = {'BN': 'B-N voltage outside limits - report to TNB/SESB.',
                                  'YN': 'Y-N voltage outside limits - report to TNB/SESB.',
                                  'RN': 'R-N voltage outside limits - report to TNB/SESB.'}
@@ -766,22 +839,6 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                             sitedata.append(addtositedata(
                                 sites, b3_error_messages[sites.item_id.items]))
 
-            # data = {}
-            # subsidiary = str(sites.master_id.site_id.subsidiary)
-            # category = ' '.join(sites.category_id.category.split(' ')[1:])
-            # data["name"] = sites.master_id.site_id.name
-            # data["siteno"] = sites.master_id.site_id.site_no
-            # data["masterid"] = sites.master_id
-            # data["dateadd"] = sites.master_id.add_date
-            # data["category"] = category
-            # data["itemname"] = sites.item_id.items
-            # data["severity"] = risk[int(sites.item_id.severity)]
-            # data["state"] = sites.master_id.site_id.state
-            # data["subsidiary"] = subsidiary[subsidiary.find(
-            #     "(")+1:subsidiary.find(")")]
-            # data["errortype"] = sites.item_id.errortype
-            # else:
-            #     sitedata.append(addtositedata(sites))
         elif checkcategory == 'ENGINEERING':
             # print('engineering')
             sitesfound = InspectionDetails.objects.filter(
@@ -869,8 +926,10 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         elif checkcategory == 'RISK':
             sitesfound = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self), item_id__severity__gt=0)
+
             for sites in sitesfound:
                 sitedata.append(addtositedata(sites))
+
         else:
             sitesfound = InspectionDetails.objects.filter(
                 item_id__errortype=checkcategory,
@@ -1189,13 +1248,30 @@ class PrintForm(LoginRequiredMixin, TemplateView):
 
 @csrf_exempt
 def DisplayIssueDetails(request):
+    responsedtl = {}
+    columns = ['Category', 'Items', 'Value', 'Category', 'Risk']
     if request:
-        print('request:', request)
         ids = request.POST['id']
         details = InspectionDetails.objects.filter(master_id=ids)
+        responsedtl['site'] = details
         for x in details:
             print(x.category_id.category.split(' ')[
-                  1], x.item_id.items, x.item_value, x.item_id, x.item_id.errortype, x.item_id.severity)
+                  1], x.item_id.items, x.item_value, x.item_id.errortype, x.item_id.severity)
+            responsedtl['sitename'] = details
         return HttpResponse(json.dumps(details))
 
     return None
+
+
+class ShowInspectionDashboardTypeDetails(TemplateView):
+    template_name = 'inspectv1/dashboard_2_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ShowInspectionDashboardTypeDetails, self).get_context_data(**kwargs)
+        sitedata = []
+        pk = self.kwargs['pk']
+        details = InspectionDetails.objects.filter(master_id=pk).order_by(('-id'))
+        for x in details:
+            sitedata.append(addtositedata(x))
+        context["sitedata"] = sitedata
+        return context

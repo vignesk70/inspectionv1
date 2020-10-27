@@ -1215,7 +1215,7 @@ class PrintForm(LoginRequiredMixin, TemplateView):
         data = InspectionDetails.objects.filter(master_id=master_id)
         inspector = InspectorDetails.objects.get(
             users=data[0].master_id.user_id)
-        issues = InspectionDetails.objects.filter(item_id__show_in_section__gt=0)\
+        issues = data.filter(item_id__show_in_section__gt=0)\
             .distinct('item_id')
         section1issues = [issue.item_id.items for issue in issues
                           .filter(item_id__show_in_section=1)]

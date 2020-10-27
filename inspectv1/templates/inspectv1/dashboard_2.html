@@ -6,8 +6,8 @@
 
 <section class="datefilters">
     <div class="container mb-2">
-        {% comment %} <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse" href="#collapsefilters"
-                aria-expanded="false" aria-controls="collapsefilters">
+        {% comment %} <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse"
+                href="#collapsefilters" aria-expanded="false" aria-controls="collapsefilters">
                 Date Filters
             </a></h5> {% endcomment %}
         <div class="" id="collapsefilters">
@@ -124,11 +124,13 @@
                             {% for x in sitedata %}
                             <tr>
                                 <td>{{x.siteno}}</td>
-                                <td><a href="{%url 'inspectv1:dash2detail' pk=x.masterid%}" >{{x.name}}</a>
-                                    {% comment %} <a href="#" data-toggle="modal" data-target="#SiteDetailModalCenter" onclick="getissuedetails({{x.masterid}})">{{x.name}}</a> {% endcomment %}
-                                    </td>
-                                <td><span
-                                        style="display: none;">{{x.dateadd|date:"Ymd"}}</span>{{x.dateadd|date:"d/m/Y"}}
+                                <td><a href="{%url 'inspectv1:dash2detail' pk=x.masterid%}"
+                                        target="_blank">{{x.name}}</a>
+                                    {% comment %} <a href="#" data-toggle="modal" data-target="#SiteDetailModalCenter"
+                                        onclick="getissuedetails({{x.masterid}})">{{x.name}}</a> {% endcomment %}
+                                </td>
+                                <td>
+                                    <span style="display: none;">{{x.dateadd|dtfmt}}</span>{{x.dateadd}}
                                 </td>
                                 <td>{{x.category}}</td>
                                 <td>{{x.itemname}}</td>
@@ -150,27 +152,28 @@
 </section>
 
 <!-- Section to display the modal dialog for clicking on Details -->
-<section class = "modaldisplay">
+<section class="modaldisplay">
     <div class="container-fluid">
-        <div class="modal fade" id="SiteDetailModalCenter" tabindex="-1" role="dialog" aria-labelledby="SiteDetailModalCenterTitle" aria-hidden="true">
+        <div class="modal fade" id="SiteDetailModalCenter" tabindex="-1" role="dialog"
+            aria-labelledby="SiteDetailModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="SiteDetailModalLongTitle">Modal title</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  This is where table goes - need to add org and paging
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="SiteDetailModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        This is where table goes - need to add org and paging
 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-              </div>
             </div>
-          </div>
+        </div>
     </div>
 
 
@@ -198,14 +201,21 @@
     ]
 
     function calculatePoint(i, intervalSize, colorRangeInfo) {
-        var { colorStart, colorEnd, useEndAsStart } = colorRangeInfo;
-        return (useEndAsStart
-            ? (colorEnd - (i * intervalSize))
-            : (colorStart + (i * intervalSize)));
+        var {
+            colorStart,
+            colorEnd,
+            useEndAsStart
+        } = colorRangeInfo;
+        return (useEndAsStart ?
+            (colorEnd - (i * intervalSize)) :
+            (colorStart + (i * intervalSize)));
     }
 
     function interpolateColors(dataLength, colorScale, colorRangeInfo) {
-        var { colorStart, colorEnd } = colorRangeInfo;
+        var {
+            colorStart,
+            colorEnd
+        } = colorRangeInfo;
         var colorRange = colorEnd - colorStart;
         var intervalSize = colorRange / dataLength;
         var i, colorPoint;
@@ -242,13 +252,11 @@
             type: 'doughnut',
             data: {
                 labels: chartLabel,
-                datasets: [
-                    {
-                        backgroundColor: COLORS,
-                        hoverBackgroundColor: COLORS,
-                        data: chartData
-                    }
-                ],
+                datasets: [{
+                    backgroundColor: COLORS,
+                    hoverBackgroundColor: COLORS,
+                    data: chartData
+                }],
             },
             options: {
                 responsive: true,
@@ -276,5 +284,7 @@
     createChart('state', {{ state_label| js}}, {{ state_data }}, colorScale, colorRangeInfo)
     createChart('risk', {{ risk_label| js}}, {{ risk_data }}, colorScale, colorRangeInfo)
     createChart('issues', {{ issue_label| js}}, {{ issue_data }}, colorScale, colorRangeInfo)
+
 </script>
+
 {% endblock content %}

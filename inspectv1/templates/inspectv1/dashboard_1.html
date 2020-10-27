@@ -117,12 +117,13 @@
                     <p class=" ml-2 mt-2 inline"><strong>{{RISK.sum}}</strong> issues</p>
                     <p class=" ml-2 inline"><strong>{{RISK.ds}} </strong>sites</p>
 
-                </div>
-                <div class="col-sm">
+
                     <p class=" ml-2"><strong>{%if RISK.di %}{{RISK.di}}{% else %}0{% endif %}</strong>
                         distinct issues</p>
                     <p class=" ml-2 mb-2" style="line-height: 1.3rem; font-size:small"><em>Top Issue</em><br>
-                        <strong>{%if RISK.top %}{{RISK.top}}{% else %}None{% endif %}</strong></p>
+                        <strong>{%if RISK.top %}
+                        {% for items in RISK.top %}<p class=" ml-2">{{items}}</p>{% endfor %}
+                        {% else %}None{% endif %}</strong></p>
                 </div>
 
             </div>

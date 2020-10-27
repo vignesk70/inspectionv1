@@ -36,11 +36,12 @@
                         <thead>
 
                             <tr>
+                                <th>No.</th>
                                 <th>Field</th>
                                 <th>Issue</th>
                                 <th>Value</th>
                                 <th>Category</th>
-                                <th>Risk</th>
+
                             </tr>
                         </thead>
                         {%if sitedata%}
@@ -48,12 +49,12 @@
 
                             {% for x in sitedata %}
                             <tr>
-
+                                <td>{{x.category_code}}</td>
                                 <td>{{x.category}}</td>
                                 <td>{{x.itemname}}</td>
                                 <td>{{x.itemvalue}}</td>
                                 <td>{{x.errortype}}</td>
-                                <td>{{x.severity}}</td>
+
 
                             </tr>
                             {%endfor%}

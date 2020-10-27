@@ -3,8 +3,10 @@ import io
 import json
 from math import radians, acos, sin, cos
 # import array as arr
+from collections import Counter, OrderedDict
 from datetime import datetime
 import dateutil.relativedelta as delta
+from dateutil.parser import parse
 from mailmerge import MailMerge
 from django.conf import settings
 from django.http import HttpResponse  # HttpResponseRedirect
@@ -709,14 +711,22 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         # get risk errors.
         sums = 0
         totalissue = []
+        issue_to_display = []
         distinctsites = set({})
         for key, value in data['errors'].items():
             if value.get('risk') is not None:
                 if len(value['risk']) > 0:
                     totalissue.extend(value['risk'])
-                # print(f"***RISK*** {key} {value['risk']} {len(value['risk'])}")
+                    # print(f"***RISK*** {key} {value['risk']} {len(value['risk'])}")
 
         issuetop = [issue[3] for issue in totalissue if issue[2] > 0]
+        issuedict = dict(Counter(issuetop).items())
+        issuedict_sort = sorted(issuedict.items(), key=lambda x: x[1], reverse=True)
+
+        # print(issuedict_sort)
+        for key, value in issuedict_sort[:3]:
+            issue_to_display.append(key)
+
         sums = len(issuetop)
         distinctissue = len(set(issuetop))
         distinctsites = len(set([issue[0] for issue in totalissue]))
@@ -727,7 +737,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
             topissue = ''
 
         context['RISK'] = {
-            'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue, 'risk': ''}
+            'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': issue_to_display, 'risk': ''}
 
         # get the list of sites inspected
         # get count of sites and get percentage against sites in inspected which have data
@@ -753,11 +763,21 @@ def addtositedata(sites, *itemname):
     data = {}
     subsidiary = str(sites.master_id.site_id.subsidiary)
     category = ' '.join(sites.category_id.category.split(' ')[1:])
+    category_code = sites.category_id.category.split(' ')[0]
     data["name"] = sites.master_id.site_id.name
     data["siteno"] = sites.master_id.site_id.site_no
-    data["masterid"] = sites.master_id
-    data["dateadd"] = sites.master_id.add_date
-    data['itemvalue'] = sites.item_value
+    data["masterid"] = sites.master_id.id
+    data["dateadd"] = datetime.strftime(sites.master_id.add_date, '%d/%m/%Y')
+
+    try:
+        dateval = datetime.strptime(sites.item_value, '%Y-%m-%d')
+        if dateval:
+            data['itemvalue'] = datetime.strftime(dateval, "%d/%m/%Y")
+    except ValueError:
+        data['itemvalue'] = sites.item_value
+    if sites.item_value == 'true':
+        data['itemvalue'] = ''
+    data['category_code'] = category_code
     data["category"] = category
     if itemname:
         data["itemname"] = itemname[0]
@@ -860,7 +880,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                     sitedata.append(addtositedata(sites, 'MSB age > 20 years'))
 
         elif checkcategory == 'STATUTORY':
-            print('statutory')
+
             sitesfound = InspectionDetails.objects.filter(
                 item_id__errortype=checkcategory,
                 item_id__throw_error=True, master_id__add_date__range=getstartq(self))
@@ -1229,9 +1249,9 @@ class PrintForm(LoginRequiredMixin, TemplateView):
                        sitename=sitename,
                        stateauth=stateauth,
                        clientname=clientname,
-                       section1issue=section1issues,
-                       section2issue=section2issues,
-                       section3issue=section3issues)
+                       section1issues=section1issues,
+                       section2issues=section2issues,
+                       section3issues=section3issues)
         date = datetime.now().strftime("%Y%m%d")
         filename = 'Form_I_' + str(sitenum) + '_' + date+'.docx'
         f = io.BytesIO()
@@ -1248,17 +1268,16 @@ class PrintForm(LoginRequiredMixin, TemplateView):
 
 @csrf_exempt
 def DisplayIssueDetails(request):
-    responsedtl = {}
+
+    sitedata = []
     columns = ['Category', 'Items', 'Value', 'Category', 'Risk']
     if request:
         ids = request.POST['id']
-        details = InspectionDetails.objects.filter(master_id=ids)
-        responsedtl['site'] = details
+        details = InspectionDetails.objects.filter(master_id=ids).order_by(('-id'))
         for x in details:
-            print(x.category_id.category.split(' ')[
-                  1], x.item_id.items, x.item_value, x.item_id.errortype, x.item_id.severity)
-            responsedtl['sitename'] = details
-        return HttpResponse(json.dumps(details))
+            sitedata.append(addtositedata(x))
+        # sitedata[0]['dateadd'] = datetime.strftime(sitedata[0]['dateadd'], '%d/%m/%Y')
+        return HttpResponse(json.dumps(sitedata))
 
     return None
 

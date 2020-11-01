@@ -53,7 +53,7 @@
                                     <thead>
 
                                         <tr>
-                                            <th>id</th>
+
                                             <th>Site Id</th>
                                             <th>Site Name</th>
                                             <th>Date Visited</th>
@@ -68,7 +68,7 @@
 
                                         {% for x in sitedata %}
                                         <tr>
-                                            <td>{{x.siteid}}</td>
+
                                             <td>{{x.siteno}}</td>
                                             <td><a
                                                     href="{%url 'inspectv1:inspectdetail' pk=x.siteid%}">{{x.sitename}}</a>
@@ -99,18 +99,16 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('#mytable').DataTable(
-            {
-                "columnDefs": [
-                    {
-                        "targets": [4],
-                        "visible": false,
-                        "searchable": false
-                    }
-                ],
-                "order" :[[4,'desc']]
-            }
-        );
+        $('#mytable').DataTable({
+            "columnDefs": [{
+                "targets": [4],
+                "visible": false,
+                "searchable": true
+            }],
+            "order": [
+                [3, 'desc']
+            ]
+        });
     });
 </script>
 

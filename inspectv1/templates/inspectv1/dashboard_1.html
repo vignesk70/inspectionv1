@@ -40,10 +40,10 @@
                 <!-- <h5 class='page-title'>Sites Visit Status</h5> -->
                 <div class="progress-group">
                     <span class="progress-text">Sites visited</span>
-                    <span class="progress-number">{{countinspected}}/{{countofsites}}</span>
+                    <span class="progress-number"><span style="--countinspect: {{countinspected}}"><span class="progress-count"></span></span>/{{countofsites}}</span>
 
                     <div class="progress sm">
-                        <div class="progress-bar progress-bar-aqua" style="width: {{percentcompleted}}%"></div>
+                        <span style="width: {{percentcompleted}}%"><span class="progress-bar progress-bar-aqua"></span></span>
                     </div>
                 </div>
             </div>

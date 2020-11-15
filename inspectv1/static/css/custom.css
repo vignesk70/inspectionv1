@@ -71,12 +71,26 @@ li .nocircle {
 .card {
   background-clip: content-box !important;
   border: none !important;
+  background: #F5F5F5 !important;
+  background-position: center;
+  transition: background 0.5s;
 }
 
-.card-body:hover {
+.card:hover>.card-body {
   color: #0018A8;
+  transition-property: color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  transition-delay: 0s;
 }
 
+/*
+.card-body:active {
+  background-color: #F0F8FF !important;
+  background-size: 100% !important;
+  transition: background 0.3s !important;
+}
+*/
 .card-header {
   box-shadow: 0px 2px 10px gray;
 }
@@ -102,7 +116,7 @@ li .nocircle {
 }
 
 p {
-  background-color: white;
+  /*background-color: white;*/
   margin-top: 0;
   margin-bottom: 1rem;
 }
@@ -166,11 +180,11 @@ input[type="checkbox"][readonly] {
   padding-left: 50px;
   padding-top: 160px;
   width: max-content;
-  color: white !important;
+  color: #2F4F4F !important;
 }
 
 .banner>h5 {
-  color: white !important;
+  color: #2F4F4F !important;
 }
 
 /* updated stylesheet */
@@ -308,7 +322,7 @@ h5:hover {
 .progress {
   border-top-left-radius: 0px !important;
   border-bottom-left-radius: 0px !important;
-  height: 0.5rem !important;
+  height: 0.25rem !important;
   /*background: #696969 !important;*/
   /*border: 1px solid #696969;*/
 }
@@ -318,6 +332,54 @@ h5:hover {
 .progress>.progress-bar .progress-bar {
 
   background: #1E90FF !important;
+  -webkit-animation: progressBar 2s ease-out;
+  -webkit-animation-fill-mode: both;
+  -moz-animation: progressBar 2s ease-out;
+  -moz-animation-fill-mode: both;
+  -o-animation: progressBar 2s ease-out;
+  -o-animation-fill-mode: both;
+  animation: progressBar 2s ease-out;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes progressBar {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@-moz-keyframes progressBar {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@-o-keyframes progressBar {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes progressBar {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
 }
 
 .progress-group .progress-number {
@@ -333,18 +395,81 @@ h5:hover {
   color: #2F4F4F;
 }
 
+/* Animation for running counter */
+@property --num {
+  syntax: '<integer>';
+  initial-value: 0;
+  inherits: false;
+}
+
+.progress-count {
+  -webkit-animation: progressCount 2s ease-out;
+  -webkit-animation-fill-mode: both;
+  -moz-animation: progressCount 2s ease-out;
+  -moz-animation-fill-mode: both;
+  -o-animation: progressCount 2s ease-out;
+  -o-animation-fill-mode: both;
+  animation: progressCount 2s ease-out;
+  animation-fill-mode: both;
+  counter-increment: num var(--num, var(--countinspect));
+}
+
+@-webkit-keyframes progressCount {
+  0% {
+    --num: 0;
+  }
+
+  100% {
+    --num: var(--countinspect);
+  }
+}
+
+@-moz-keyframes progressCount {
+  0% {
+    --num: 0;
+  }
+
+  100% {
+    --num: var(--countinspect);
+  }
+}
+
+@-o-keyframes progressCount {
+  0% {
+    --num: 0;
+  }
+
+  100% {
+    --num: var(--countinspect);
+  }
+}
+
+@keyframes progressCount {
+  0% {
+    --num: 0;
+  }
+
+  100% {
+    --num: var(--countinspect);
+  }
+}
+
+.progress-count::after {
+  content: counter(num);
+}
+
 .datefilters label {
   font-weight: 600;
   color: #2F4F4F !important;
 }
 
 .datefilters a {
-  color: white;
+  color: #2F4F4F;
   text-decoration: none;
 }
 
 .datefilters a:hover {
-  color: white;
+  color: #323245;
   text-decoration: none;
 }
 
@@ -355,8 +480,9 @@ h5:hover {
 }
 
 .card-deck .card:hover {
-  box-shadow: 0 0 10px #323245;
+  box-shadow: 0 0 10px #708090;
   cursor: pointer;
+  background: white !important;
 }
 
 .bg-operations {

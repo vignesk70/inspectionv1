@@ -125,7 +125,13 @@
                             <tr>
                                 <td>{{x.siteno}}</td>
                                 <td><a href="{%url 'inspectv1:dash2detail' pk=x.masterid%}"
-                                        target="_blank">{{x.name}}</a>
+                                        target="_blank">{{x.name}}</a> 
+                                        
+                                        {% if x.item_imageurl %}
+                                        <span><i class="fa fa-paperclip"></i></span>
+                                        {% endif %}
+                                            
+                                        
                                     {% comment %} <a href="#" data-toggle="modal" data-target="#SiteDetailModalCenter"
                                         onclick="getissuedetails({{x.masterid}})">{{x.name}}</a> {% endcomment %}
                                 </td>

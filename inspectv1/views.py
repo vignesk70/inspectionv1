@@ -431,7 +431,9 @@ def getSum(self, errtype):
             # sums = details.count()
             for each in details:
                 distinctsites.add(each.master_id.site_id)
-                issuecount[each.category_id] = issuecount.get(
+                # issuecount[each.category_id] = issuecount.get(
+                #     each.item_id.items, 0) + 1
+                issuecount[each.item_id] = issuecount.get(
                     each.item_id.items, 0) + 1
                 sums += 1
                 issuetop.append(each.item_id.items)
@@ -451,7 +453,9 @@ def getSum(self, errtype):
                     distinctsites.add(each.master_id.site_id)
                     # distinctissue += 1
                     # distinctsites.add(each.master_id)
-                    issuecount[each.category_id] = issuecount.get(
+                    # issuecount[each.category_id] = issuecount.get(
+                    #     each.item_id.items, 0) + 1
+                    issuecount[each.item_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append('MSB age > 20 years')
                     riskids.append([each.master_id.site_id.id, each.item_id.id,
@@ -476,7 +480,9 @@ def getSum(self, errtype):
             # sums = details.count()
             for each in details:
                 distinctsites.add(each.master_id.site_id)
-                issuecount[each.category_id] = issuecount.get(
+                # issuecount[each.category_id] = issuecount.get(
+                #     each.item_id.items, 0) + 1
+                issuecount[each.item_id] = issuecount.get(
                     each.item_id.items, 0) + 1
                 sums += 1
                 issuetop.append(each.item_id.items)
@@ -499,7 +505,9 @@ def getSum(self, errtype):
                     # distinctsites.add(each.master_id)
                     # distinctissue += 1
                     distinctsites.add(each.master_id.site_id)
-                    issuecount[each.category_id] = issuecount.get(
+                    # issuecount[each.category_id] = issuecount.get(
+                    #     each.item_id.items, 0) + 1
+                    issuecount[each.item_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
                         'MSB relay calibration expired - calibrate ASAP.')
@@ -522,7 +530,9 @@ def getSum(self, errtype):
                     # distinctsites.add(each.master_id)
                     # distinctissue += 1
                     distinctsites.add(each.master_id.site_id)
-                    issuecount[each.category_id] = issuecount.get(
+                    # issuecount[each.category_id] = issuecount.get(
+                    #     each.item_id.items, 0) + 1
+                    issuecount[each.item_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
                         'Relay calibration expired - calibrate ASAP.')
@@ -545,7 +555,9 @@ def getSum(self, errtype):
                     # distinctsites.add(each.master_id)
                     # distinctissue += 1
                     distinctsites.add(each.master_id.site_id)
-                    issuecount[each.category_id] = issuecount.get(
+                    # issuecount[each.category_id] = issuecount.get(
+                    #     each.item_id.items, 0) + 1
+                    issuecount[each.item_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
                         'CO2 extinguisher cert. expired - to recertify.')
@@ -568,7 +580,9 @@ def getSum(self, errtype):
                     # distinctsites.add(each.master_id)
                     # distinctissue += 1
                     distinctsites.add(each.master_id.site_id)
-                    issuecount[each.category_id] = issuecount.get(
+                    # issuecount[each.category_id] = issuecount.get(
+                    #     each.item_id.items, 0) + 1
+                    issuecount[each.item_id] = issuecount.get(
                         each.item_id.items, 0) + 1
                     issuetop.append(
                         'Genset ST registration expired - to renew.')
@@ -612,7 +626,9 @@ def getSum(self, errtype):
             # distinctsites = details.distinct('master_id__site_id').count()
             for each in details:
                 distinctsites.add(each.master_id.site_id)
-                issuecount[each.category_id] = issuecount.get(
+                # issuecount[each.category_id] = issuecount.get(
+                #     each.item_id.items, 0) + 1
+                issuecount[each.item_id] = issuecount.get(
                     each.item_id.items, 0) + 1
                 sums += 1
                 issuetop.append(each.item_id.items)

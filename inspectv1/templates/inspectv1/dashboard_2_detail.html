@@ -40,6 +40,7 @@
                                 <th>Field</th>
                                 <th>Issue</th>
                                 <th>Value</th>
+                                <th>Media</th>
                                 <th>Category</th>
 
                             </tr>
@@ -53,6 +54,11 @@
                                 <td>{{x.category}}</td>
                                 <td>{{x.itemname}}</td>
                                 <td>{{x.itemvalue}}</td>
+                                <td>{% if x.item_imageurl %}
+                                <a href="{{ x.item_imageurl }}" target="_blank"><img src="{{x.item_imageurl }}"
+                                    style="width:50px;"></a>
+                                {% else %}
+                                {% endif %}</td>
                                 <td>{{x.errortype}}</td>
 
 
@@ -195,59 +201,11 @@
         colorEnd: 0.9,
         useEndAsStart: false,
     };
-    createChart('subsidiary', {
-            {
-                subsidiary_label | js
-            }
-        }, {
-            {
-                subsidiary_data
-            }
-        }, colorScale, colorRangeInfo) <
-        !--createChart('site', {
-            {
-                site_label | js
-            }
-        }, {
-            {
-                site_data
-            }
-        }, colorScale, colorRangeInfo) -- >
-        createChart('field', {
-            {
-                cat_label | js
-            }
-        }, {
-            {
-                cat_data
-            }
-        }, colorScale, colorRangeInfo)
-    createChart('state', {
-        {
-            state_label | js
-        }
-    }, {
-        {
-            state_data
-        }
-    }, colorScale, colorRangeInfo)
-    createChart('risk', {
-        {
-            risk_label | js
-        }
-    }, {
-        {
-            risk_data
-        }
-    }, colorScale, colorRangeInfo)
-    createChart('issues', {
-        {
-            issue_label | js
-        }
-    }, {
-        {
-            issue_data
-        }
-    }, colorScale, colorRangeInfo)
+    createChart('subsidiary', {{subsidiary_label | js}}, {{subsidiary_data}}, colorScale, colorRangeInfo) 
+    <!--createChart('site', {{site_label | js}}, {{site_data}}, colorScale, colorRangeInfo) -- >
+        createChart('field', {{cat_label | js}}, {{cat_data}}, colorScale, colorRangeInfo)
+    createChart('state', {{state_label | js}}, {{state_data}}, colorScale, colorRangeInfo)
+    createChart('risk', {{risk_label | js}}, {{risk_data}}, colorScale, colorRangeInfo)
+    createChart('issues', {{issue_label | js}}, {{issue_data}}, colorScale, colorRangeInfo)
 </script>
 {% endblock content %}

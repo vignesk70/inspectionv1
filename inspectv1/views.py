@@ -804,6 +804,11 @@ def addtositedata(sites, *itemname):
     data["subsidiary"] = subsidiary[subsidiary.find(
         "(")+1:subsidiary.find(")")]
     data["errortype"] = sites.item_id.errortype
+    try:
+        if sites.item_image.url:
+            data["item_imageurl"] = sites.item_image.url
+    except:
+        pass
     # sitedata.append(data)
     return data
 

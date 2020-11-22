@@ -656,6 +656,24 @@ def getSum(self, errtype):
             return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
 
 
+def showmediafiles(sites):
+    medialistall = []
+    for site in sites:
+        try:
+            if site.item_image:
+                medialist = {}
+                medialist['siteid'] = site.master_id.site_id.site_no
+                medialist['sitename'] = site.master_id.site_id.name
+                medialist['visitdate'] = site.master_id.add_date
+                medialist['category']= site.item_id.items
+                medialist['url'] = site.item_image.url
+                medialist['masterid']=site.master_id
+                medialistall.append(medialist)
+        except:
+            pass
+    return medialistall
+
+
 class ShowDashboard(LoginRequiredMixin, FormView):
     template_name = 'inspectv1/dashboard_1.html'
     model = InspectionData
@@ -761,6 +779,8 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         countinspected = InspectionMaster.objects.filter(
             add_date__range=getstartq(self)).distinct().count()
         percentcompleted = (countinspected / countofsites) * 100
+        images = showmediafiles(InspectionDetails.objects.filter(
+            master_id__add_date__range=getstartq(self)))
 
         context["errors"] = error
         context['headers'] = getERRTYPE()
@@ -769,6 +789,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         context['countofsites'] = countofsites
         context['countinspected'] = countinspected
         context['percentcompleted'] = percentcompleted
+        context['item_imageurl'] = images
 
         # context['form'] = form
         return context
@@ -1223,7 +1244,7 @@ class ShowInspectionDetails(LoginRequiredMixin, DetailView):
 
 
 class TestForm(TemplateView):
-    template_name = 'inspectv1/dashboard_2 copy.html'
+    template_name = 'inspectv1/test.html'
 
 
 class PrintForm(LoginRequiredMixin, TemplateView):

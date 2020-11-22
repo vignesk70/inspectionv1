@@ -40,10 +40,12 @@
                 <!-- <h5 class='page-title'>Sites Visit Status</h5> -->
                 <div class="progress-group">
                     <span class="progress-text">Sites visited</span>
-                    <span class="progress-number"><span style="--countinspect: {{countinspected}}"><span class="progress-count"></span></span>/{{countofsites}}</span>
+                    <span class="progress-number"><span style="--countinspect: {{countinspected}}"><span
+                                class="progress-count"></span></span>/{{countofsites}}</span>
 
                     <div class="progress sm">
-                        <span style="width: {{percentcompleted}}%"><span class="progress-bar progress-bar-aqua"></span></span>
+                        <span style="width: {{percentcompleted}}%"><span
+                                class="progress-bar progress-bar-aqua"></span></span>
                     </div>
                 </div>
             </div>
@@ -95,17 +97,30 @@
 </section>
 
 <!-- Section for boxplot -->
-{% comment %} <section class="boxplot">
+<section class="boxplot">
     <div class="container">
-        <h5 class='page-title'>Box plot</h5>
-        <div class="row">
-            <div class="col">
-                This section for boxplot
-            </div>
+        <h5 class='page-title'>Media Files</h5>
+        <div class="cover-container">
+            <div class="d-flex flex-row flex-nowrap">
+                {% for p in item_imageurl %}
+                <div class="product">
+                    <div class="imgbox"> <img src="{{p.url}}"> </div>
+                    <div class="specifies">
+                        <h2><span>{{p.siteid}} - {{p.sitename}}</span></h2>
+                        <h2><span>{{p.visitdate}}</span><br><span>{{p.category}}</span></h2>
+                        
+                    </div>
+                    <div class="chevron">
+                       <a href="{% url 'inspectv1:dash2detail' pk=p.masterid %}" target="_blank" rel="noopener noreferrer"> <i class="fa fa-chevron-right"></i></a>
+                    </div>
+                </div>
+                {% endfor %}
 
+            </div>
         </div>
-    </div>
-</section> {% endcomment %}
+            
+               
+</section>
 <!-- Section for Risks -->
 <section class='risks'>
     <div class="container">
@@ -122,8 +137,8 @@
                         distinct issues</p>
                     <p class=" ml-2 mb-2" style="line-height: 1.3rem; font-size:small"><em>Top Issue</em><br>
                         <strong>{%if RISK.top %}
-                        {% for items in RISK.top %}<p class=" ml-2">{{items}}</p>{% endfor %}
-                        {% else %}None{% endif %}</strong></p>
+                            {% for items in RISK.top %}<p class=" ml-2">{{items}}</p>{% endfor %}
+                            {% else %}None{% endif %}</strong></p>
                 </div>
 
             </div>
@@ -184,7 +199,12 @@
                             imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
                         });
                     }
-                    var locations = {{locations | js}}                </script>
+                    var locations = {{locations | js}}
+
+                    
+                </script>
+
+                
                 <!--Load the API from the specified URL
                     * The async attribute allows the browser to render the page while the API loads
                     * The key parameter will contain your own API key (which is not needed for this tutorial)
@@ -195,6 +215,7 @@
                 <script async defer
                     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEml-6NZm26rmoaZgPvu-LQpzN4gsNAzA&callback=initMap">
                 </script>
+                
             </div>
 
 

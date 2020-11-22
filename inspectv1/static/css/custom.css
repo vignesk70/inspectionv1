@@ -505,3 +505,113 @@ h5:hover {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
+
+.cover-container {
+ 
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.cover-item {
+  position: relative;
+  display: inline-block;
+  margin: 8px 8px;
+  box-shadow: 2px 2px 4px #bbb;
+  border-top-right-radius: 4px;
+  width: 200px;
+  height: 250px;
+  vertical-align: bottom;
+  background-position: top left;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.card2 .card2-body {
+  min-height: 300px;
+  min-width: 200px;
+  margin-right: 10px;
+}
+
+.card2 .card-img-top {
+  object-fit: cover;
+}
+
+
+
+.product {
+  position: relative;
+  display: inline-block;
+  width: 200px;
+  height: 300px;
+  box-shadow: 3px 11px 10px 0px rgba(0, 0, 0, .5);
+  border-radius: 5px;
+  background: #0e0e0f;
+  
+  margin-right: 20px;
+}
+
+.product .imgbox {
+  height: 100%;
+  box-sizing: border-box;
+  overflow:hidden;
+}
+
+.product .imgbox img {
+  display: block;
+  
+  /* margin: 10px auto 0; */
+  object-fit: cover;
+}
+
+.specifies {
+  position: absolute;
+  width: 100%;
+  bottom: -200px;
+  background: #dcdcdceb;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: .5s
+}
+
+.product:hover .specifies {
+  bottom: 0
+}
+
+.specifies h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  width: 100%
+}
+
+.specifies h2 span {
+  font-size: 14px;
+  color: rgb(71, 71, 71);
+  font-weight: normal
+}
+
+
+label {
+  display: block;
+  margin-top: 5px;
+  font-weight: bold;
+  font-size: 15px
+}
+
+.chevron {
+    bottom: 0px;
+    position: absolute;
+    right: 5px;
+}
+
+.btn {
+  display: block;
+  padding: 5px;
+  color: #fff;
+  margin: 10px 0 0;
+  width: 100%;
+  font-size: 13px;
+  border-radius: 2px
+}

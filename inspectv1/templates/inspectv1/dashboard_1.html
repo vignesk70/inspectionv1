@@ -96,31 +96,7 @@
 
 </section>
 
-<!-- Section for boxplot -->
-<section class="boxplot">
-    <div class="container">
-        <h5 class='page-title'>Media Files</h5>
-        <div class="cover-container">
-            <div class="d-flex flex-row flex-nowrap">
-                {% for p in item_imageurl %}
-                <div class="product">
-                    <div class="imgbox"> <img src="{{p.url}}"> </div>
-                    <div class="specifies">
-                        <h2><span>{{p.siteid}} - {{p.sitename}}</span></h2>
-                        <h2><span>{{p.visitdate}}</span><br><span>{{p.category}}</span></h2>
-                        
-                    </div>
-                    <div class="chevron">
-                       <a href="{% url 'inspectv1:dash2detail' pk=p.masterid %}" target="_blank" rel="noopener noreferrer"> <i class="fa fa-chevron-right"></i></a>
-                    </div>
-                </div>
-                {% endfor %}
 
-            </div>
-        </div>
-            
-               
-</section>
 <!-- Section for Risks -->
 <section class='risks'>
     <div class="container">
@@ -225,6 +201,36 @@
     </div>
     </div>
 </section>
+<!-- Section for boxplot -->
+<section class="boxplot datefilters">
+    <div class="container">
+        <!-- <h5 class='page-title'>Media Files</h5> -->
+        <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse" href="#collapsehere"
+                aria-expanded="true" aria-controls="collapsehere">
+                Media Files
+            </a></h5>
+        <div class="collapse" id="collapsehere"> 
+        <div class="cover-container">
+            <div class="d-flex flex-row flex-nowrap">
+                {% for p in item_imageurl %}
+                <div class="product">
+                    <div class="imgbox"> <img src="{{p.url}}"> </div>
+                    <div class="specifies">
+                        <h2><span>{{p.siteid}} - {{p.sitename}}</span></h2>
+                        <h2><span>{{p.visitdate}}</span><br><span>{{p.category}}</span></h2>
+                        
+                    </div>
+                    <div class="chevron">
+                       <a href="{% url 'inspectv1:dash2detail' pk=p.masterid %}" target="_blank" rel="noopener noreferrer"> <i class="fa fa-chevron-right"></i></a>
+                    </div>
+                </div>
+                {% endfor %}
 
+            </div>
+        </div>
+        </div>
+            
+               
+</section>
 
 {% endblock content %}

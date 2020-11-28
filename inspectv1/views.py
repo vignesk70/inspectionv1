@@ -676,7 +676,7 @@ def showmediafiles(sites):
                 
                 if medialist['category'].split(" ")[0].split(".")[0].isdigit():
                     for x in sites:
-                        if x.item_id.items == medialist['category'].split(" ")[0]:
+                        if x.item_id.items == medialist['category'].split(" ")[0] and x.master_id.site_id.site_no==medialist['siteid']:
                             print(x.item_value)
                             medialist['category']=x.item_value
                 

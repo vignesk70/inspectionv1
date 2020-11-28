@@ -658,18 +658,34 @@ def getSum(self, errtype):
 
 def showmediafiles(sites):
     medialistall = []
+    # try:
+    #     if (sites.filter(category_id__category = '1.')):
+    #         print('yes')
+    # except Exception as e:
+    #     print(e)
+    #     pass
     for site in sites:
         try:
+            # print(site.item_id.items=='1.')
             if site.item_image:
                 medialist = {}
                 medialist['siteid'] = site.master_id.site_id.site_no
                 medialist['sitename'] = site.master_id.site_id.name
                 medialist['visitdate'] = site.master_id.add_date
                 medialist['category']= site.item_id.items
+                
+                if medialist['category'].split(" ")[0].split(".")[0].isdigit():
+                    for x in sites:
+                        if x.item_id.items == medialist['category'].split(" ")[0]:
+                            print(x.item_value)
+                            medialist['category']=x.item_value
+                
+                
                 medialist['url'] = site.item_image.url
                 medialist['masterid']=site.master_id
                 medialistall.append(medialist)
-        except:
+        except Exception as e:
+            print(e)
             pass
     return medialistall
 
@@ -780,7 +796,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
             add_date__range=getstartq(self)).distinct().count()
         percentcompleted = (countinspected / countofsites) * 100
         images = showmediafiles(InspectionDetails.objects.filter(
-            master_id__add_date__range=getstartq(self)))
+            master_id__add_date__range=getstartq(self)).select_related())
 
         context["errors"] = error
         context['headers'] = getERRTYPE()

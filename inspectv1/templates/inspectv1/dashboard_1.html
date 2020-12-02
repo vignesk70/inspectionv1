@@ -20,7 +20,7 @@
                 <div class="col">
                     {% bootstrap_field form.end_date layout='horizontal'%}
                 </div>
-                <div>
+                <div class="col">
 
                     <button type="submit" class="btn btn-primary" name="dates">
                         Filter Dates
@@ -77,9 +77,9 @@
                         </div>
                         <div class="card-body">
 
-                            <p class="card-text"><strong>{{value.sum}}</strong> issues</p>
-                            <p class="card-text"><strong>{{value.ds}} </strong>sites</p>
-                            <p class="card-text"><strong>{%if value.di %}{{value.di}}{% else %}0{% endif %}</strong>
+                            <p class="card-text"><i class="fa fa-tachometer"></i><span class="ml-1"></span><strong>{{value.sum}}</strong> issues</p>
+                            <p class="card-text"><i class="fa fa-map-marker"></i><span class="ml-1"></span><strong>{{value.ds}} </strong>sites</p>
+                            <p class="card-text"><i class="fa fa-bar-chart"></i><span class="ml-1"></span><strong>{%if value.di %}{{value.di}}{% else %}0{% endif %}</strong>
                                 distinct issues</p>
                             <p class="card-text" style="line-height: 1.3rem; font-size:small"><em>Top Issue</em><br>
                                 <strong>{%if value.top %}{{value.top}}{% else %}None{% endif %}</strong></p>
@@ -204,24 +204,27 @@
 <!-- Section for boxplot -->
 <section class="boxplot datefilters">
     <div class="container">
-        <!-- <h5 class='page-title'>Media Files</h5> -->
-        <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse" href="#collapsehere"
+        <!-- <h5 class='page-title'>Media</h5> -->
+        <h5 class='page-title datefilterheader'> <a class="collapsed" data-toggle="collapse" href="#collapsehere"
                 aria-expanded="true" aria-controls="collapsehere">
-                Media Files
-            </a></h5>
+                Media
+            <span class="ml-1"><i class="fa fa-chevron-right"></i></a></h5>
         <div class="collapse" id="collapsehere"> 
-        <div class="cover-container">
+        <div class="cover-container" id="carousel">
             <div class="d-flex flex-row flex-nowrap">
                 {% for p in item_imageurl %}
                 <div class="product">
-                    <div class="imgbox"> <img src="{{p.url}}"> </div>
+                    <div class="imgbox"> <object data="{{p.url}}" width="210"> &#60;media file&#62; </object> </div>
                     <div class="specifies">
-                        <h2><span>{{p.siteid}} - {{p.sitename}}</span></h2>
-                        <h2><span>{{p.visitdate}}</span><br><span>{{p.category}}</span></h2>
-                        
+                        <p class="alignleft">{{p.siteid}}</p>
+			<p class="alignright">{{p.visitdate}}</p>
+			<div style="clear: both;"></div>
+			<p>{{p.sitename}}</p>
+                        <h2><span>{{p.category}}</span><br><br></h2>    
                     </div>
-                    <div class="chevron">
-                       <a href="{% url 'inspectv1:dash2detail' pk=p.masterid %}" target="_blank" rel="noopener noreferrer"> <i class="fa fa-chevron-right"></i></a>
+
+                    <div class="btncontainer">
+                       <a href="{% url 'inspectv1:dash2detail' pk=p.masterid %}" target="_blank" rel="noopener noreferrer" role="button" 				class="btn">&#x1f5cb;</a>
                     </div>
                 </div>
                 {% endfor %}

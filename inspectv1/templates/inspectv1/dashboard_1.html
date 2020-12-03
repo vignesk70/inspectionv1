@@ -20,7 +20,7 @@
                 <div class="col">
                     {% bootstrap_field form.end_date layout='horizontal'%}
                 </div>
-                <div class="col">
+                <div class="col-sm-auto">
 
                     <button type="submit" class="btn btn-primary" name="dates">
                         Filter Dates
@@ -77,9 +77,9 @@
                         </div>
                         <div class="card-body">
 
-                            <p class="card-text"><i class="fa fa-tachometer"></i><span class="ml-1"></span><strong>{{value.sum}}</strong> issues</p>
-                            <p class="card-text"><i class="fa fa-map-marker"></i><span class="ml-1"></span><strong>{{value.ds}} </strong>sites</p>
-                            <p class="card-text"><i class="fa fa-bar-chart"></i><span class="ml-1"></span><strong>{%if value.di %}{{value.di}}{% else %}0{% endif %}</strong>
+                            <p class="card-text"><i class="fa fa-sliders fa-fw"></i><span class="ml-1"></span><strong>{{value.sum}}</strong> issues</p>
+                            <p class="card-text"><i class="fa fa-map-marker fa-fw"></i><span class="ml-1"></span><strong>{{value.ds}} </strong>sites</p>
+                            <p class="card-text"><i class="fa fa-bar-chart fa-fw"></i><span class="ml-1"></span><strong>{%if value.di %}{{value.di}}{% else %}0{% endif %}</strong>
                                 distinct issues</p>
                             <p class="card-text" style="line-height: 1.3rem; font-size:small"><em>Top Issue</em><br>
                                 <strong>{%if value.top %}{{value.top}}{% else %}None{% endif %}</strong></p>
@@ -208,7 +208,7 @@
         <h5 class='page-title datefilterheader'> <a class="collapsed" data-toggle="collapse" href="#collapsehere"
                 aria-expanded="true" aria-controls="collapsehere">
                 Media
-            <span class="ml-1"><i class="fa fa-chevron-right"></i></a></h5>
+            <i class="fa fa-caret-down"></i></a></h5>
         <div class="collapse" id="collapsehere"> 
         <div class="cover-container" id="carousel">
             <div class="d-flex flex-row flex-nowrap">
@@ -224,7 +224,7 @@
                     </div>
 
                     <div class="btncontainer">
-                       <a href="{% url 'inspectv1:dash2detail' pk=p.masterid %}" target="_blank" rel="noopener noreferrer" role="button" 				class="btn">&#x1f5cb;</a>
+                       <a href="{% url 'inspectv1:dash2detail' pk=p.masterid %}" target="_blank" rel="noopener noreferrer" role="button" 				class="btn"><i class="fa fa-file-o"></i></a>
                     </div>
                 </div>
                 {% endfor %}

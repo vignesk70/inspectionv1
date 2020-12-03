@@ -76,25 +76,38 @@ li .nocircle {
   transition: background 0.5s;
 }
 
-.card:hover>.card-body {
-  color: #0018A8;
+@mixin customtrans {
   transition-property: color;
   transition-duration: 0.5s;
   transition-timing-function: ease-out;
   transition-delay: 0s;
 }
 
-.fa-tachometer {
- color: #00BFFF;
+.card:hover>.card-body {
+  color: #0018A8;
+  @include customtrans;
 }
-.fa-map-marker {
- color: #DC143C;
+
+
+.card:hover .fa-sliders {
+ color: #1E90FF;
+ @include customtrans;
 }
-.fa-bar-chart {
- color: #32CD32;
+.card:hover .fa-map-marker {
+ color: #B22222;
+ @include customtrans;
+}
+.card:hover .fa-bar-chart {
+ color: #228B22;
+ @include customtrans;
 }
 
 /*
+.tab { 
+	display: inline-block; 
+        margin-left: 10px; 
+} 
+
 .card-body:active {
   background-color: #F0F8FF !important;
   background-size: 100% !important;
@@ -521,7 +534,16 @@ h5:hover {
   		object-fit: cover;
 }
 
-.specifies {
+/*
+@mixin commonspec {
+  position: absolute;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+*/
+
+.specifies {		/* same as .btncontainer */
   position: absolute;
   width: 100%;
   bottom: -200px;
@@ -593,16 +615,18 @@ label {
 
 .product .btn {
   /*display: block;*/
-  padding: 0px 10px;
+  /*padding: 0px 10px;*/
   color: #1E90FF;
   /*width: 100%;*/
-  
+  	height: 45px;
+  	width: 45px;
   	border-radius: 50%;
 	background-color: transparent; 
   	border: 2px solid #1E90FF;
   	text-decoration: none;  
-	vertical-align: middle;
-	text-align: center;
+	display: flex;
+    	justify-content: center;
+    	align-items: center;
 	font-size: 1.5rem;
 	font-weight: 600;
 }

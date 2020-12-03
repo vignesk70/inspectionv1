@@ -153,8 +153,18 @@
     }
 
     $(document).ready(function () {
-        $('#mytable').DataTable();
+        $('#mytable').DataTable({
+            "columnDefs": [{
+                "targets": [4],
+                "visible": true,
+                "searchable": true,
+            }],
+            "order": [
+                [4, 'desc'],[0,'asc']
+            ]
+        });
     });
+    
 </script>
 
 

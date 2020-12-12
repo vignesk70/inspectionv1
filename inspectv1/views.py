@@ -247,6 +247,13 @@ def Add(request):
         try:
             inspectDetailObj = InspectionDetails.objects.get(
 
+                master_id_id=master_id, category_id_id=request.POST['category_id'])
+            inspectDetailObj.delete()
+        except:
+            pass
+        try:
+            inspectDetailObj = InspectionDetails.objects.get(
+
                 master_id_id=master_id, category_id_id=request.POST['category_id'],
                 item_id_id=request.POST['item_id'])
             inspectDetailObj.item_value = request.POST['item_value']
@@ -673,14 +680,14 @@ def showmediafiles(sites):
                 medialist['sitename'] = site.master_id.site_id.name
                 medialist['visitdate'] = site.master_id.add_date
                 medialist['category']= site.item_id.items
-                
+
                 if medialist['category'].split(" ")[0].split(".")[0].isdigit():
                     for x in sites:
                         if x.item_id.items == medialist['category'].split(" ")[0] and x.master_id.site_id.site_no==medialist['siteid']:
                             print(x.item_value)
                             medialist['category']=x.item_value
-                
-                
+
+
                 medialist['url'] = site.item_image.url
                 medialist['masterid']=site.master_id
                 medialistall.append(medialist)
@@ -1352,3 +1359,9 @@ class ShowInspectionDashboardTypeDetails(TemplateView):
             sitedata.append(addtositedata(x))
         context["sitedata"] = sitedata
         return context
+
+class GenerateExcelfile(LoginRequiredMixin,TemplateView):
+    template_name = 'inspectv1/test.html'
+
+    def get_context_data(self, **kwargs):
+        pass

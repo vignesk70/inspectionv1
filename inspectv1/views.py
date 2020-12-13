@@ -1163,12 +1163,11 @@ def getstartq(self, **kwargs):
             # print(kwargs['startdate'])
             first_date = datetime.strptime(kwargs['startdate'], '%Y-%m-%d')
             last_date = datetime.strptime(kwargs['enddate'], '%Y-%m-%d')
-    try:
-        if self.startdate:
-            first_date = self.startdate
-            last_date = self.enddate
-    except:
-        pass
+
+    if self.startdate:
+        first_date = self.startdate
+        last_date = self.enddate
+
     return (first_date, last_date)
 
 

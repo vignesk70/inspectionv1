@@ -25,6 +25,9 @@
                     <button type="submit" class="btn btn-primary" name="dates">
                         Filter Dates
                     </button>
+                    <a  href="/generatexlsx" target="_blank" class="btn btn-primary" name="xlsx">
+                        Get Excel
+                    </a>
                     </form>
                 </div>
 
@@ -177,10 +180,10 @@
                     }
                     var locations = {{locations | js}}
 
-                    
+
                 </script>
 
-                
+
                 <!--Load the API from the specified URL
                     * The async attribute allows the browser to render the page while the API loads
                     * The key parameter will contain your own API key (which is not needed for this tutorial)
@@ -191,7 +194,7 @@
                 <script async defer
                     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEml-6NZm26rmoaZgPvu-LQpzN4gsNAzA&callback=initMap">
                 </script>
-                
+
             </div>
 
 
@@ -209,7 +212,7 @@
                 aria-expanded="true" aria-controls="collapsehere">
                 Media
             <i class="fa fa-caret-down"></i></a></h5>
-        <div class="collapse" id="collapsehere"> 
+        <div class="collapse" id="collapsehere">
         <div class="cover-container" id="carousel">
             <div class="d-flex flex-row flex-nowrap">
                 {% for p in item_imageurl %}
@@ -220,7 +223,7 @@
 			<p class="alignright">{{p.visitdate}}</p>
 			<div style="clear: both;"></div>
 			<p>{{p.sitename}}</p>
-                        <h2><span>{{p.category}}</span><br><br></h2>    
+                        <h2><span>{{p.category}}</span><br><br></h2>
                     </div>
 
                     <div class="btncontainer">
@@ -232,8 +235,8 @@
             </div>
         </div>
         </div>
-            
-               
+
+
 </section>
 
 {% endblock content %}

@@ -29,5 +29,6 @@ urlpatterns = [
     #     path('runinspection/', views.CreateInspectionForm.as_view(),
     #          name='runinspectiondata'),
     path('displayissuedetail/', views.DisplayIssueDetails, name='issuedetails'),
-    path('dashdetails/<int:pk>', views.ShowInspectionDashboardTypeDetails.as_view(), name='dash2detail')
+    path('dashdetails/<int:pk>', views.ShowInspectionDashboardTypeDetails.as_view(), name='dash2detail'),
+    path('generatexlsx/',views.GenerateExcelfile.as_view(), name='generatexlsx'),
 ]

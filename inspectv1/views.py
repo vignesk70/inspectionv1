@@ -8,6 +8,7 @@ from datetime import datetime
 import dateutil.relativedelta as delta
 from dateutil.parser import parse
 from mailmerge import MailMerge
+import xlsxwriter
 from django.conf import settings
 from django.http import HttpResponse  # HttpResponseRedirect
 from django.shortcuts import render  # , redirect
@@ -1162,9 +1163,12 @@ def getstartq(self, **kwargs):
             # print(kwargs['startdate'])
             first_date = datetime.strptime(kwargs['startdate'], '%Y-%m-%d')
             last_date = datetime.strptime(kwargs['enddate'], '%Y-%m-%d')
-    if self.startdate:
-        first_date = self.startdate
-        last_date = self.enddate
+    try:
+        if self.startdate:
+            first_date = self.startdate
+            last_date = self.enddate
+    except:
+        pass
     return (first_date, last_date)
 
 
@@ -1363,5 +1367,90 @@ class ShowInspectionDashboardTypeDetails(TemplateView):
 class GenerateExcelfile(LoginRequiredMixin,TemplateView):
     template_name = 'inspectv1/test.html'
 
-    def get_context_data(self, **kwargs):
-        pass
+    def get(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            if self.request.GET['start_date']:
+                self.startdate = (self.request.GET['start_date'])
+                self.enddate = (self.request.GET['end_date'])
+                initial_dict = {'start_date': self.startdate,
+                                'end_date': self.enddate}
+                form = DashboardDateFilterForm(None, initial=initial_dict)
+                context['form'] = form
+
+        except:
+            initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
+                            'end_date': datetime.now().strftime("%Y-%m-%d")}  # 'end_date': datetime.now().strftime("%Y-%m-%d")
+            form = DashboardDateFilterForm(None, initial=initial_dict)
+            context['form'] = form
+        categories = InspectionCategory.objects.all()
+        items = ItemInCategory.objects.all()
+        sites = InspectionMaster.objects.filter(
+            user_id=self.request.user.id, add_date__range=getstartq(self))
+        siterowdata = []
+        labels = ['Site No.','Station','State','Date']
+        labels.extend([' '.join(category.category.split()[1:]) for category in categories])
+        for site in sites:
+            siterow=[]
+            # print(site.site_id.site_no,site.site_id.name,site.site_id.state,site.add_date)
+            siterow.extend([str(site.site_id.site_no),str(site.site_id.name),str(site.site_id.state),str(site.add_date)])
+
+            for category in categories:
+
+                items = InspectionDetails.objects.filter(master_id=site.id,category_id=category.id)
+                # print(' '.join(str(category).split()[1:]))
+                catdata = []
+                for  item in items:
+                    # print(item)
+                    try:
+                        if item.item_value:
+                            # print(category.category, item.item_value)
+                            # print(data[0].item_value)
+                            value = item.item_value
+                            if value == "true":
+                                value = item.item_id.items
+                                # print('value',value)
+                            # siterow.append(value)
+                            catdata.append(value)
+                    except:
+                        # siterow.append(' ')
+                        # catdata.append(' ')
+                        pass
+                    # print(category,catdata)
+                siterow.append("|".join(catdata))
+
+            else:
+                siterow.append(' ')
+
+            siterowdata.append(siterow)
+
+        # create the file to be sent to download the excel file.
+        f = io.BytesIO()
+        workbook = xlsxwriter.Workbook(f,{'im_memory':True})
+        worksheet = workbook.add_worksheet()
+        maxrow = len(siterowdata)
+        maxcol = len(siterowdata[0])
+        row=0
+        col=0
+
+        for x in range(0,len(labels)):
+            worksheet.write_string(row,col, labels[x])
+            col+=1
+        row=1
+        for rows in range(0,maxrow):
+            for cols in range(0,maxcol):
+                worksheet.write_string(rows+1,cols, siterowdata[rows][cols])
+
+        workbook.close()
+
+        date = datetime.now().strftime("%Y%m%d")
+        filename = 'Excel_download_' + date+'.xlsx'
+        f.seek(0)
+        response = HttpResponse(f.getvalue(),content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = "attachment; filename="+filename
+
+
+        return response
+
+
+

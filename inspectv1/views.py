@@ -9,6 +9,7 @@ import dateutil.relativedelta as delta
 from dateutil.parser import parse
 from mailmerge import MailMerge
 import xlsxwriter
+import pandas as pd
 from django.conf import settings
 from django.http import HttpResponse  # HttpResponseRedirect
 from django.shortcuts import render  # , redirect
@@ -18,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_list_or_404
-from django.db.models import Q, Count  # Max, Min, Avg, , ,F
+from django.db.models import Q, Count  #Max, Min, Avg, , ,F
 from django.views.generic.edit import FormView
 from .models import InspectionCategory, InspectionDetails, InspectionMaster,\
     Sites, ItemInCategory, InspectorDetails
@@ -167,7 +168,7 @@ def GetSites(request):
 @csrf_exempt
 def Add(request):
     if settings.DEBUG:
-        print("In Add")
+        print(datetime.now(), "In Add")
 
     # return HttpResponse(request.POST['category_id'])
 
@@ -336,10 +337,12 @@ def getERRTYPE():
     '''
     Get the list of errorTyples as part of the model for error categories.
     '''
-    lists = []
-    for x in ItemInCategory.ERRORTYPE:
-        if x[0] != 'NONE':
-            lists.append(x[0])
+    if settings.DEBUG:
+            print("DEBUG: Get Err Type",datetime.now())
+    lists = [x[0] for x in ItemInCategory.ERRORTYPE if x[0] != 'NONE']
+    # for x in ItemInCategory.ERRORTYPE:
+    #     if x[0] != 'NONE':
+    #         lists.append(x[0])
     return lists
 
 
@@ -347,7 +350,8 @@ def getCount(masterid, errtype):
     '''
     Get the count of issues based on a site visited.
     '''
-
+    if settings.DEBUG:
+            print("DEBUG: Start getCount",errtype,datetime.now())
     if not errtype == 'NONE':
         count = InspectionDetails.objects.all().filter(
             master_id=masterid, item_id__errortype=errtype).count()
@@ -355,6 +359,8 @@ def getCount(masterid, errtype):
 
 
 def getSum(self, errtype):
+    if settings.DEBUG:
+            print("DEBUG: Start getSum",errtype,datetime.now())
     if not errtype == 'NONE':
         # sum = InspectionDetails.objects.all().filter(
         #     master_id=masterid, item_id__errortype=errtype).count()
@@ -380,16 +386,38 @@ def getSum(self, errtype):
             issuecount = {}
             issuetop = []
             riskids = []
+
+            # # new code for filter
+            # details2 = InspectionDetails.objects.filter(master_id__add_date__range=getstartq(self),item_id__errortype=errtype)
+            # for errors in all_errors:
+            #     print(list(errors.keys()))
+            #     # print(details2.item_id.items)
+            #     if list(errors.keys())[0] in b1_error_messages:
+            #         q = details2.filter(Q(item_id__items__in=list(errors.keys())) & (Q(item_value__lt=216)|Q(item_value__gt=253)))
+            #         for each in q:
+            #             print(each.item_id.items,each.item_value)
+            #     if list(errors.keys())[0] in b2_error_messages:
+            #         q2 = details2.filter(Q(item_id__items__in=list(errors.keys())) & Q(item_value__gt=80))
+            #         for each in q2:
+            #             print(each.item_id.items,each.item_value)
+            #     if list(errors.keys())[0] in b3_error_messages:
+            #         q3 = details2.filter(Q(item_id__items__in=list(errors.keys())) & Q(item_value__lt=0.85))
+            #         for each in q3:
+            #             print(each.item_id.items,each.item_value)
+
+
+
+
             for each in all_errors:
                 for keys in each:
                     details = InspectionDetails.objects.filter(
-                        master_id__add_date__range=getstartq(self), item_id__items=keys)
+                        master_id__add_date__range=getstartq(self),item_id__errortype=errtype, item_id__items=keys)
                     if keys in b1_error_messages.keys():
                         for row in details:
                             if float(row.item_value) < 216 or float(row.item_value) > 253.0:
                                 sums += 1
-                                # print(
-                                #     f"{keys} {row.item_value} - {each[keys]}")
+                                print(
+                                    f"{keys} {row.item_value} - {each[keys]}")
                                 distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b1_error_messages[keys])
@@ -399,8 +427,8 @@ def getSum(self, errtype):
                         for row in details:
                             if float(row.item_value) >= 80:
                                 sums += 1
-                                # print(
-                                #     f"{keys} {row.item_value} - {each[keys]}")
+                                print(
+                                    f"{keys} {row.item_value} - {each[keys]}")
                                 distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b2_error_messages[keys])
@@ -410,8 +438,8 @@ def getSum(self, errtype):
                         for row in details:
                             if float(row.item_value) < 0.85:
                                 sums += 1
-                                # print(
-                                #     f"{keys} {row.item_value} - {each[keys]}")
+                                print(
+                                    f"{keys} {row.item_value} - {each[keys]}")
                                 distinctsites.add(row.master_id.site_id)
                                 issuecount[keys] = issuecount.get(keys, 0) + 1
                                 issuetop.append(b3_error_messages[keys])
@@ -482,127 +510,157 @@ def getSum(self, errtype):
             distinctsites = set({})
             issuecount = {}
             issuetop = []
+            issuetop2 = []
             riskids = []
-            details = InspectionDetails.objects.filter(
-                item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
-            # sums = details.count()
-            for each in details:
-                distinctsites.add(each.master_id.site_id)
-                # issuecount[each.category_id] = issuecount.get(
-                #     each.item_id.items, 0) + 1
-                issuecount[each.item_id] = issuecount.get(
-                    each.item_id.items, 0) + 1
-                sums += 1
-                issuetop.append(each.item_id.items)
-                riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                each.item_id.severity, issuetop[-1]])
+            # details = InspectionDetails.objects.filter(
+            #     item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+            details2 = InspectionDetails.objects.filter(
+                item_id__errortype=errtype, master_id__add_date__range=getstartq(self)).select_related()
+            # print(len(details2))
+            xsums=details2.filter(item_id__throw_error=True).count()
+            xdistinctsites = details2.filter(item_id__throw_error=True).distinct('master_id__site_id').count()
+            issuetop2 = [x.item_id.items  for x in details2.filter(item_id__throw_error=True) if not x.item_id.items.startswith('Due')]
 
-            # item C.4 Due date - if result < 0, then
-            # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
-            datenow = datetime.now()
-            details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self),
-                item_id__items__contains='Due', category_id__category__contains='C.4')
-            for each in details:
-                datadate = datetime.strptime(
-                    each.item_value, "%Y-%m-%d")
-                diffdate = delta.relativedelta(
-                    datadate, datenow)
-                if diffdate.days < 0:
-                    sums += 1
-                    # distinctsites.add(each.master_id)
-                    # distinctissue += 1
-                    distinctsites.add(each.master_id.site_id)
-                    # issuecount[each.category_id] = issuecount.get(
-                    #     each.item_id.items, 0) + 1
-                    issuecount[each.item_id] = issuecount.get(
-                        each.item_id.items, 0) + 1
-                    issuetop.append(
-                        'MSB relay calibration expired - calibrate ASAP.')
-                    riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                    each.item_id.severity, issuetop[-1]])
+            # custom sites filter logic.
+            # tags = ['C.4','C.5','C.10','C.17']
+            tagsdict = {'C.4':'MSB relay calibration expired - calibrate ASAP.',
+            'C.5':'Relay calibration expired - calibrate ASAP.',
+            'C.10':'CO2 extinguisher cert. expired - to recertify.',
+            'C.17':'Genset ST registration expired - to renew.'}
+            todaydate = datetime.now().strftime('%Y-%m-%d')
 
-            # item c.5 Due date - if result < 0, then
-            # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
-            details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self),
-                item_id__items__contains='Due', category_id__category__contains='C.5')
+            for tag,value in tagsdict.items():
+                q2 = details2.filter(category_id__category__contains=tag,item_id__items__contains='Due').filter(item_value__lt=todaydate)
+                if q2.count() >0:
+                    xsums += q2.count()
+                    for each in q2:
+                        issuetop2.append(tagsdict[tag])
+                        riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                each.item_id.severity, issuetop2[-1]])
 
-            for each in details:
-                datadate = datetime.strptime(
-                    each.item_value, "%Y-%m-%d")
-                diffdate = delta.relativedelta(
-                    datadate, datenow)
-                if diffdate.days < 0:
-                    sums += 1
-                    # distinctsites.add(each.master_id)
-                    # distinctissue += 1
-                    distinctsites.add(each.master_id.site_id)
-                    # issuecount[each.category_id] = issuecount.get(
-                    #     each.item_id.items, 0) + 1
-                    issuecount[each.item_id] = issuecount.get(
-                        each.item_id.items, 0) + 1
-                    issuetop.append(
-                        'Relay calibration expired - calibrate ASAP.')
-                    riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                    each.item_id.severity, issuetop[-1]])
+            # for each in details:
+            #     distinctsites.add(each.master_id.site_id)
+            #     # issuecount[each.category_id] = issuecount.get(
+            #     #     each.item_id.items, 0) + 1
+            #     issuecount[each.item_id] = issuecount.get(
+            #         each.item_id.items, 0) + 1
+            #     sums += 1
+            #     issuetop.append(each.item_id.items)
+            #     riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #                     each.item_id.severity, issuetop[-1]])
 
-            # item c.10 Due date - if result < 0, then
-            # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
-            details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self),
-                item_id__items__contains='Due', category_id__category__contains='C.10')
+            # # item C.4 Due date - if result < 0, then
+            # # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
+            # datenow = datetime.now()
+            # details = InspectionDetails.objects.filter(
+            #     master_id__add_date__range=getstartq(self),
+            #     item_id__items__contains='Due', category_id__category__contains='C.4')
+            # for each in details:
+            #     datadate = datetime.strptime(
+            #         each.item_value, "%Y-%m-%d")
+            #     diffdate = delta.relativedelta(
+            #         datadate, datenow)
+            #     if diffdate.days < 0:
+            #         sums += 1
+            #         # distinctsites.add(each.master_id)
+            #         # distinctissue += 1
+            #         distinctsites.add(each.master_id.site_id)
+            #         # issuecount[each.category_id] = issuecount.get(
+            #         #     each.item_id.items, 0) + 1
+            #         issuecount[each.item_id] = issuecount.get(
+            #             each.item_id.items, 0) + 1
+            #         issuetop.append(
+            #             'MSB relay calibration expired - calibrate ASAP.')
+            #         riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #                         each.item_id.severity, issuetop[-1]])
 
-            for each in details:
-                datadate = datetime.strptime(
-                    each.item_value, "%Y-%m-%d")
-                diffdate = delta.relativedelta(
-                    datadate, datenow)
-                if diffdate.days < 0:
-                    sums += 1
-                    # distinctsites.add(each.master_id)
-                    # distinctissue += 1
-                    distinctsites.add(each.master_id.site_id)
-                    # issuecount[each.category_id] = issuecount.get(
-                    #     each.item_id.items, 0) + 1
-                    issuecount[each.item_id] = issuecount.get(
-                        each.item_id.items, 0) + 1
-                    issuetop.append(
-                        'CO2 extinguisher cert. expired - to recertify.')
-                    riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                    each.item_id.severity, issuetop[-1]])
+            # # item c.5 Due date - if result < 0, then
+            # # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
+            # details = InspectionDetails.objects.filter(
+            #     master_id__add_date__range=getstartq(self),
+            #     item_id__items__contains='Due', category_id__category__contains='C.5')
 
-            # item c.17 Due date - if result < 0, then
-            # Genset registration expired - pls renew with ST. (STATUTORY, 3)
-            details = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self),
-                item_id__items__contains='Due', category_id__category__contains='C.17')
+            # for each in details:
+            #     datadate = datetime.strptime(
+            #         each.item_value, "%Y-%m-%d")
+            #     diffdate = delta.relativedelta(
+            #         datadate, datenow)
+            #     if diffdate.days < 0:
+            #         sums += 1
+            #         # distinctsites.add(each.master_id)
+            #         # distinctissue += 1
+            #         distinctsites.add(each.master_id.site_id)
+            #         # issuecount[each.category_id] = issuecount.get(
+            #         #     each.item_id.items, 0) + 1
+            #         issuecount[each.item_id] = issuecount.get(
+            #             each.item_id.items, 0) + 1
+            #         issuetop.append(
+            #             'Relay calibration expired - calibrate ASAP.')
+            #         riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #                         each.item_id.severity, issuetop[-1]])
 
-            for each in details:
-                datadate = datetime.strptime(
-                    each.item_value, "%Y-%m-%d")
-                diffdate = delta.relativedelta(
-                    datadate, datenow)
-                if diffdate.days < 0:
-                    sums += 1
-                    # distinctsites.add(each.master_id)
-                    # distinctissue += 1
-                    distinctsites.add(each.master_id.site_id)
-                    # issuecount[each.category_id] = issuecount.get(
-                    #     each.item_id.items, 0) + 1
-                    issuecount[each.item_id] = issuecount.get(
-                        each.item_id.items, 0) + 1
-                    issuetop.append(
-                        'Genset ST registration expired - to renew.')
-                    riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                    each.item_id.severity, issuetop[-1]])
+            # # item c.10 Due date - if result < 0, then
+            # # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
+            # details = InspectionDetails.objects.filter(
+            #     master_id__add_date__range=getstartq(self),
+            #     item_id__items__contains='Due', category_id__category__contains='C.10')
 
-            distinctissue = len(issuecount)
-            if len(issuetop) > 0:
-                topissue = max(set(issuetop), key=issuetop.count)
+            # for each in details:
+            #     datadate = datetime.strptime(
+            #         each.item_value, "%Y-%m-%d")
+            #     diffdate = delta.relativedelta(
+            #         datadate, datenow)
+            #     if diffdate.days < 0:
+            #         sums += 1
+            #         # distinctsites.add(each.master_id)
+            #         # distinctissue += 1
+            #         distinctsites.add(each.master_id.site_id)
+            #         # issuecount[each.category_id] = issuecount.get(
+            #         #     each.item_id.items, 0) + 1
+            #         issuecount[each.item_id] = issuecount.get(
+            #             each.item_id.items, 0) + 1
+            #         issuetop.append(
+            #             'CO2 extinguisher cert. expired - to recertify.')
+            #         riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #                         each.item_id.severity, issuetop[-1]])
+
+            # # item c.17 Due date - if result < 0, then
+            # # Genset registration expired - pls renew with ST. (STATUTORY, 3)
+            # details = InspectionDetails.objects.filter(
+            #     master_id__add_date__range=getstartq(self),
+            #     item_id__items__contains='Due', category_id__category__contains='C.17')
+
+            # for each in details:
+            #     datadate = datetime.strptime(
+            #         each.item_value, "%Y-%m-%d")
+            #     diffdate = delta.relativedelta(
+            #         datadate, datenow)
+            #     if diffdate.days < 0:
+            #         sums += 1
+            #         # distinctsites.add(each.master_id)
+            #         # distinctissue += 1
+            #         distinctsites.add(each.master_id.site_id)
+            #         # issuecount[each.category_id] = issuecount.get(
+            #         #     each.item_id.items, 0) + 1
+            #         issuecount[each.item_id] = issuecount.get(
+            #             each.item_id.items, 0) + 1
+            #         issuetop.append(
+            #             'Genset ST registration expired - to renew.')
+            #         riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #                         each.item_id.severity, issuetop[-1]])
+
+            # distinctissue = len(issuecount)
+            # if len(issuetop) > 0:
+            #     topissue = max(set(issuetop), key=issuetop.count)
+            # else:
+            #     topissue = ''
+            # return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
+            distinctissue = len(set(issuetop2))
+            if len(issuetop2) > 0:
+                topissue = max(set(issuetop2), key=issuetop2.count)
             else:
                 topissue = ''
-            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
+            return {'sum': xsums, 'ds': xdistinctsites, 'di': distinctissue, 'top': topissue, 'risk': riskids}
         elif errtype == 'RISK':
             riskids = []
             details = InspectionDetails.objects.all()\
@@ -665,6 +723,7 @@ def getSum(self, errtype):
 
 
 def showmediafiles(sites):
+
     medialistall = []
     # try:
     #     if (sites.filter(category_id__category = '1.')):
@@ -672,6 +731,8 @@ def showmediafiles(sites):
     # except Exception as e:
     #     print(e)
     #     pass
+    if settings.DEBUG:
+            print("DEBUG: Start media files",datetime.now())
     for site in sites:
         try:
             # print(site.item_id.items=='1.')
@@ -685,7 +746,7 @@ def showmediafiles(sites):
                 if medialist['category'].split(" ")[0].split(".")[0].isdigit():
                     for x in sites:
                         if x.item_id.items == medialist['category'].split(" ")[0] and x.master_id.site_id.site_no==medialist['siteid']:
-                            print(x.item_value)
+                            # print(x.item_value)
                             medialist['category']=x.item_value
 
 
@@ -729,7 +790,8 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         # print(self.request.GET['start_date'])
 
         context = super().get_context_data(**kwargs)
-
+        if settings.DEBUG:
+            print("DEBUG: Start show dashboard",datetime.now())
         # load the datefilters with default values
         try:
             if self.request.GET['start_date']:
@@ -756,17 +818,26 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         names = []
 
         # location list for map markers
+        if settings.DEBUG:
+            print("DEBUG: Start location markers",datetime.now())
+
         locationlist = Sites.objects.filter(active=True)
-        for loc in locationlist:
-            locations.append({'lat': loc.latitude, 'lng': loc.longitude})
-            names.append(loc.name)
+        locations=[{'lat':loc.latitude,'lng':loc.longitude} for loc in locationlist]
+        names = [loc.name for loc in locationlist]
+        # for loc in locationlist:
+        #     locations.append({'lat': loc.latitude, 'lng': loc.longitude})
+        #     names.append(loc.name)
 
         # count of types of issues and errors
+        if settings.DEBUG:
+            print("DEBUG: Start issues",datetime.now())
         for errors in getERRTYPE():
             error[errors] = getSum(self, errors)
             data["errors"] = error
 
         # get risk errors.
+        if settings.DEBUG:
+            print("DEBUG: Start get risks",datetime.now())
         sums = 0
         totalissue = []
         issue_to_display = []
@@ -799,12 +870,22 @@ class ShowDashboard(LoginRequiredMixin, FormView):
 
         # get the list of sites inspected
         # get count of sites and get percentage against sites in inspected which have data
+        if settings.DEBUG:
+            print("DEBUG: list of site inspected",datetime.now())
+
         countofsites = Sites.objects.filter(active=True).count()
         countinspected = InspectionMaster.objects.filter(
             add_date__range=getstartq(self)).distinct().count()
         percentcompleted = (countinspected / countofsites) * 100
-        images = showmediafiles(InspectionDetails.objects.filter(
-            master_id__add_date__range=getstartq(self)).select_related())
+        # images = showmediafiles(InspectionDetails.objects.filter(
+            # master_id__add_date__range=getstartq(self)).select_related())
+        totalissue = 0
+        totaldistinctissue = 0
+        for key,value in error.items():
+            # print(key,value['di'])
+            totalissue += value['sum']
+            totaldistinctissue+=value['di']
+            # print(key,value['ds'])
 
         context["errors"] = error
         context['headers'] = getERRTYPE()
@@ -813,13 +894,18 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         context['countofsites'] = countofsites
         context['countinspected'] = countinspected
         context['percentcompleted'] = percentcompleted
-        context['item_imageurl'] = images
+        context['totalissue']=totalissue
+        context['totaldistinctissue']=totaldistinctissue
+        # context['item_imageurl'] = images
 
         # context['form'] = form
+        if settings.DEBUG:
+            print("DEBUG: End ShowDashboard",datetime.now())
         return context
 
 
 def addtositedata(sites, *itemname):
+
     risk = ['None', 'Low', 'Medium', 'High']
     data = {}
     subsidiary = str(sites.master_id.site_id.subsidiary)
@@ -870,6 +956,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         sitedata = []
         # risk = ['None', 'Low', 'Medium', 'High']
         # set the datefilters
+        if settings.DEBUG:
+            print("DEBUG: Start show dashboard details",datetime.now())
         try:
             if self.request.GET['start_date']:
                 self.startdate = (self.request.GET['start_date'])
@@ -1144,6 +1232,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         context['subsidiary_label'] = label6
         context['subsidiary_data'] = data6
 
+        if settings.DEBUG:
+            print("DEBUG: End show dashboard details",datetime.now())
         return context
 
 
@@ -1164,9 +1254,12 @@ def getstartq(self, **kwargs):
             first_date = datetime.strptime(kwargs['startdate'], '%Y-%m-%d')
             last_date = datetime.strptime(kwargs['enddate'], '%Y-%m-%d')
 
-    if self.startdate:
-        first_date = self.startdate
-        last_date = self.enddate
+    try:
+        if self.startdate:
+            first_date = self.startdate
+            last_date = self.enddate
+    except:
+        pass
 
     return (first_date, last_date)
 
@@ -1366,90 +1459,91 @@ class ShowInspectionDashboardTypeDetails(TemplateView):
 class GenerateExcelfile(LoginRequiredMixin,TemplateView):
     template_name = 'inspectv1/test.html'
 
-    # def get(self, request, *args, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     try:
-    #         if self.request.GET['start_date']:
-    #             self.startdate = (self.request.GET['start_date'])
-    #             self.enddate = (self.request.GET['end_date'])
-    #             initial_dict = {'start_date': self.startdate,
-    #                             'end_date': self.enddate}
-    #             form = DashboardDateFilterForm(None, initial=initial_dict)
-    #             context['form'] = form
+    def get(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            if self.request.GET['start_date']:
+                self.startdate = (self.request.GET['start_date'])
+                self.enddate = (self.request.GET['end_date'])
+                initial_dict = {'start_date': self.startdate,
+                                'end_date': self.enddate}
+                form = DashboardDateFilterForm(None, initial=initial_dict)
+                context['form'] = form
 
-    #     except:
-    #         initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
-    #                         'end_date': datetime.now().strftime("%Y-%m-%d")}  # 'end_date': datetime.now().strftime("%Y-%m-%d")
-    #         form = DashboardDateFilterForm(None, initial=initial_dict)
-    #         context['form'] = form
-    #     categories = InspectionCategory.objects.all()
-    #     items = ItemInCategory.objects.all()
-    #     sites = InspectionMaster.objects.filter(
-    #         user_id=self.request.user.id, add_date__range=getstartq(self))
-    #     siterowdata = []
-    #     labels = ['Site No.','Station','State','Date']
-    #     labels.extend([' '.join(category.category.split()[1:]) for category in categories])
-    #     for site in sites:
-    #         siterow=[]
-    #         # print(site.site_id.site_no,site.site_id.name,site.site_id.state,site.add_date)
-    #         siterow.extend([str(site.site_id.site_no),str(site.site_id.name),str(site.site_id.state),str(site.add_date)])
+        except:
+            initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
+                            'end_date': datetime.now().strftime("%Y-%m-%d")}  # 'end_date': datetime.now().strftime("%Y-%m-%d")
+            form = DashboardDateFilterForm(None, initial=initial_dict)
+            context['form'] = form
+        categories = InspectionCategory.objects.all()
+        items = ItemInCategory.objects.all()
+        sites = InspectionMaster.objects.filter(
+            user_id=self.request.user.id, add_date__range=getstartq(self))
+        siterowdata = []
+        labels = ['Site No.','Station','State','Date']
+        labels.extend([' '.join(category.category.split()[1:]) for category in categories])
+        print('getting siterowdata listing')
+        for site in sites:
+            siterow=[]
+            # print(site.site_id.site_no,site.site_id.name,site.site_id.state,site.add_date)
+            siterow.extend([str(site.site_id.site_no),str(site.site_id.name),str(site.site_id.state),str(site.add_date)])
 
-    #         for category in categories:
+            for category in categories:
 
-    #             items = InspectionDetails.objects.filter(master_id=site.id,category_id=category.id)
-    #             # print(' '.join(str(category).split()[1:]))
-    #             catdata = []
-    #             for  item in items:
-    #                 # print(item)
-    #                 try:
-    #                     if item.item_value:
-    #                         # print(category.category, item.item_value)
-    #                         # print(data[0].item_value)
-    #                         value = item.item_value
-    #                         if value == "true":
-    #                             value = item.item_id.items
-    #                             # print('value',value)
-    #                         # siterow.append(value)
-    #                         catdata.append(value)
-    #                 except:
-    #                     # siterow.append(' ')
-    #                     # catdata.append(' ')
-    #                     pass
-    #                 # print(category,catdata)
-    #             siterow.append("|".join(catdata))
+                items = InspectionDetails.objects.filter(master_id=site.id,category_id=category.id)
+                # print(' '.join(str(category).split()[1:]))
+                catdata = []
+                for  item in items:
+                    # print(item)
+                    try:
+                        if item.item_value:
+                            # print(category.category, item.item_value)
+                            # print(data[0].item_value)
+                            value = item.item_value
+                            if value == "true":
+                                value = item.item_id.items
+                                # print('value',value)
+                            # siterow.append(value)
+                            catdata.append(value)
+                    except:
+                        # siterow.append(' ')
+                        # catdata.append(' ')
+                        pass
+                    # print(category,catdata)
+                siterow.append("|".join(catdata))
 
-    #         else:
-    #             siterow.append(' ')
+            else:
+                siterow.append(' ')
 
-    #         siterowdata.append(siterow)
+            siterowdata.append(siterow)
+        print('generate excel')
+        # create the file to be sent to download the excel file.
+        f = io.BytesIO()
+        workbook = xlsxwriter.Workbook(f,{'im_memory':True})
+        worksheet = workbook.add_worksheet()
+        maxrow = len(siterowdata)
+        maxcol = len(siterowdata[0])
+        row=0
+        col=0
 
-    #     # create the file to be sent to download the excel file.
-    #     f = io.BytesIO()
-    #     workbook = xlsxwriter.Workbook(f,{'im_memory':True})
-    #     worksheet = workbook.add_worksheet()
-    #     maxrow = len(siterowdata)
-    #     maxcol = len(siterowdata[0])
-    #     row=0
-    #     col=0
+        for x in range(0,len(labels)):
+            worksheet.write_string(row,col, labels[x])
+            col+=1
+        row=1
+        for rows in range(0,maxrow):
+            for cols in range(0,maxcol):
+                worksheet.write_string(rows+1,cols, siterowdata[rows][cols])
 
-    #     for x in range(0,len(labels)):
-    #         worksheet.write_string(row,col, labels[x])
-    #         col+=1
-    #     row=1
-    #     for rows in range(0,maxrow):
-    #         for cols in range(0,maxcol):
-    #             worksheet.write_string(rows+1,cols, siterowdata[rows][cols])
+        workbook.close()
 
-    #     workbook.close()
-
-    #     date = datetime.now().strftime("%Y%m%d")
-    #     filename = 'Excel_download_' + date+'.xlsx'
-    #     f.seek(0)
-    #     response = HttpResponse(f.getvalue(),content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    #     response['Content-Disposition'] = "attachment; filename="+filename
+        date = datetime.now().strftime("%Y%m%d")
+        filename = 'Excel_download_' + date+'.xlsx'
+        f.seek(0)
+        response = HttpResponse(f.getvalue(),content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = "attachment; filename="+filename
 
 
-    #     return response
+        return response
 
 
 

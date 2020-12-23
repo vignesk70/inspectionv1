@@ -366,6 +366,8 @@ def getSum(self, errtype):
         #     master_id=masterid, item_id__errortype=errtype).count()
 
         if errtype == 'POWER':
+            if settings.DEBUG:
+                print("DEBUG: Start getSum - POWER",errtype,datetime.now())
             b1_error_messages = {'BN': 'B-N voltage outside limits - report to TNB/SESB.',
                                  'YN': 'Y-N voltage outside limits - report to TNB/SESB.',
                                  'RN': 'R-N voltage outside limits - report to TNB/SESB.'}
@@ -461,6 +463,9 @@ def getSum(self, errtype):
             issuecount = {}
             issuetop = []
             riskids = []
+            if settings.DEBUG:
+                print("DEBUG: Start getSum - ENGINEERING",errtype,datetime.now())
+
             details = InspectionDetails.objects.all()\
                 .filter(item_id__errortype=errtype,
                         item_id__throw_error=True, master_id__add_date__range=getstartq(self))
@@ -512,6 +517,9 @@ def getSum(self, errtype):
             issuetop = []
             issuetop2 = []
             riskids = []
+
+            if settings.DEBUG:
+                print("DEBUG: Start getSum - STATUTORY",errtype,datetime.now())
             # details = InspectionDetails.objects.filter(
             #     item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
             details2 = InspectionDetails.objects.filter(
@@ -663,6 +671,8 @@ def getSum(self, errtype):
             return {'sum': xsums, 'ds': xdistinctsites, 'di': distinctissue, 'top': topissue, 'risk': riskids}
         elif errtype == 'RISK':
             riskids = []
+            if settings.DEBUG:
+                print("DEBUG: Start getSum - RISK",errtype,datetime.now())
             details = InspectionDetails.objects.all()\
                 .filter(item_id__severity__gt=0,
                         master_id__add_date__range=getstartq(self))
@@ -686,8 +696,9 @@ def getSum(self, errtype):
             issuecount = {}
             issuetop = []
             riskids = []
-            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True,
-                                                             master_id__add_date__range=getstartq(self))
+            if settings.DEBUG:
+                print("DEBUG: Start getSum - ALL ELSE",errtype,datetime.now())
+            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
             # sums = details.count()
             # distinctsites = details.distinct('master_id__site_id').count()
             for each in details:
@@ -853,6 +864,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         issuedict_sort = sorted(issuedict.items(), key=lambda x: x[1], reverse=True)
 
         # print(issuedict_sort)
+
         for key, value in issuedict_sort[:3]:
             issue_to_display.append(key)
 

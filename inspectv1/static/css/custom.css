@@ -124,22 +124,22 @@ li .nocircle {
 }
 
 @keyframes animIn {
-  0% { transform: translateX(-150%); }
+  0% { transform: translateX(-200%); }
   100% { transform: translateX(0%); }
 }
 
 @-o-keyframes animIn {
-  0% { transform: translateX(-150%); }
+  0% { transform: translateX(-200%); }
   100% { transform: translateX(0%); }
 }
 
 @-moz-keyframes animIn {
-  0% { transform: translateX(-150%); }
+  0% { transform: translateX(-200%); }
   100% { transform: translateX(0%); }
 }
 
 @-webkit-keyframes animIn {
-  0% { transform: translateX(-150%); }
+  0% { transform: translateX(-200%); }
   100% { transform: translateX(0%); }
 }
 
@@ -163,13 +163,13 @@ li .nocircle {
   transition-delay: var(--customtrans-delay);
 }
 .card:hover .fa-sliders {
-  color: #ADD8E6;
+  color: #87CEEB;
 }
 .card:hover .fa-map-marker {
-  color: #FFCCCB;
+  color: #F08080;
 }
 .card:hover .fa-star-o {
-  color: #D8BFD8;
+  color: #DA70D6;
 }
 
 /*

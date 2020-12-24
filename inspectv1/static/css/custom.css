@@ -9,6 +9,13 @@ body {
   background-blend-mode: screen;
 }
 
+:root {
+  --customtrans-prop: color;
+  --customtrans-dur: 0.5s;
+  --customtrans-timing-func: ease-out;
+  --customtrans-delay: 0s; 
+}
+
 .first {
   background-color: rgba(0, 0, 0, 0.76) !important;
 }
@@ -71,35 +78,98 @@ li .nocircle {
 .card {
   background-clip: content-box !important;
   border: none !important;
-  background: #F5F5F5 !important;
   background-position: center;
   transition: background 0.5s;
 }
 
-@mixin customtrans {
-  transition-property: color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  transition-delay: 0s;
-}
-
 .card:hover>.card-body {
   color: #0018A8;
-  @include customtrans;
+  transition-property: var(--customtrans-prop);
+  transition-duration: var(--customtrans-dur);
+  transition-timing-function: var(--customtrans-timing-func);
+  transition-delay: var(--customtrans-delay);
 }
 
+.card-text {
+  line-height: 1.3rem; 
+  font-size: small;
+}
 
+.bar-text {
+  display: inline-block;
+  font-size: medium;
+  padding-left: 5px;
+}
+
+.bar {
+  display: block; 
+  height: 1.4rem;     
+}
+
+.bar-bkground {
+  background-color: #F5F5F5;
+  width: 100%;    
+}
+
+.bar-issue {
+  background-color: #ADD8E6;     
+}
+
+.bar-site {
+  background-color: #FFCCCB;     
+}
+
+.bar-distinct {
+  background-color: #D8BFD8;     
+}
+
+@keyframes animIn {
+  0% { transform: translateX(-150%); }
+  100% { transform: translateX(0%); }
+}
+
+@-o-keyframes animIn {
+  0% { transform: translateX(-150%); }
+  100% { transform: translateX(0%); }
+}
+
+@-moz-keyframes animIn {
+  0% { transform: translateX(-150%); }
+  100% { transform: translateX(0%); }
+}
+
+@-webkit-keyframes animIn {
+  0% { transform: translateX(-150%); }
+  100% { transform: translateX(0%); }
+}
+
+.card:hover .bar-issue, 
+.card:hover .bar-site, 
+.card:hover .bar-distinct {
+  -webkit-animation: animIn 0.3s ease-out;
+  -webkit-animation-delay: calc(var(--animation-order) * 100ms);
+  -moz-animation: animIn 0.3s ease-out;
+  -moz-animation-delay: calc(var(--animation-order) * 100ms);
+  -o-animation: animIn 0.3s ease-out;
+  -o-animation-delay: calc(var(--animation-order) * 100ms);
+  animation: animIn 0.3s ease-out;  
+  animation-delay: calc(var(--animation-order) * 100ms);
+}
+
+.card:hover .fa {
+  transition-property: var(--customtrans-prop);
+  transition-duration: var(--customtrans-dur);
+  transition-timing-function: var(--customtrans-timing-func);
+  transition-delay: var(--customtrans-delay);
+}
 .card:hover .fa-sliders {
- color: #1E90FF;
- @include customtrans;
+  color: #ADD8E6;
 }
 .card:hover .fa-map-marker {
- color: #B22222;
- @include customtrans;
+  color: #FFCCCB;
 }
-.card:hover .fa-bar-chart {
- color: #228B22;
- @include customtrans;
+.card:hover .fa-star-o {
+  color: #D8BFD8;
 }
 
 /*
@@ -142,6 +212,7 @@ p {
   /*background-color: white;*/
   margin-top: 0;
   margin-bottom: 1rem;
+  overflow: hidden;
 }
 
 .base_error {
@@ -651,3 +722,8 @@ label {
 
 .alignleft { float: left; }
 .alignright { float: right; }
+
+.btn-excel {
+  color: white !important;
+  background-color: #026e3a !important;
+}

@@ -22,8 +22,8 @@
                     <button type="submit" class="btn btn-primary" name="dates">
                         Filter Dates
                     </button>
-                    <a  href="/generatexlsx" target="_blank" class="btn btn-primary" name="xlsx">
-                        Get Excel
+                    <a  href="/generatexlsx" target="_blank" class="btn btn-success btn-excel" name="xlsx">
+                        <i class="fa fa-download"></i><span class="ml-1">Excel</span>
                     </a>
                     </form>
                 </div>
@@ -77,10 +77,21 @@
                         </div>
                         <div class="card-body">
 
-                            <p class="card-text"><i class="fa fa-sliders fa-fw"></i><span class="ml-1"></span><strong>{{value.sum}}</strong> issues</p>
-                            <p class="card-text"><i class="fa fa-map-marker fa-fw"></i><span class="ml-1"></span><strong>{{value.ds}} </strong>sites</p>
-                            <p class="card-text"><i class="fa fa-bar-chart fa-fw"></i><span class="ml-1"></span><strong>{%if value.di %}{{value.di}}{% else %}0{% endif %}</strong>
-                                distinct issues</p>
+                            <p class="card-text"><i class="fa fa-sliders fa-fw"></i><span class="ml-1"></span>Issues<br>
+				<span class="bar bar-bkground"><span class="bar bar-issue" style="width: calc({{value.sum}} / {{totalissue}} * 100%); --animation-order: 1;">
+					<span class="bar-text">{{value.sum}}</span>
+				</span></span>
+			    </p>
+                            <p class="card-text"><i class="fa fa-map-marker fa-fw"></i><span class="ml-1"></span>Sites<br>
+				<span class="bar bar-bkground"><span class="bar bar-site" style="width: calc({{value.ds}} / {{countinspected}} * 100%); --animation-order: 2;">
+					<span class="bar-text">{{value.ds}}</span>
+				</span></span>
+			    </p>
+                            <p class="card-text"><i class="fa fa-star-o fa-fw"></i><span class="ml-1"></span>Distinct issues<br>
+				<span class="bar bar-bkground"><span class="bar bar-distinct" style="width: {%if value.di %}calc({{value.di}} / {{totaldistinctissue}} * 100%){% else %}0{% endif %}; --animation-order: 3;">
+					<span class="bar-text">{%if value.di %}{{value.di}}{% else %}0{% endif %}</span>
+				</span></span>
+			    </p>
                             <p class="card-text" style="line-height: 1.3rem; font-size:small"><em>Top Issue</em><br>
                                 <strong>{%if value.top %}{{value.top}}{% else %}None{% endif %}</strong></p>
 

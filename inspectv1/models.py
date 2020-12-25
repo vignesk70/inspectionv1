@@ -35,11 +35,11 @@ class ItemInCategory(models.Model):
                                  on_delete=models.CASCADE, related_name='items', default=3)
     items = models.CharField("Item", max_length=200)
     show_in_section = models.IntegerField("Show in Section", default=0)
-    throw_error = models.BooleanField("Throw error if True")
+    throw_error = models.BooleanField("Throw error if True",db_index=True)
     sequence = models.IntegerField("Sequence")
     fieldtype = models.CharField(max_length=20, choices=FIELDTYPE)
     errortype = models.CharField(
-        max_length=20, choices=ERRORTYPE, default=' ', verbose_name="Category")
+        max_length=20, choices=ERRORTYPE, default=' ', verbose_name="Category" , db_index=True)
     severity = models.IntegerField("Risk Factors", default=0)
 
     class Meta:

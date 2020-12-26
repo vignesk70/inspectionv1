@@ -497,23 +497,23 @@ def getSum(self, errtype):
             xsums = details.count()
             xdistinctissues =details.distinct('item_id__items').count()
 
-            for each in details:
-                distinctsites.add(each.master_id.site_id)
-                # issuecount[each.category_id] = issuecount.get(
-                #     each.item_id.items, 0) + 1
-                issuecount[each.item_id] = issuecount.get(
-                    each.item_id.items, 0) + 1
-                sums += 1
-                issuetop.append(each.item_id.items)
-                riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                each.item_id.severity, issuetop[-1]])
+            # for each in details:
+            #     distinctsites.add(each.master_id.site_id)
+            #     # issuecount[each.category_id] = issuecount.get(
+            #     #     each.item_id.items, 0) + 1
+            #     issuecount[each.item_id] = issuecount.get(
+            #         each.item_id.items, 0) + 1
+            #     sums += 1
+            #     issuetop.append(each.item_id.items)
+            #     riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #                     each.item_id.severity, issuetop[-1]])
 
             if settings.DEBUG:
                 print("DEBUG: Start getSum - end ENGINEERING",errtype,datetime.now())
 
 
             datenow = datetime.now()
-            datediff = datetime.strftime(datenow+delta.relativedelta(years=-10),"%Y-%m-%d")
+            datediff = datetime.strftime(datenow+delta.relativedelta(years=-20),"%Y-%m-%d")
             print(datediff)
             details2 = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self), item_id__items__contains='MSB year').filter(item_id__items__contains='MSB year').filter(item_value__lt=datediff)
@@ -522,6 +522,7 @@ def getSum(self, errtype):
             xdistinctsites = details.distinct('master_id__site_id')
             xdistinctsites2 = details2.distinct('master_id__site_id')
             xdistinctsites3 = xdistinctsites.union(xdistinctsites2).distinct('master_id__site_id').count()
+            issuetop = xdistinctsites3
             if settings.DEBUG:
                 print("Debug - Engineering issues",xsums)
                 print("Debug - Engineering distinct issue",xdistinctissues)
@@ -749,12 +750,19 @@ def getSum(self, errtype):
             xdistinctissues = details.distinct('item_id__items').count()
             xissues = details.count()
             xtopissue = details.annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
+            try:
+                if len(xtopissue[0].item_id.items)  > 0:
+                    xtopissue = xtopissue[0].item_id.items=""
+                else:
+                    xtopissue = ''
+            except:
+                pass
             riskids = list(details.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))
             if settings.DEBUG:
                 print("Debug xdistinct sites",xdistinctsites)
                 print("Debug xdistinct issues",xdistinctissues)
                 print("DEbug xissues",xissues)
-                print("Debug xtopissue",xtopissue[0].item_id.items)
+                print("Debug xtopissue",xtopissue)
                 # print("Debug riskid",list(details.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items')))
             # for each in details:
                 # distinctsites.add(each.master_id.site_id)
@@ -785,7 +793,7 @@ def getSum(self, errtype):
             # else:
             #     topissue = ''
             # return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue, 'risks': riskids}
-            return {'sum': xissues, 'ds': xdistinctsites, 'di': xdistinctissues, 'top': xtopissue[0].item_id.items, 'risk': riskids}
+            return {'sum': xissues, 'ds': xdistinctsites, 'di': xdistinctissues, 'top': xtopissue, 'risk': riskids}
 
 
 def showmediafiles(sites):

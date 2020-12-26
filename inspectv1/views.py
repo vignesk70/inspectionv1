@@ -522,11 +522,19 @@ def getSum(self, errtype):
             xdistinctsites = details.distinct('master_id__site_id')
             xdistinctsites2 = details2.distinct('master_id__site_id')
             xdistinctsites3 = xdistinctsites.union(xdistinctsites2).distinct('master_id__site_id').count()
-            issuetop = xdistinctsites3
+            xtopissue = details.annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
+            try:
+                if len(xtopissue)  > 0:
+                    xtopissue = xtopissue[0].item_id.items
+                else:
+                    xtopissue = None
+            except:
+                pass
             if settings.DEBUG:
                 print("Debug - Engineering issues",xsums)
                 print("Debug - Engineering distinct issue",xdistinctissues)
                 print("Debug - Engineering distinct sites", xdistinctsites3)
+                print('DEBUG - engineering xtopissue',xtopissue)
 
 
             for each in details2:
@@ -543,17 +551,17 @@ def getSum(self, errtype):
                     #     each.item_id.items, 0) + 1
                     issuecount[each.item_id] = issuecount.get(
                         each.item_id.items, 0) + 1
-                    issuetop.append('MSB age > 20 years')
-                    riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                    each.item_id.severity, issuetop[-1]])
+                    # issuetop.append('MSB age > 20 years')
+                    # riskids.append([each.master_id.site_id.id, each.item_id.id,
+                                    # each.item_id.severity, issuetop[-1]])
 
             distinctissue = len(issuecount)
 
-            if len(issuetop) > 0:
-                topissue = max(set(issuetop), key=issuetop.count)
-            else:
-                topissue = None
-            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
+            # if len(issuetop) > 0:
+            #     topissue = max(set(issuetop), key=issuetop.count)
+            # else:
+            #     topissue = None
+            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': xtopissue, 'risk': riskids}
         elif errtype == 'STATUTORY':
 
             sums = 0
@@ -754,7 +762,7 @@ def getSum(self, errtype):
                 if len(xtopissue[0].item_id.items)  > 0:
                     xtopissue = xtopissue[0].item_id.items=""
                 else:
-                    xtopissue = ''
+                    xtopissue = None
             except:
                 pass
             riskids = list(details.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))

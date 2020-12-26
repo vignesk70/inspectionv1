@@ -381,187 +381,162 @@ def getSum(self, errtype):
                 'PF': 'Low PF reading - rectify to avoid penalty.'}
             all_errors = [b1_error_messages,
                           b2_error_messages, b3_error_messages]
-            # register the variables
-            sums = 0
-            xsums = 0
-            distinctsites = set({})
-
-            # issuecount = {key for key in b1_error_messages}
-            issuecount = {}
-            issuetop = []
-            riskids = []
-
-            # # new code for filter
-            # details2 = InspectionDetails.objects.filter(master_id__add_date__range=getstartq(self),item_id__errortype=errtype)
-            # for errors in all_errors:
-            #     print(list(errors.keys()))
-            #     # print(details2.item_id.items)
-            #     if list(errors.keys())[0] in b1_error_messages:
-            #         q = details2.filter(Q(item_id__items__in=list(errors.keys())) & (Q(item_value__lt=216)|Q(item_value__gt=253)))
-            #         for each in q:
-            #             print(each.item_id.items,each.item_value)
-            #     if list(errors.keys())[0] in b2_error_messages:
-            #         q2 = details2.filter(Q(item_id__items__in=list(errors.keys())) & Q(item_value__gt=80))
-            #         for each in q2:
-            #             print(each.item_id.items,each.item_value)
-            #     if list(errors.keys())[0] in b3_error_messages:
-            #         q3 = details2.filter(Q(item_id__items__in=list(errors.keys())) & Q(item_value__lt=0.85))
-            #         for each in q3:
-            #             print(each.item_id.items,each.item_value)
-
 
 
             details = InspectionDetails.objects.filter(
-                        master_id__add_date__range=getstartq(self),item_id__errortype=errtype)
+                        master_id__add_date__range=getstartq(self),item_id__errortype=errtype).annotate(itemval = Cast('item_value',output_field=FloatField()))
+
+            q1 = details.filter(item_id__items__in=b1_error_messages.keys()).filter(Q(itemval__lt=216)|Q(itemval__gt=253))
+
+
+            q2 = details.filter(item_id__items__in=b2_error_messages.keys()).filter(Q(itemval__gte=80))
+
+            q3 = details.filter(item_id__items__in=b3_error_messages.keys()).filter(Q(itemval__lt=0.85))
+
+
+            # merged = q1.union(q2,q3)
+            merged = q1|q2|q3
+            allissuescount = merged.count()
+            distinctsites = merged.values('master_id__site_id').distinct('master_id__site_id').count()
+            distinctissues = merged.values('item_id__items').distinct('item_id__items').count()
+            topissue = merged.values('item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
+            topissue = topissue[0]['item_id__items']
             for each in all_errors:
-                for keys in each:
-                    # details = InspectionDetails.objects.filter(
-                    #     master_id__add_date__range=getstartq(self),item_id__errortype=errtype, item_id__items=keys)
-                    details2 = details.filter(item_id__items=keys)
-                    # if settings.DEBUG: print("DEBUG - details2 count of isses with key",keys,details2.count())
+                try:
+                    print(each,topissue)
+                    if topissue in each.keys():
+                        topissue = each[topissue]
+                except:
+                    pass
 
-                    if keys in b1_error_messages.keys():
-                        xb1issues = details2.annotate(itemval = Cast('item_value',output_field=FloatField())).filter(Q(itemval__lt=216)| Q(itemval__gt=253))
-                        xsums += xb1issues.count()
-                        if settings.DEBUG: print("DEBUG b1 errors-filter", xb1issues.values_list(),xsums)
-
-
-                        for row in details2:
-                            if float(row.item_value) < 216 or float(row.item_value) > 253.0:
-                                sums += 1
-                                # if settings.DEBUG:
-                                    # print(
-                                    # f"{keys} {row.item_value} - {each[keys]}")
-                                distinctsites.add(row.master_id.site_id)
-                                issuecount[keys] = issuecount.get(keys, 0) + 1
-                                issuetop.append(b1_error_messages[keys])
-                                riskids.append([row.master_id.site_id.id, row.item_id.id,
-                                                row.item_id.severity, issuetop[-1]])
-                        if settings.DEBUG: print("DEBUG b1 errors", sums)
-
-                    if keys in b2_error_messages:
-                        # xdetailsb2 = details2.annotate(itemval = Cast('item_value',output_field=FloatField())).filter(Q(itemval__gt=80))
-                        # for rows in xdetailsb2:
-                        #     print("ROWS in b2",rows.item_value)
-                        xb2issues = details2.annotate(itemval = Cast('item_value',output_field=FloatField())).filter(Q(itemval__gt=80))
-                        xsums += xb2issues.count()
-                        if settings.DEBUG: print("DEBUG b2 errors-filter", xb2issues.values_list(),xsums)
-                        for row in details2:
-                            if float(row.item_value) >= 80:
-                                sums += 1
-                                if settings.DEBUG: print(
-                                    f"{keys} {row.item_value} - {each[keys]}")
-                                # distinctsites.add(row.master_id.site_id)
-                                issuecount[keys] = issuecount.get(keys, 0) + 1
-                                issuetop.append(b2_error_messages[keys])
-                                riskids.append([row.master_id.site_id.id, row.item_id.id,
-                                                row.item_id.severity, issuetop[-1]])
-                        if settings.DEBUG: print("DEBUG b2 errors", sums)
-                    if keys in b3_error_messages:
-                        xb3issues = details2.annotate(itemval = Cast('item_value',output_field=FloatField())).filter(Q(itemval__lt=0.85))
-                        xsums += xb3issues.count()
-                        if settings.DEBUG: print("DEBUG b3 errors-filter", xb3issues.values_list(),xsums)
-                        for row in details2:
-                            if float(row.item_value) < 0.85:
-                                sums += 1
-                                # if settings.DEBUG: print(
-                                #     f"{keys} {row.item_value} - {each[keys]}")
-                                distinctsites.add(row.master_id.site_id)
-                                issuecount[keys] = issuecount.get(keys, 0) + 1
-                                issuetop.append(b3_error_messages[keys])
-                                riskids.append([row.master_id.site_id.id, row.item_id.id,
-                                                row.item_id.severity, issuetop[-1]])
-                        if settings.DEBUG: print("DEBUG b3 errors", sums)
-                    if len(issuetop) > 0:
-                        topissue = max(set(issuetop), key=issuetop.count)
-                    else:
-                        topissue = None
-                    distinctissue = len(issuecount)
-                    if settings.DEBUG: print("DEBUG xsums", xsums)
-
-            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
+            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
         elif errtype == 'ENGINEERING':
 
             # item A.3 MSB year of installation - if result > 20 (years), then
             # MSB age > 20 years. (ENGINEERING, 2)
-            sums = 0
-            distinctsites = set({})
-            issuecount = {}
-            issuetop = []
-            riskids = []
-            if settings.DEBUG:
-                print("DEBUG: Start getSum - start ENGINEERING",errtype,datetime.now())
+            # sums = 0
+            # distinctsites = set({})
+            # issuecount = {}
+            # issuetop = []
+            # riskids = []
+            # if settings.DEBUG:
+            #     print("DEBUG: Start getSum - start ENGINEERING",errtype,datetime.now())
 
-            details = InspectionDetails.objects.filter(item_id__errortype=errtype,
-                        item_id__throw_error=True, master_id__add_date__range=getstartq(self))
-            xsums = details.count()
-            xdistinctissues =details.distinct('item_id__items').count()
+            # details = InspectionDetails.objects.filter(item_id__errortype=errtype,
+            #             item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+            # xsums = details.count()
+            # xdistinctissues =details.distinct('item_id__items').count()
 
-            # for each in details:
-            #     distinctsites.add(each.master_id.site_id)
-            #     # issuecount[each.category_id] = issuecount.get(
-            #     #     each.item_id.items, 0) + 1
-            #     issuecount[each.item_id] = issuecount.get(
-            #         each.item_id.items, 0) + 1
-            #     sums += 1
-            #     issuetop.append(each.item_id.items)
-            #     riskids.append([each.master_id.site_id.id, each.item_id.id,
-            #                     each.item_id.severity, issuetop[-1]])
+            # # for each in details:
+            # #     distinctsites.add(each.master_id.site_id)
+            # #     # issuecount[each.category_id] = issuecount.get(
+            # #     #     each.item_id.items, 0) + 1
+            # #     issuecount[each.item_id] = issuecount.get(
+            # #         each.item_id.items, 0) + 1
+            # #     sums += 1
+            # #     issuetop.append(each.item_id.items)
+            # #     riskids.append([each.master_id.site_id.id, each.item_id.id,
+            # #                     each.item_id.severity, issuetop[-1]])
 
-            if settings.DEBUG:
-                print("DEBUG: Start getSum - end ENGINEERING",errtype,datetime.now())
+            # if settings.DEBUG:
+            #     print("DEBUG: Start getSum - end ENGINEERING",errtype,datetime.now())
 
 
+            # datenow = datetime.now()
+            # datediff = datetime.strftime(datenow+delta.relativedelta(years=-20),"%Y-%m-%d")
+            # print(datediff)
+            # details2 = InspectionDetails.objects.filter(
+            #     master_id__add_date__range=getstartq(self), item_id__items__contains='MSB year').filter(item_id__items__contains='MSB year').filter(item_value__lt=datediff)
+            # xsums += details2.count()
+            # xdistinctissues += details2.distinct('item_id__items').count()
+            # xdistinctsites = details.distinct('master_id__site_id')
+            # xdistinctsites2 = details2.distinct('master_id__site_id')
+            # xdistinctsites3 = xdistinctsites.union(xdistinctsites2).distinct('master_id__site_id').count()
+            # xtopissue = details.annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
+            # try:
+            #     if len(xtopissue)  > 0:
+            #         xtopissue = xtopissue[0].item_id.items
+            #     else:
+            #         xtopissue = None
+            # except:
+            #     pass
+            # if settings.DEBUG:
+            #     print("Debug - Engineering issues",xsums)
+            #     print("Debug - Engineering distinct issue",xdistinctissues)
+            #     print("Debug - Engineering distinct sites", xdistinctsites3)
+            #     print('DEBUG - engineering xtopissue',xtopissue)
+
+
+            # for each in details2:
+            #     # datadate = datetime.strptime(each.item_value, "%Y-%m-%d")
+            #     # diffdate = delta.relativedelta(
+            #     #     datenow, datadate)
+            #     # if diffdate.years >= 20:
+            #     if True:
+            #         sums += 1
+            #         distinctsites.add(each.master_id.site_id)
+            #         # distinctissue += 1
+            #         # distinctsites.add(each.master_id)
+            #         # issuecount[each.category_id] = issuecount.get(
+            #         #     each.item_id.items, 0) + 1
+            #         issuecount[each.item_id] = issuecount.get(
+            #             each.item_id.items, 0) + 1
+            #         # issuetop.append('MSB age > 20 years')
+            #         # riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #                         # each.item_id.severity, issuetop[-1]])
+
+            # distinctissue = len(issuecount)
+
+            # # if len(issuetop) > 0:
+            # #     topissue = max(set(issuetop), key=issuetop.count)
+            # # else:
+            #  #     topissue = None
+            details = InspectionDetails.objects.filter(item_id__errortype=errtype,master_id__add_date__range=getstartq(self))
+
+            # get all with error_true
+            q1 = details.filter(item_id__throw_error=True)
+
+            # get date value to compare
             datenow = datetime.now()
             datediff = datetime.strftime(datenow+delta.relativedelta(years=-20),"%Y-%m-%d")
             print(datediff)
-            details2 = InspectionDetails.objects.filter(
-                master_id__add_date__range=getstartq(self), item_id__items__contains='MSB year').filter(item_id__items__contains='MSB year').filter(item_value__lt=datediff)
-            xsums += details2.count()
-            xdistinctissues += details2.distinct('item_id__items').count()
-            xdistinctsites = details.distinct('master_id__site_id')
-            xdistinctsites2 = details2.distinct('master_id__site_id')
-            xdistinctsites3 = xdistinctsites.union(xdistinctsites2).distinct('master_id__site_id').count()
-            xtopissue = details.annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
-            try:
-                if len(xtopissue)  > 0:
-                    xtopissue = xtopissue[0].item_id.items
-                else:
-                    xtopissue = None
-            except:
-                pass
-            if settings.DEBUG:
-                print("Debug - Engineering issues",xsums)
-                print("Debug - Engineering distinct issue",xdistinctissues)
-                print("Debug - Engineering distinct sites", xdistinctsites3)
-                print('DEBUG - engineering xtopissue',xtopissue)
+
+            q2= details.filter(item_id__items__contains='MSB year').filter(item_value__lt=datediff)
+
+            print("Details count with errtype",details.count())
+            print("details with errors",q1.count())
+            print("details with msb>20",q2.count())
+            print(q2[0].item_id.items)
 
 
-            for each in details2:
-                # datadate = datetime.strptime(each.item_value, "%Y-%m-%d")
-                # diffdate = delta.relativedelta(
-                #     datenow, datadate)
-                # if diffdate.years >= 20:
-                if True:
-                    sums += 1
-                    distinctsites.add(each.master_id.site_id)
-                    # distinctissue += 1
-                    # distinctsites.add(each.master_id)
-                    # issuecount[each.category_id] = issuecount.get(
-                    #     each.item_id.items, 0) + 1
-                    issuecount[each.item_id] = issuecount.get(
-                        each.item_id.items, 0) + 1
-                    # issuetop.append('MSB age > 20 years')
-                    # riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                    # each.item_id.severity, issuetop[-1]])
+            merged = q1|q2
+            allissuescount = merged.count()
+            distinctsites = merged.values('master_id__site_id').distinct('master_id__site_id').count()
+            distinctissues = merged.values('item_id__items').distinct('item_id__items').count()
+            topissue = merged.values('item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
 
-            distinctissue = len(issuecount)
+            print("All issues",allissuescount)
+            print("distinct sites",distinctsites)
+            print("distinct issues",distinctissues)
+            print(topissue[0]['item_id__items'])
+            # print("Top issue",topissue[0].item_id.items)
 
-            # if len(issuetop) > 0:
-            #     topissue = max(set(issuetop), key=issuetop.count)
-            # else:
-            #     topissue = None
-            return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': xtopissue, 'risk': riskids}
+
+            all_errors = [{'MSB year of installation':'MSB age > 20 years'}]
+            topissue = topissue[0]['item_id__items']
+            # for each in merged:
+            #     print(each.item_id.items)
+
+            for each in all_errors:
+                try:
+                    print(each,topissue)
+                    if topissue in each.keys():
+                        topissue = each[topissue]
+                except:
+                    pass
+
+
+            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
         elif errtype == 'STATUTORY':
 
             sums = 0

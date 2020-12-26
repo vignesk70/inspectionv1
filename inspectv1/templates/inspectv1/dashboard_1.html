@@ -9,12 +9,12 @@
 
         <div class="" id="collapsefilters">
             <div class="row">
-                <div class="col flex-nowrap">
+                <div class="col" style="white-space: nowrap;">
                     <form action="#" method="get" class="form">
                         {% csrf_token %}
                         {% bootstrap_field form.start_date layout='horizontal'%}
                 </div>
-                <div class="col flex-nowrap">
+                <div class="col" style="white-space: nowrap;">
                     {% bootstrap_field form.end_date layout='horizontal'%}
                 </div>
                 <div class="col-sm-auto">
@@ -23,7 +23,7 @@
                         Filter Dates
                     </button>
                     <a  href="/generatexlsx" target="_blank" class="btn btn-success btn-excel" name="xlsx">
-                        <i class="fa fa-download"></i><span class="ml-1">Excel</span>
+                        <i class="fa fa-download"></i><span class="ml-2"></span>Excel
                     </a>
                     </form>
                 </div>

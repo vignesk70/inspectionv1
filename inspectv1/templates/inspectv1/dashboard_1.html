@@ -9,12 +9,12 @@
 
         <div class="" id="collapsefilters">
             <div class="row">
-                <div class="col">
+                <div class="col flex-nowrap">
                     <form action="#" method="get" class="form">
                         {% csrf_token %}
                         {% bootstrap_field form.start_date layout='horizontal'%}
                 </div>
-                <div class="col">
+                <div class="col flex-nowrap">
                     {% bootstrap_field form.end_date layout='horizontal'%}
                 </div>
                 <div class="col-sm-auto">
@@ -78,12 +78,12 @@
                         <div class="card-body">
 
                             <p class="card-text"><i class="fa fa-sliders fa-fw"></i><span class="ml-1"></span>Issues<br>
-				<span class="bar bar-bkground"><span class="bar bar-issue" style="width: calc({{value.sum}} / {{totalissue}} * 100%); --animation-order: 1;">
+				<span class="bar bar-bkground"><span class="bar bar-issue" style="width: {%if value.sum %}calc({{value.sum}} / {{totalissue}} * 100%){% else %}0{% endif %}; --animation-order: 1;">
 					<span class="bar-text">{{value.sum}}</span>
 				</span></span>
 			    </p>
                             <p class="card-text"><i class="fa fa-map-marker fa-fw"></i><span class="ml-1"></span>Sites<br>
-				<span class="bar bar-bkground"><span class="bar bar-site" style="width: calc({{value.ds}} / {{countinspected}} * 100%); --animation-order: 2;">
+				<span class="bar bar-bkground"><span class="bar bar-site" style="width: {%if value.ds %}calc({{value.ds}} / {{countinspected}} * 100%){% else %}0{% endif %}; --animation-order: 2;">
 					<span class="bar-text">{{value.ds}}</span>
 				</span></span>
 			    </p>

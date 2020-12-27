@@ -539,164 +539,59 @@ def getSum(self, errtype):
             return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
         elif errtype == 'STATUTORY':
 
-            sums = 0
-            distinctsites = set({})
-            issuecount = {}
-            issuetop = []
-            issuetop2 = []
-            riskids = []
-
             if settings.DEBUG:
                 print("DEBUG: Start getSum - STATUTORY",errtype,datetime.now())
-            # details = InspectionDetails.objects.filter(
-            #     item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
-            details2 = InspectionDetails.objects.filter(
-                item_id__errortype=errtype, master_id__add_date__range=getstartq(self)).select_related()
-            # print(len(details2))
-            xsums=details2.filter(item_id__throw_error=True).count()
-            xdistinctsites = details2.filter(item_id__throw_error=True).distinct('master_id__site_id').count()
-            issuetop2 = [x.item_id.items  for x in details2.filter(item_id__throw_error=True) if not x.item_id.items.startswith('Due')]
 
-            # custom sites filter logic.
-            # tags = ['C.4','C.5','C.10','C.17']
             tagsdict = {'C.4':'MSB relay calibration expired - calibrate ASAP.',
-            'C.5':'Relay calibration expired - calibrate ASAP.',
-            'C.10':'CO2 extinguisher cert. expired - to recertify.',
-            'C.17':'Genset ST registration expired - to renew.'}
+                        'C.5':'Relay calibration expired - calibrate ASAP.',
+                        'C.10':'CO2 extinguisher cert. expired - to recertify.',
+                        'C.17':'Genset ST registration expired - to renew.'}
             todaydate = datetime.now().strftime('%Y-%m-%d')
+            details = InspectionDetails.objects.filter(item_id__errortype='STATUTORY',master_id__add_date__range=getstartq(self))
+            print("debug stat count",details.count())
 
-            for tag,value in tagsdict.items():
-                q2 = details2.filter(category_id__category__contains=tag,item_id__items__contains='Due').filter(item_value__lt=todaydate)
-                if q2.count() >0:
-                    xsums += q2.count()
-                    for each in q2:
-                        issuetop2.append(tagsdict[tag])
-                        riskids.append([each.master_id.site_id.id, each.item_id.id,
-                                each.item_id.severity, issuetop2[-1]])
+            q1 = details.filter(item_id__throw_error=True)
+            print("debug - throw error",q1.count())
 
-            # for each in details:
-            #     distinctsites.add(each.master_id.site_id)
-            #     # issuecount[each.category_id] = issuecount.get(
-            #     #     each.item_id.items, 0) + 1
-            #     issuecount[each.item_id] = issuecount.get(
-            #         each.item_id.items, 0) + 1
-            #     sums += 1
-            #     issuetop.append(each.item_id.items)
-            #     riskids.append([each.master_id.site_id.id, each.item_id.id,
-            #                     each.item_id.severity, issuetop[-1]])
+            print(tagsdict.keys())
 
-            # # item C.4 Due date - if result < 0, then
-            # # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
-            # datenow = datetime.now()
-            # details = InspectionDetails.objects.filter(
-            #     master_id__add_date__range=getstartq(self),
-            #     item_id__items__contains='Due', category_id__category__contains='C.4')
-            # for each in details:
-            #     datadate = datetime.strptime(
-            #         each.item_value, "%Y-%m-%d")
-            #     diffdate = delta.relativedelta(
-            #         datadate, datenow)
-            #     if diffdate.days < 0:
-            #         sums += 1
-            #         # distinctsites.add(each.master_id)
-            #         # distinctissue += 1
-            #         distinctsites.add(each.master_id.site_id)
-            #         # issuecount[each.category_id] = issuecount.get(
-            #         #     each.item_id.items, 0) + 1
-            #         issuecount[each.item_id] = issuecount.get(
-            #             each.item_id.items, 0) + 1
-            #         issuetop.append(
-            #             'MSB relay calibration expired - calibrate ASAP.')
-            #         riskids.append([each.master_id.site_id.id, each.item_id.id,
-            #                         each.item_id.severity, issuetop[-1]])
 
-            # # item c.5 Due date - if result < 0, then
-            # # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
-            # details = InspectionDetails.objects.filter(
-            #     master_id__add_date__range=getstartq(self),
-            #     item_id__items__contains='Due', category_id__category__contains='C.5')
+            for keys in tagsdict:
+                q2 = details.filter(category_id__category__contains=keys,item_id__items__startswith='Due').filter(item_value__lt=todaydate)
+                print(keys, q2.count())
+            query=''
+            q3 = details.filter(Q(category_id__category__contains='C.4')|Q(category_id__category__contains='C.5')|Q(category_id__category__contains='C.10')|Q(category_id__category__contains='C.17')).filter(item_id__items__startswith='Due').filter(item_value__lt=todaydate)
+            print(q3.count())
 
-            # for each in details:
-            #     datadate = datetime.strptime(
-            #         each.item_value, "%Y-%m-%d")
-            #     diffdate = delta.relativedelta(
-            #         datadate, datenow)
-            #     if diffdate.days < 0:
-            #         sums += 1
-            #         # distinctsites.add(each.master_id)
-            #         # distinctissue += 1
-            #         distinctsites.add(each.master_id.site_id)
-            #         # issuecount[each.category_id] = issuecount.get(
-            #         #     each.item_id.items, 0) + 1
-            #         issuecount[each.item_id] = issuecount.get(
-            #             each.item_id.items, 0) + 1
-            #         issuetop.append(
-            #             'Relay calibration expired - calibrate ASAP.')
-            #         riskids.append([each.master_id.site_id.id, each.item_id.id,
-            #                         each.item_id.severity, issuetop[-1]])
+            merged = q1|q3
+            allissuescount = merged.count()
+            distinctsites = merged.values('master_id__site_id').distinct('master_id__site_id').count()
+            distinctissues = merged.values('category_id__category').distinct('item_id__items').count()
+            topissue = merged.values('category_id__category','item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
 
-            # # item c.10 Due date - if result < 0, then
-            # # CO2 extinguisher overdue for certification - pls arrange. (STATUTORY, 3)
-            # details = InspectionDetails.objects.filter(
-            #     master_id__add_date__range=getstartq(self),
-            #     item_id__items__contains='Due', category_id__category__contains='C.10')
 
-            # for each in details:
-            #     datadate = datetime.strptime(
-            #         each.item_value, "%Y-%m-%d")
-            #     diffdate = delta.relativedelta(
-            #         datadate, datenow)
-            #     if diffdate.days < 0:
-            #         sums += 1
-            #         # distinctsites.add(each.master_id)
-            #         # distinctissue += 1
-            #         distinctsites.add(each.master_id.site_id)
-            #         # issuecount[each.category_id] = issuecount.get(
-            #         #     each.item_id.items, 0) + 1
-            #         issuecount[each.item_id] = issuecount.get(
-            #             each.item_id.items, 0) + 1
-            #         issuetop.append(
-            #             'CO2 extinguisher cert. expired - to recertify.')
-            #         riskids.append([each.master_id.site_id.id, each.item_id.id,
-            #                         each.item_id.severity, issuetop[-1]])
+            print("All issues",allissuescount)
+            print("distinct sites",distinctsites)
+            print("distinct issues",distinctissues)
+            print("topissue",topissue[0]['category_id__category'])
+            # print("Top issue",topissue[0].item_id.items)
 
-            # # item c.17 Due date - if result < 0, then
-            # # Genset registration expired - pls renew with ST. (STATUTORY, 3)
-            # details = InspectionDetails.objects.filter(
-            #     master_id__add_date__range=getstartq(self),
-            #     item_id__items__contains='Due', category_id__category__contains='C.17')
 
-            # for each in details:
-            #     datadate = datetime.strptime(
-            #         each.item_value, "%Y-%m-%d")
-            #     diffdate = delta.relativedelta(
-            #         datadate, datenow)
-            #     if diffdate.days < 0:
-            #         sums += 1
-            #         # distinctsites.add(each.master_id)
-            #         # distinctissue += 1
-            #         distinctsites.add(each.master_id.site_id)
-            #         # issuecount[each.category_id] = issuecount.get(
-            #         #     each.item_id.items, 0) + 1
-            #         issuecount[each.item_id] = issuecount.get(
-            #             each.item_id.items, 0) + 1
-            #         issuetop.append(
-            #             'Genset ST registration expired - to renew.')
-            #         riskids.append([each.master_id.site_id.id, each.item_id.id,
-            #                         each.item_id.severity, issuetop[-1]])
+            topcategory = topissue[0]['category_id__category']
+            topissue = topissue[0]['item_id__items']
+            # for each in merged:
+            #     print(each.item_id.items)
 
-            # distinctissue = len(issuecount)
-            # if len(issuetop) > 0:
-            #     topissue = max(set(issuetop), key=issuetop.count)
-            # else:
-            #     topissue = ''
-            # return {'sum': sums, 'ds': len(distinctsites), 'di': distinctissue, 'top': topissue, 'risk': riskids}
-            distinctissue = len(set(issuetop2))
-            if len(issuetop2) > 0:
-                topissue = max(set(issuetop2), key=issuetop2.count)
-            else:
-                topissue = ''
-            return {'sum': xsums, 'ds': xdistinctsites, 'di': distinctissue, 'top': topissue, 'risk': riskids}
+            for key,value in tagsdict.items():
+                try:
+                    print(key,topcategory,topissue)
+                    if topcategory.split()[0] in key:
+                        topissue = value
+                except:
+                    pass
+            print(topissue)
+
+            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
         elif errtype == 'RISK':
             riskids = []
             if settings.DEBUG:
@@ -719,33 +614,32 @@ def getSum(self, errtype):
                 topissue = ''
             return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue, 'risk': riskids}
         else:
-            sums = 0
-            distinctsites = set({})
-            issuecount = {}
-            issuetop = []
-            riskids = []
-            if settings.DEBUG:
-                print("DEBUG: Start getSum - ALL ELSE",errtype,datetime.now())
-            details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
-            # sums = details.count()
-            # distinctsites = details.distinct('master_id__site_id').count()
-            xdistinctsites = details.distinct('master_id__site_id').count()
-            xdistinctissues = details.distinct('item_id__items').count()
-            xissues = details.count()
-            xtopissue = details.annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
-            try:
-                if len(xtopissue[0].item_id.items)  > 0:
-                    xtopissue = xtopissue[0].item_id.items=""
-                else:
-                    xtopissue = None
-            except:
-                pass
-            riskids = list(details.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))
-            if settings.DEBUG:
-                print("Debug xdistinct sites",xdistinctsites)
-                print("Debug xdistinct issues",xdistinctissues)
-                print("DEbug xissues",xissues)
-                print("Debug xtopissue",xtopissue)
+            # sums = 0
+            # distinctsites = set({})
+            # issuecount = {}
+            # issuetop = []
+            # riskids = []
+            # if settings.DEBUG:
+            #     print("DEBUG: Start getSum - ALL ELSE",errtype,datetime.now())
+            # details = InspectionDetails.objects.all().filter(item_id__errortype=errtype, item_id__throw_error=True, master_id__add_date__range=getstartq(self))
+            # # sums = details.count()
+            # # distinctsites = details.distinct('master_id__site_id').count()
+            # xdistinctsites = details.distinct('master_id__site_id').count()
+            # xdistinctissues = details.distinct('item_id__items').count()
+            # xissues = details.count()
+            # xtopissue = details.annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
+            # try:
+            #     if len(xtopissue[0].item_id.items)  > 0:
+            #         xtopissue = xtopissue[0].item_id.items=""
+
+            # except:
+            #     pass
+            # riskids = list(details.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))
+            # if settings.DEBUG:
+            #     print("Debug xdistinct sites",xdistinctsites)
+            #     print("Debug xdistinct issues",xdistinctissues)
+            #     print("DEbug xissues",xissues)
+            #     print("Debug xtopissue",xtopissue)
                 # print("Debug riskid",list(details.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items')))
             # for each in details:
                 # distinctsites.add(each.master_id.site_id)
@@ -776,7 +670,19 @@ def getSum(self, errtype):
             # else:
             #     topissue = ''
             # return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue, 'risks': riskids}
-            return {'sum': xissues, 'ds': xdistinctsites, 'di': xdistinctissues, 'top': xtopissue, 'risk': riskids}
+            details = InspectionDetails.objects.filter(item_id__errortype=errtype,master_id__add_date__range=getstartq(self))
+            print("debug stat count",details.count())
+
+            q1 = details.filter(item_id__throw_error=True)
+            print("debug - throw error",q1.count())
+
+            merged = q1
+            allissuescount = merged.count()
+            distinctsites = merged.values('master_id__site_id').distinct('master_id__site_id').count()
+            distinctissues = merged.values('item_id__items').distinct('item_id__items').count()
+            topissue = merged.values('category_id__category','item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
+            topissue = topissue[0]['item_id__items']
+            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
 
 
 def showmediafiles(sites):

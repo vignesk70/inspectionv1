@@ -408,8 +408,9 @@ def getSum(self, errtype):
                         topissue = each[topissue]
                 except:
                     pass
+            riskids = list(merged.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))
 
-            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
+            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': riskids}
         elif errtype == 'ENGINEERING':
 
             # item A.3 MSB year of installation - if result > 20 (years), then
@@ -514,7 +515,7 @@ def getSum(self, errtype):
             distinctsites = merged.values('master_id__site_id').distinct('master_id__site_id').count()
             distinctissues = merged.values('item_id__items').distinct('item_id__items').count()
             topissue = merged.values('item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
-
+            riskids = list(merged.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))
             print("All issues",allissuescount)
             print("distinct sites",distinctsites)
             print("distinct issues",distinctissues)
@@ -536,7 +537,7 @@ def getSum(self, errtype):
                     pass
 
 
-            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
+            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': riskids}
         elif errtype == 'STATUTORY':
 
             if settings.DEBUG:
@@ -568,7 +569,7 @@ def getSum(self, errtype):
             distinctsites = merged.values('master_id__site_id').distinct('master_id__site_id').count()
             distinctissues = merged.values('category_id__category').distinct('item_id__items').count()
             topissue = merged.values('category_id__category','item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
-
+            riskids = list(merged.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))
 
             print("All issues",allissuescount)
             print("distinct sites",distinctsites)
@@ -591,7 +592,7 @@ def getSum(self, errtype):
                     pass
             print(topissue)
 
-            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
+            return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': riskids}
         elif errtype == 'RISK':
             riskids = []
             if settings.DEBUG:

@@ -842,8 +842,8 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         countinspected = InspectionMaster.objects.filter(
             add_date__range=getstartq(self)).distinct().count()
         percentcompleted = (countinspected / countofsites) * 100
-        # images = showmediafiles(InspectionDetails.objects.filter(
-            # master_id__add_date__range=getstartq(self)).select_related())
+        images = showmediafiles(InspectionDetails.objects.filter(
+            master_id__add_date__range=getstartq(self)).select_related())
         totalissue = 0
         totaldistinctissue = 0
         for key,value in error.items():
@@ -861,7 +861,7 @@ class ShowDashboard(LoginRequiredMixin, FormView):
         context['percentcompleted'] = percentcompleted
         context['totalissue']=totalissue
         context['totaldistinctissue']=totaldistinctissue
-        # context['item_imageurl'] = images
+        context['item_imageurl'] = images
 
         # context['form'] = form
         if settings.DEBUG:

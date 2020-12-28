@@ -500,14 +500,14 @@ def getSum(self, errtype):
             # get date value to compare
             datenow = datetime.now()
             datediff = datetime.strftime(datenow+delta.relativedelta(years=-20),"%Y-%m-%d")
-            print(datediff)
+            if settings.DEBUG: print(datediff)
 
             q2= details.filter(item_id__items__contains='MSB year').filter(item_value__lt=datediff)
-
-            print("Details count with errtype",details.count())
-            print("details with errors",q1.count())
-            print("details with msb>20",q2.count())
-            print(q2[0].item_id.items)
+            if settings.DEBUG:
+                print("Details count with errtype",details.count())
+                print("details with errors",q1.count())
+                print("details with msb>20",q2.count())
+                print(q2[0].item_id.items)
 
 
             merged = q1|q2
@@ -516,10 +516,11 @@ def getSum(self, errtype):
             distinctissues = merged.values('item_id__items').distinct('item_id__items').count()
             topissue = merged.values('item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
             riskids = list(merged.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))
-            print("All issues",allissuescount)
-            print("distinct sites",distinctsites)
-            print("distinct issues",distinctissues)
-            print(topissue[0]['item_id__items'])
+            if settings.DEBUG:
+                print("All issues",allissuescount)
+                print("distinct sites",distinctsites)
+                print("distinct issues",distinctissues)
+                print(topissue[0]['item_id__items'])
             # print("Top issue",topissue[0].item_id.items)
 
 
@@ -549,20 +550,16 @@ def getSum(self, errtype):
                         'C.17':'Genset ST registration expired - to renew.'}
             todaydate = datetime.now().strftime('%Y-%m-%d')
             details = InspectionDetails.objects.filter(item_id__errortype='STATUTORY',master_id__add_date__range=getstartq(self))
-            print("debug stat count",details.count())
+            if settings.DEBUG: print("debug stat count",details.count())
 
             q1 = details.filter(item_id__throw_error=True)
-            print("debug - throw error",q1.count())
-
-            print(tagsdict.keys())
-
 
             for keys in tagsdict:
                 q2 = details.filter(category_id__category__contains=keys,item_id__items__startswith='Due').filter(item_value__lt=todaydate)
-                print(keys, q2.count())
+
             query=''
             q3 = details.filter(Q(category_id__category__contains='C.4')|Q(category_id__category__contains='C.5')|Q(category_id__category__contains='C.10')|Q(category_id__category__contains='C.17')).filter(item_id__items__startswith='Due').filter(item_value__lt=todaydate)
-            print(q3.count())
+
 
             merged = q1|q3
             allissuescount = merged.count()
@@ -570,12 +567,12 @@ def getSum(self, errtype):
             distinctissues = merged.values('category_id__category').distinct('item_id__items').count()
             topissue = merged.values('category_id__category','item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
             riskids = list(merged.values_list('master_id__site_id_id','item_id_id','item_id__severity','item_id__items'))
-
-            print("All issues",allissuescount)
-            print("distinct sites",distinctsites)
-            print("distinct issues",distinctissues)
-            print("topissue",topissue[0]['category_id__category'])
-            # print("Top issue",topissue[0].item_id.items)
+            if settings.DEBUG:
+                print("All issues",allissuescount)
+                print("distinct sites",distinctsites)
+                print("distinct issues",distinctissues)
+                print("topissue",topissue[0]['category_id__category'])
+                # print("Top issue",topissue[0].item_id.items)
 
 
             topcategory = topissue[0]['category_id__category']
@@ -590,7 +587,7 @@ def getSum(self, errtype):
                         topissue = value
                 except:
                     pass
-            print(topissue)
+            if settings.DEBUG: print(topissue)
 
             return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': riskids}
         elif errtype == 'RISK':
@@ -672,10 +669,10 @@ def getSum(self, errtype):
             #     topissue = ''
             # return {'sum': sums, 'ds': distinctsites, 'di': distinctissue, 'top': topissue, 'risks': riskids}
             details = InspectionDetails.objects.filter(item_id__errortype=errtype,master_id__add_date__range=getstartq(self))
-            print("debug stat count",details.count())
+            if settings.DEBUG: print("debug stat count",details.count())
 
             q1 = details.filter(item_id__throw_error=True)
-            print("debug - throw error",q1.count())
+            if settings.DEBUG: print("debug - throw error",q1.count())
 
             merged = q1
             allissuescount = merged.count()
@@ -697,29 +694,60 @@ def showmediafiles(sites):
     #     pass
     if settings.DEBUG:
             print("DEBUG: Start media files",datetime.now())
-    for site in sites:
-        try:
-            # print(site.item_id.items=='1.')
-            if site.item_image:
-                medialist = {}
-                medialist['siteid'] = site.master_id.site_id.site_no
-                medialist['sitename'] = site.master_id.site_id.name
-                medialist['visitdate'] = site.master_id.add_date
-                medialist['category']= site.item_id.items
+            print(sites.count())
+    medialistall = []
+    siteswimage = sites.exclude(item_image='')
+    print(sites.count())
+    print(siteswimage.count())
 
-                if medialist['category'].split(" ")[0].split(".")[0].isdigit():
-                    for x in sites:
-                        if x.item_id.items == medialist['category'].split(" ")[0] and x.master_id.site_id.site_no==medialist['siteid']:
-                            # print(x.item_value)
-                            medialist['category']=x.item_value
+    for x in siteswimage:
+        # print(x.item_id.items,x.master_id.site_id.site_no,x.master_id.site_id.name,x.master_id.add_date)
+        medialist = {}
+        medialist['siteid'] = x.master_id.site_id.site_no
+        medialist['sitename'] = x.master_id.site_id.name
+        medialist['visitdate'] = x.master_id.add_date
+        medialist['category']= x.item_id.items
+        medialist['url'] = x.item_image.url
+        medialist['masterid']=x.master_id
+
+        if x.item_id.items.split(" ")[0].split(".")[0].isdigit():
+            txt = sites.filter(Q(master_id__site_id__site_no=x.master_id.site_id.site_no) & Q(item_id__items=x.item_id.items.split(" ")[0])).values('item_value')
+            try:
+                if len(txt)>0:
+                    # print(txt[0]['item_value'])
+                    medialist['category']= txt[0]['item_value']
+            except:
+                pass
+        medialistall.append(medialist)
+    print(len(medialistall))
+    print(medialistall)
+
+    # for site in sites:
+
+    #     try:
+    #         # print(site.item_id.items=='1.')
+    #         if site.item_image:
+    #             medialist = {}
+    #             medialist['siteid'] = site.master_id.site_id.site_no
+    #             medialist['sitename'] = site.master_id.site_id.name
+    #             medialist['visitdate'] = site.master_id.add_date
+    #             medialist['category']= site.item_id.items
+
+    #             if medialist['category'].split(" ")[0].split(".")[0].isdigit():
+    #                 for x in sites:
+    #                     if x.item_id.items == medialist['category'].split(" ")[0] and x.master_id.site_id.site_no==medialist['siteid']:
+    #                         # print(x.item_value)
+    #                         medialist['category']=x.item_value
 
 
-                medialist['url'] = site.item_image.url
-                medialist['masterid']=site.master_id
-                medialistall.append(medialist)
-        except Exception as e:
-            print(e)
-            pass
+    #             medialist['url'] = site.item_image.url
+    #             medialist['masterid']=site.master_id
+    #             medialistall.append(medialist)
+    #     except Exception as e:
+    #         print(e)
+    #         pass
+    if settings.DEBUG:
+            print("DEBUG: End media files",datetime.now())
     return medialistall
 
 

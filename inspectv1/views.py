@@ -383,16 +383,38 @@ def getSum(self, errtype):
                           b2_error_messages, b3_error_messages]
 
 
+            # details = InspectionDetails.objects.filter(
+            #             master_id__add_date__range=getstartq(self),item_id__errortype=errtype).annotate(itemval = Cast('item_value',output_field=FloatField(default=0.0)))
             details = InspectionDetails.objects.filter(
-                        master_id__add_date__range=getstartq(self),item_id__errortype=errtype).annotate(itemval = Cast('item_value',output_field=FloatField()))
+                        master_id__add_date__range=getstartq(self),item_id__errortype=errtype) #.annotate(itemval = Cast('item_value',output_field=FloatField(default=0.0)))
 
-            q1 = details.filter(item_id__items__in=b1_error_messages.keys()).filter(Q(itemval__lt=216)|Q(itemval__gt=253))
+            # q1 = details.filter(item_id__items__in=b1_error_messages.keys()).filter(Q(itemval__lt=216)|Q(itemval__gt=253))
+            # if settings.DEBUG:
+            #     if len(q1)>0: 
+            #         print(q1)
 
 
-            q2 = details.filter(item_id__items__in=b2_error_messages.keys()).filter(Q(itemval__gte=80))
+            # q2 = details.filter(item_id__items__in=b2_error_messages.keys()).filter(Q(itemval__gte=80))
+            # if settings.DEBUG:
+            #     if len(q2)>0: print(q2.count())
 
-            q3 = details.filter(item_id__items__in=b3_error_messages.keys()).filter(Q(itemval__lt=0.85))
+            # q3 = details.filter(item_id__items__in=b3_error_messages.keys()).filter(Q(itemval__lt=0.85))
+            # if settings.DEBUG:
+            #    if len(q3)>0: print(q3.count())
 
+            q1 = details.filter(item_id__items__in=b1_error_messages.keys()).filter(Q(item_value__lt=216)|Q(item_value__gt=253))
+            if settings.DEBUG:
+                if len(q1)>0: 
+                    print(q1)
+
+
+            q2 = details.filter(item_id__items__in=b2_error_messages.keys()).filter(Q(item_value__gte=80))
+            if settings.DEBUG:
+                if len(q2)>0: print(q2.count())
+
+            q3 = details.filter(item_id__items__in=b3_error_messages.keys()).filter(Q(item_value__lt=0.85))
+            if settings.DEBUG:
+               if len(q3)>0: print(q3.count())
 
             # merged = q1.union(q2,q3)
             merged = q1|q2|q3
@@ -400,7 +422,10 @@ def getSum(self, errtype):
             distinctsites = merged.values('master_id__site_id').distinct('master_id__site_id').count()
             distinctissues = merged.values('item_id__items').distinct('item_id__items').count()
             topissue = merged.values('item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
-            topissue = topissue[0]['item_id__items']
+            if len(topissue)>0:
+                topissue = topissue[0]['item_id__items']
+            else:
+                topissue = None
             for each in all_errors:
                 try:
                     print(each,topissue)
@@ -483,7 +508,8 @@ def getSum(self, errtype):
             #         issuecount[each.item_id] = issuecount.get(
             #             each.item_id.items, 0) + 1
             #         # issuetop.append('MSB age > 20 years')
-            #         # riskids.append([each.master_id.site_id.id, each.item_id.id,
+            #         # riskids.append([each.master_id.site_id.id, each.item_id.id,Vikipoo99
+
             #                         # each.item_id.severity, issuetop[-1]])
 
             # distinctissue = len(issuecount)
@@ -507,7 +533,7 @@ def getSum(self, errtype):
                 print("Details count with errtype",details.count())
                 print("details with errors",q1.count())
                 print("details with msb>20",q2.count())
-                print(q2[0].item_id.items)
+                # print(q2[0].item_id.items)
 
 
             merged = q1|q2
@@ -520,12 +546,15 @@ def getSum(self, errtype):
                 print("All issues",allissuescount)
                 print("distinct sites",distinctsites)
                 print("distinct issues",distinctissues)
-                print(topissue[0]['item_id__items'])
+                # print(topissue[0]['item_id__items'])
             # print("Top issue",topissue[0].item_id.items)
 
 
             all_errors = [{'MSB year of installation':'MSB age > 20 years'}]
-            topissue = topissue[0]['item_id__items']
+            if len(topissue)>0:
+                topissue = topissue[0]['item_id__items']
+            else:
+                topissue = None
             # for each in merged:
             #     print(each.item_id.items)
 
@@ -571,12 +600,17 @@ def getSum(self, errtype):
                 print("All issues",allissuescount)
                 print("distinct sites",distinctsites)
                 print("distinct issues",distinctissues)
-                print("topissue",topissue[0]['category_id__category'])
+                if len(topissue)>0: print("topissue",topissue[0]['category_id__category'])
                 # print("Top issue",topissue[0].item_id.items)
 
 
-            topcategory = topissue[0]['category_id__category']
-            topissue = topissue[0]['item_id__items']
+            
+            # topcategory = topissue[0]['category_id__category']
+            if len(topissue)>0:
+                topcategory = topissue[0]['category_id__category']
+                topissue = topissue[0]['item_id__items']
+            else:
+                topissue = None
             # for each in merged:
             #     print(each.item_id.items)
 
@@ -679,7 +713,11 @@ def getSum(self, errtype):
             distinctsites = merged.values('master_id__site_id').distinct('master_id__site_id').count()
             distinctissues = merged.values('item_id__items').distinct('item_id__items').count()
             topissue = merged.values('category_id__category','item_id__items').annotate(numissues=Count('item_id__items')).order_by('-numissues')[:1]
-            topissue = topissue[0]['item_id__items']
+            if len(topissue)>0: #[0]['item_id__items']:
+                
+                topissue = topissue[0]['item_id__items']
+            else:
+                topissue= None
             return {'sum': allissuescount, 'ds': distinctsites, 'di': distinctissues, 'top': topissue, 'risk': ''}
 
 
@@ -898,7 +936,8 @@ class ShowDashboard(LoginRequiredMixin, FormView):
 
 
 def addtositedata(sites, *itemname):
-
+    if settings.DEBUG:
+        print("DEBUG: Start add to site data",datetime.now())
     risk = ['None', 'Low', 'Medium', 'High']
     data = {}
     subsidiary = str(sites.master_id.site_id.subsidiary)
@@ -968,6 +1007,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
         # get the sites related to the key
         if checkcategory == "POWER":
             # print("power")
+            if settings.DEBUG:
+                print("DEBUG: Start show dashboard details - start power",datetime.now())
             b1_error_messages = {'BN': 'B-N voltage outside limits - report to TNB/SESB.',
                                  'YN': 'Y-N voltage outside limits - report to TNB/SESB.',
                                  'RN': 'R-N voltage outside limits - report to TNB/SESB.'}
@@ -1005,7 +1046,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                             #       sites.master_id.site_id.name)
                             sitedata.append(addtositedata(
                                 sites, b3_error_messages[sites.item_id.items]))
-
+                if settings.DEBUG:
+                    print("DEBUG: Start show dashboard details - end power",datetime.now())
         elif checkcategory == 'ENGINEERING':
             # print('engineering')
             sitesfound = InspectionDetails.objects.filter(
@@ -1451,8 +1493,10 @@ class ShowInspectionDashboardTypeDetails(TemplateView):
 
 class GenerateExcelfile(LoginRequiredMixin,TemplateView):
     template_name = 'inspectv1/test.html'
-
-    def get(self, request, *args, **kwargs):
+    
+    def get(self,request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
         context = super().get_context_data(**kwargs)
         try:
             if self.request.GET['start_date']:

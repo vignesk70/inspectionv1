@@ -139,14 +139,14 @@ def GetSites(request):
         totalsites = 0
         if request.POST.get('siteid', False):
             sites = Sites.objects.all().filter(
-                site_no__contains=request.POST['siteid']).order_by('site_no')
+                site_no__contains=request.POST['siteid'],active=True).order_by('site_no')
             totalsites = Sites.objects.all().filter(
                 site_no__contains=request.POST['siteid']).count()
         elif request.POST.get('sitename', False):
             sites = Sites.objects.all().filter(name__contains=str(
                 request.POST['sitename']).upper()).order_by('name')
             totalsites = Sites.objects.all().filter(
-                name__contains=str(request.POST['sitename']).upper()).count()
+                name__contains=str(request.POST['sitename'],active=True).upper()).count()
 
         # a_dict = dict()
         a_dict = [None] * totalsites

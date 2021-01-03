@@ -247,13 +247,13 @@ def Add(request):
         if settings.DEBUG:
             print("DEBUG:masterid after save", master_id)
         inspectDetailObj = InspectionDetails()
-        try:
-            inspectDetailObj = InspectionDetails.objects.get(
+        # try:
+        #     inspectDetailObj = InspectionDetails.objects.get(
 
-                master_id_id=master_id, category_id_id=request.POST['category_id'])
-            inspectDetailObj.delete()
-        except:
-            pass
+        #         master_id_id=master_id, category_id_id=request.POST['category_id'])
+        #     inspectDetailObj.delete()
+        # except:
+        #     pass
         try:
             inspectDetailObj = InspectionDetails.objects.get(
 

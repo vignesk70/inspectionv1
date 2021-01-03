@@ -57,9 +57,7 @@
                                             <th>Site Id</th>
                                             <th>Site Name</th>
                                             <th>Date Visited</th>
-                                            <!--  {%for x in headers%}
-                                        <th>{{x}}</th>
-                                        {%endfor%} -->
+                                            
 
                                         </tr>
                                     </thead>
@@ -101,12 +99,12 @@
     $(document).ready(function () {
         $('#mytable').DataTable({
             "columnDefs": [{
-                "targets": [4],
-                "visible": false,
+                "targets": [2],
+                "visible": true,
                 "searchable": true
             }],
             "order": [
-                [3, 'desc']
+                [2, 'desc']
             ]
         });
     });

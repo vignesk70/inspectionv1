@@ -135,6 +135,7 @@ def GetCategories(request):
 
 @csrf_exempt
 def GetSites(request):
+    sites=None
     if request.method == 'POST':
         totalsites = 0
         if request.POST.get('siteid', False):
@@ -144,9 +145,9 @@ def GetSites(request):
                 site_no__contains=request.POST['siteid'],active=True).count()
         elif request.POST.get('sitename', False):
             sites = Sites.objects.all().filter(name__contains=str(
-                request.POST['sitename'],active=True).upper()).order_by('name')
+                request.POST['sitename']).upper(),active=True).order_by('name')
             totalsites = Sites.objects.all().filter(
-                name__contains=str(request.POST['sitename'],active=True).upper()).count()
+                name__contains=str(request.POST['sitename']).upper(),active=True).count()
 
         # a_dict = dict()
         a_dict = [None] * totalsites

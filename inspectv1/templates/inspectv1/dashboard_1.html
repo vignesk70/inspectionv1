@@ -225,7 +225,7 @@
             <div class="d-flex flex-row flex-nowrap">
                 {% for p in item_imageurl %}
                 <div class="product">
-                    <div class="imgbox"> <object data="{{p.url}}" width="210" onload="contentLoaded()" id="imgObj"> &#60;media file&#62; </object> </div>
+                    <div class="imgbox"> <embed src="{{p.url}}" width="210" onload="contentLoaded()" id="imgObj"> &#60;media file&#62; </div>
                     <div class="specifies">
                         <p class="alignleft">{{p.siteid}}</p>
 			<p class="alignright">{{p.visitdate}}</p>
@@ -249,7 +249,7 @@
 	<script>
 		function contentLoaded() {
   			console.log("Object loaded!");
-			var video = document.getElementById("imgObj").contentDocument.document.getElementsByTagName("VIDEO")[0];
+			var video = document.getElementById("imgObj").document.getElementsByTagName("VIDEO")[0];
 			console.log(video);
 		}
 	</script>

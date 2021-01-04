@@ -249,7 +249,7 @@
 	<script>
 		function contentLoaded() {
   			console.log("Object loaded!");
-			var video = document.getElementById("imgObj").contentDocument;
+			var video = document.getElementById("imgObj").contentDocument.document.getElementsByTagName("VIDEO")[0];
 			console.log(video);
 		}
 	</script>

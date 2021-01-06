@@ -248,8 +248,8 @@
 	<script>
     		function contentLoaded() {
 			console.log("Object loaded");
-        		var $c = $(".embed").html();
-			console.log('object' + $c);
+        		var $c = $(".embed").contents();
+			console.log(JSON.stringify($c));
     		};
 	</script>
 

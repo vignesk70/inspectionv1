@@ -251,7 +251,7 @@
 			console.log("Object loaded");
         		<!-- var $c = $(".embed").contents(); -->
 			<!-- console.log(JSON.stringify($c)); -->
-			var $d = $( ".embed" ).find("video");
+			var $d = $( ".embed" ).contents().find("video");
 			$d.removeAttr("autoplay");
 			console.log($d);
     		};

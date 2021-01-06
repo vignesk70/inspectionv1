@@ -598,7 +598,7 @@ h5:hover {
 }
 */
 
-.product .imgbox object {
+.product .imgbox embed {
   		display: block;
   		/* max-height: 100%; */		height: 100%;
   		/* margin: 10px auto 0; */

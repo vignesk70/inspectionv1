@@ -251,20 +251,9 @@
 			console.log("Object loaded");
         		<!-- var $c = $(".embed").contents(); -->
 			<!-- console.log(JSON.stringify($c)); -->
-			var $d = $( ".embed" ).contents().find("video"); 
-			$d.removeAttr("autoplay");
+			var $d = $( ".embed" ).contents().find("video").attr("autoplay"); 
+			<!-- $d.removeAttr("autoplay"); -->
 			console.log($d);
-			
-			var $c = $(".embed").contents();
-			for (var p in $c) {
-  				var value = null;
-  				try {
-    					value = $c[p];
-  				} catch (err) {console.log('error');}
-
-  			if (value)
-    				console.log(p, value);
-}
 			
     		};
 	</script>

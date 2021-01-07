@@ -225,7 +225,7 @@
             <div class="d-flex flex-row flex-nowrap">
                 {% for p in item_imageurl %}
                 <div class="product">
-                    <div class="imgbox"> <embed src="{{p.url}}" width="210" title="media file" onload="contentLoaded(this)"> </div>
+                    <div class="imgbox"> <embed src="{{p.url}}" width="210" title="media file" onload="contentLoaded()"> </div>
                     <div class="specifies">
                         <p class="alignleft">{{p.siteid}}</p>
 			<p class="alignright">{{p.visitdate}}</p>
@@ -253,8 +253,18 @@
 			<!-- console.log(JSON.stringify($c)); -->
 			var $d = $( ".embed" ).contents().find("video"); 
 			$d.removeAttr("autoplay");
-			console.log('d ' + $d);
+			console.log($d);
 			
+			var $c = $(".embed").contents();
+			for (var p in $c) {
+  				var value = null;
+  				try {
+    					value = $c[p];
+  				} catch (err) {console.log('error');}
+
+  			if (value)
+    				console.log(p, value);
+}
 			
     		};
 	</script>

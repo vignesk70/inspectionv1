@@ -213,9 +213,6 @@
     </div>
 </section>
 <!-- Section for Media files -->
-
-const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["oga", "video"], ["mp3", "video"], ["m4a", "video"], ["wav", "video"]])
-
 <section class="boxplot datefilters">
     <div class="container">
         <!-- <h5 class='page-title'>Media</h5> -->
@@ -251,6 +248,7 @@ const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["
 	<!-- Stops media autoplay -->
 	<script>
     		function contentLoaded(elem, file) {
+			const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["oga", "video"], ["mp3", "video"], ["m4a", "video"], ["wav", "video"]]);
 			console.log("Object loaded");
 			console.log(elem);
 			console.log(file);

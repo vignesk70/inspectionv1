@@ -228,7 +228,7 @@ const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["
             <div class="d-flex flex-row flex-nowrap">
                 {% for p in item_imageurl %}
                 <div class="product">
-                    <div class="imgbox"> <object data="{{p.url}}" onload="contentLoaded(this, {{p.url}})"> &#60;media file&#62; </object> </div>
+                    <div class="imgbox"> <object data="{{p.url}}" onload="contentLoaded(this, data)"> &#60;media file&#62; </object> </div>
                     <div class="specifies">
                         <p class="alignleft">{{p.siteid}}</p>
 			<p class="alignright">{{p.visitdate}}</p>
@@ -253,6 +253,7 @@ const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["
     		function contentLoaded(elem, url) {
 			console.log("Object loaded");
 			console.log(elem);
+			console.log(url);
 			const extension = url.pathname.split(".")[1]
 
 			const element = document.createElement(TYPES.get(extension))

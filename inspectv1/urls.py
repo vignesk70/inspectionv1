@@ -31,4 +31,5 @@ urlpatterns = [
     path('displayissuedetail/', views.DisplayIssueDetails, name='issuedetails'),
     path('dashdetails/<int:pk>', views.ShowInspectionDashboardTypeDetails.as_view(), name='dash2detail'),
     path('generatexlsx/',views.GenerateExcelfile.as_view(), name='generatexlsx'),
+    path('genexcel/',views.genexcel,name="genexcel"),
 ]

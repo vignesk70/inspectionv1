@@ -1,0 +1,67 @@
+{% extends 'inspectv1/base.html' %} {% load static %} {% load bootstrap4 %} 
+
+{% block content %}
+
+<section class="datefilters">
+    <div class="container mb-2">
+
+        <div class="" id="collapsefilters">
+            <div class="row">
+                <div class="col" style="white-space: nowrap;">
+                    <form action="#" method="get" class="form">
+                        {% csrf_token %}
+                        {% bootstrap_field form.start_date layout='horizontal'%}
+                </div>
+                <div class="col" style="white-space: nowrap;">
+                    {% bootstrap_field form.end_date layout='horizontal'%}
+                </div>
+                <div class="col-sm-auto">
+
+                    <button type="submit" class="btn btn-primary" id="clickexcel" name= "butxlsx">
+                        <i class="fa fa-download"></i><span class="ml-2"></span>Excel
+                    </button>
+                    
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+</section>
+<section>
+    <div class="container">
+    <div class="row">
+        <h3>Select the dates above and click on the download Excel button </h3>
+    </div>
+    <div id="result"></div>
+
+
+        
+    </div>
+</section>
+<script>
+  $(document).ready(function(){
+  $("#clickexcel").click(function(){
+    //alert("The paragraph was clicked." + $("#id_start_date").val() + $("#id_end_date").val());
+    document.getElementById("result").innerHTML = "You will receive an email with the results in a while."
+    alert("You will receive and email with the results.")
+    $.ajax({
+        url: '/genexcel/',
+        data: {
+          'start_date': $("#id_start_date").val(),
+          'end_date': $("#id_end_date").val()
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data.done) {
+            alert("You will receive an email with the results in a while.");
+          }
+          
+        }
+      });
+      
+
+  });
+});
+</script>
+{% endblock content %}

@@ -22,9 +22,11 @@ from django.shortcuts import get_list_or_404
 from django.db.models import Q, Count, FloatField  #Max, Min, Avg, , ,F
 from django.db.models.functions import Cast
 from django.views.generic.edit import FormView
+from django.core.mail.message import EmailMessage
 from .models import InspectionCategory, InspectionDetails, InspectionMaster,\
     Sites, ItemInCategory, InspectorDetails
 from .forms import DashboardDateFilterForm, InspectionData
+from django.http import JsonResponse
 # from django.contrib import messages
 # from django.views.generic.edit import FormMixin
 # from django.core.files.storage import default_storage
@@ -1051,6 +1053,9 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                     print("DEBUG: Start show dashboard details - end power",datetime.now())
         elif checkcategory == 'ENGINEERING':
             # print('engineering')
+            if settings.DEBUG:
+                print("DEBUG: Start show dashboard details - start Engineering",datetime.now())
+
             sitesfound = InspectionDetails.objects.filter(
                 item_id__errortype=checkcategory,
                 item_id__throw_error=True, master_id__add_date__range=getstartq(self))
@@ -1068,8 +1073,12 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                     datenow, datadate)
                 if diffdate.years >= 20:
                     sitedata.append(addtositedata(sites, 'MSB age > 20 years'))
+            if settings.DEBUG:
+                print("DEBUG: Start show dashboard details - end Engineering",datetime.now())
 
         elif checkcategory == 'STATUTORY':
+            if settings.DEBUG:
+                print("DEBUG: Start show dashboard details - start statutory",datetime.now())
 
             sitesfound = InspectionDetails.objects.filter(
                 item_id__errortype=checkcategory,
@@ -1132,6 +1141,8 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
                         sites, 'Genset ST registration expired - to renew.'))
+            if settings.DEBUG:
+                print("DEBUG: Start show dashboard details - end statutory",datetime.now())
 
         elif checkcategory == 'RISK':
             sitesfound = InspectionDetails.objects.filter(
@@ -1493,12 +1504,111 @@ class ShowInspectionDashboardTypeDetails(TemplateView):
         return context
 
 class GenerateExcelfile(LoginRequiredMixin,TemplateView):
-    template_name = 'inspectv1/test.html'
-    
-    def get(self,request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
+    template_name = 'inspectv1/exceldownload.html'
+    model = InspectionDetails
+    form_class = DashboardDateFilterForm
+    startdate = None
+    enddate = None
+    # def get(self,request, *args, **kwargs):
+    #     form_class = self.get_form_class()
+    #     form = self.get_form(form_class)
+    #     context = super().get_context_data(**kwargs)
+    #     try:
+    #         if self.request.GET['start_date']:
+    #             self.startdate = (self.request.GET['start_date'])
+    #             self.enddate = (self.request.GET['end_date'])
+    #             initial_dict = {'start_date': self.startdate,
+    #                             'end_date': self.enddate}
+    #             form = DashboardDateFilterForm(None, initial=initial_dict)
+    #             context['form'] = form
+
+    #     except:
+    #         initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
+    #                         'end_date': datetime.now().strftime("%Y-%m-%d")}  # 'end_date': datetime.now().strftime("%Y-%m-%d")
+    #         form = DashboardDateFilterForm(None, initial=initial_dict)
+    #         context['form'] = form
+    #     categories = InspectionCategory.objects.all()
+    #     items = ItemInCategory.objects.all()
+    #     sites = InspectionMaster.objects.filter(
+    #         user_id=self.request.user.id, add_date__range=getstartq(self))
+    #     siterowdata = []
+    #     labels = ['Site No.','Station','State','Date']
+    #     labels.extend([' '.join(category.category.split()[1:]) for category in categories])
+    #     print('getting siterowdata listing')
+    #     for site in sites:
+    #         siterow=[]
+    #         # print(site.site_id.site_no,site.site_id.name,site.site_id.state,site.add_date)
+    #         siterow.extend([str(site.site_id.site_no),str(site.site_id.name),str(site.site_id.state),str(site.add_date)])
+
+    #         for category in categories:
+
+    #             items = InspectionDetails.objects.filter(master_id=site.id,category_id=category.id)
+    #             # print(' '.join(str(category).split()[1:]))
+    #             catdata = []
+    #             for  item in items:
+    #                 # print(item)
+    #                 try:
+    #                     if item.item_value:
+    #                         # print(category.category, item.item_value)
+    #                         # print(data[0].item_value)
+    #                         value = item.item_value
+    #                         if value == "true":
+    #                             value = item.item_id.items
+    #                             # print('value',value)
+    #                         # siterow.append(value)
+    #                         catdata.append(value)
+    #                 except:
+    #                     # siterow.append(' ')
+    #                     # catdata.append(' ')
+    #                     pass
+    #                 # print(category,catdata)
+    #             siterow.append("|".join(catdata))
+
+    #         else:
+    #             siterow.append(' ')
+
+    #         siterowdata.append(siterow)
+    #     print('generate excel')
+    #     # create the file to be sent to download the excel file.
+    #     f = io.BytesIO()
+    #     workbook = xlsxwriter.Workbook(f,{'im_memory':True})
+    #     worksheet = workbook.add_worksheet()
+    #     maxrow = len(siterowdata)
+    #     maxcol = len(siterowdata[0])
+    #     row=0
+    #     col=0
+
+    #     for x in range(0,len(labels)):
+    #         worksheet.write_string(row,col, labels[x])
+    #         col+=1
+    #     row=1
+    #     for rows in range(0,maxrow):
+    #         for cols in range(0,maxcol):
+    #             worksheet.write_string(rows+1,cols, siterowdata[rows][cols])
+
+    #     workbook.close()
+
+    #     date = datetime.now().strftime("%Y%m%d")
+    #     filename = 'Excel_download_' + date+'.xlsx'
+    #     f.seek(0)
+    #     response = HttpResponse(f.getvalue(),content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    #     response['Content-Disposition'] = "attachment; filename="+filename
+
+
+    #     return response
+    def post(self,*args, **kwargs):
+        print(self)
+        pass
+
+    def get_context_data(self, **kwargs):
+        # form_class = self.get_form_class()
+        # form = self.get_form(form_class)
+        # print(self.request.GET['start_date'])
+
         context = super().get_context_data(**kwargs)
+        if settings.DEBUG:
+            print("DEBUG: Start show dashboard",datetime.now())
+        # load the datefilters with default values
         try:
             if self.request.GET['start_date']:
                 self.startdate = (self.request.GET['start_date'])
@@ -1512,76 +1622,135 @@ class GenerateExcelfile(LoginRequiredMixin,TemplateView):
             initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
                             'end_date': datetime.now().strftime("%Y-%m-%d")}  # 'end_date': datetime.now().strftime("%Y-%m-%d")
             form = DashboardDateFilterForm(None, initial=initial_dict)
+            
+            
             context['form'] = form
-        categories = InspectionCategory.objects.all()
-        items = ItemInCategory.objects.all()
-        sites = InspectionMaster.objects.filter(
-            user_id=self.request.user.id, add_date__range=getstartq(self))
-        siterowdata = []
-        labels = ['Site No.','Station','State','Date']
-        labels.extend([' '.join(category.category.split()[1:]) for category in categories])
-        print('getting siterowdata listing')
-        for site in sites:
-            siterow=[]
-            # print(site.site_id.site_no,site.site_id.name,site.site_id.state,site.add_date)
-            siterow.extend([str(site.site_id.site_no),str(site.site_id.name),str(site.site_id.state),str(site.add_date)])
 
-            for category in categories:
+        print(self.request.user.email)
 
-                items = InspectionDetails.objects.filter(master_id=site.id,category_id=category.id)
-                # print(' '.join(str(category).split()[1:]))
-                catdata = []
-                for  item in items:
-                    # print(item)
-                    try:
-                        if item.item_value:
-                            # print(category.category, item.item_value)
-                            # print(data[0].item_value)
-                            value = item.item_value
-                            if value == "true":
-                                value = item.item_id.items
-                                # print('value',value)
-                            # siterow.append(value)
-                            catdata.append(value)
-                    except:
-                        # siterow.append(' ')
-                        # catdata.append(' ')
-                        pass
-                    # print(category,catdata)
-                siterow.append("|".join(catdata))
+        return context
+def genexcel(request):
+    print(request)
+    datarecords = []
+    dataset = {}
+    categories = InspectionCategory.objects.all().order_by('category')
+    print(len(categories))
+    items = ItemInCategory.objects.all()
+    daterange=(request.GET.get('start_date'),request.GET.get('end_date'))
+    sites = InspectionMaster.objects.filter(add_date__range=daterange)
+    details = InspectionDetails.objects.filter(master_id__add_date__range=daterange).order_by('category_id__category') #getstartq())
+    # for x in details:
+    #     print(x.category.name)
+    siterowdata = []
+    labels = ['Site No.','Station','State','Date']
+    labels.extend([' '.join(category.category.split()[1:]) for category in categories])
+    print(len(labels))
+    print(labels)
+    i=0
+    for site in sites:
+        siterow=[]
+        print("debug in site",i)
+        i+=1
+        # print(site.site_id.site_no,site.site_id.name,site.site_id.state,site.add_date)
+        siterow.extend([str(site.site_id.site_no),str(site.site_id.name),str(site.site_id.state),str(site.add_date)])
 
-            else:
-                siterow.append(' ')
+        
+        for category in categories:
+            # print("debug in category")
+            items = details.filter(master_id=site.id,category_id=category.id)
+            # print(' '.join(str(category).split()[1:]))
+            catdata = []
+            # if items.count()>1:
+            #     print("|".join(x[0] for x in items.values_list('item_value')))
+            # else:
+            #     print("|".join([x.item_value if x.item_value!='true' else x.item_id.items for x in items]))
+            # print("|".join([x.item_value if x.item_value!='true' else x.item_id.items for x in items]))
+            catrow="|".join([x.item_value if x.item_value!='true' else x.item_id.items for x in items])
+            siterow.append(catrow)
+                
+                
+        #     for  item in items:
+        #         # print(item)
+        #         # print("debug in items")
+        #         try:
+        #             if item.item_value:
+        #                 # print(category.category, item.item_value)
+        #                 # print(data[0].item_value)
+        #                 value = item.item_value
+        #                 if value == "true":
+        #                     value = item.item_id.items
+        #                     # print('value',value)
+        #                 # siterow.append(value)
+        #                 catdata.append(value)
+        #         except:
+        #             # siterow.append(' ')
+        #             # catdata.append(' ')
+        #             pass
+        #         # print(category,catdata)
+        #     siterow.append("|".join(catdata))
 
-            siterowdata.append(siterow)
-        print('generate excel')
-        # create the file to be sent to download the excel file.
-        f = io.BytesIO()
-        workbook = xlsxwriter.Workbook(f,{'im_memory':True})
-        worksheet = workbook.add_worksheet()
+        # else:
+        #     siterow.append(' ')
+
+        siterowdata.append(siterow)      # print(items)
+    # vals = list(sites.values('site_id__site_no','site_id__name'))
+    # for site in sites:
+    #     pass
+
+    # testing of code
+    # details2 = details.order_by('master_id','category_id')
+    # distinctsites = details2.distinct('master_id')
+    # for sites in distinctsites:
+    #     sitedetails = details2.filter(master_id=sites.master_id).annotate(catcount=Count('category_id'))
+    #     print("SiteNo:",datetime.now(), sites.master_id.site_id.name, sitedetails)
+    #     for everysite in sitedetails.order_by('category_id'):
+            
+    #         print(everysite.category_id.category,everysite.catcount)
+
+    # siteschecked = InspectionMaster.objects.filter(add_date__range=daterange).prefetch_related()
+    # print(siteschecked.values())
+    # for site in siteschecked:
+    #     print(site.values())
+        
+
+
+
+    print("printing workbook")
+    filedate = datetime.now().strftime('%Y%m%d%H%M%S')
+    filename='PetronESI_'+filedate+'.xlsx'
+    workbook = xlsxwriter.Workbook(filename)
+    worksheet = workbook.add_worksheet()
+    maxrow,maxcol = 0,0
+    date_format = workbook.add_format({'num_format': 'dd-mm-yyyy'})
+    if len(siterowdata)>0:
         maxrow = len(siterowdata)
         maxcol = len(siterowdata[0])
-        row=0
-        col=0
-
-        for x in range(0,len(labels)):
-            worksheet.write_string(row,col, labels[x])
-            col+=1
-        row=1
-        for rows in range(0,maxrow):
-            for cols in range(0,maxcol):
-                worksheet.write_string(rows+1,cols, siterowdata[rows][cols])
-
-        workbook.close()
-
-        date = datetime.now().strftime("%Y%m%d")
-        filename = 'Excel_download_' + date+'.xlsx'
-        f.seek(0)
-        response = HttpResponse(f.getvalue(),content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = "attachment; filename="+filename
+    row=0
+    col=0
+    # print('Rows')
+    for x in range(0,len(labels)):
+        worksheet.write_string(row,col, labels[x])
+        col+=1
+    row=1
+    for rows in range(0,maxrow):
+        for cols in range(0,maxcol):
+            worksheet.write_string(rows+1,cols, siterowdata[rows][cols])
+            # print(rows,cols,':',siterowdata[rows][cols])
 
 
-        return response
+    workbook.close()
 
+    subject = 'Petron ESI Download Excel'
+    from_email = 'vigneswaren.krishnamoorthy@gmail.com'
+    to_email = ['vignes_k@yahoo.com']
+    msg = 'Download excel attached'
+    mail=EmailMessage(subject,msg,from_email,to_email)
+    mail.content_subtype = 'html'
+    mail.attach_file(filename)
+    email_res = mail.send()
+    print(email_res)
+    data = {
+        'done':True
+    }
 
-
+    return HttpResponse('0')

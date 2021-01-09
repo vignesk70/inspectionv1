@@ -250,12 +250,13 @@ const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["
 
 	<!-- Stops media autoplay -->
 	<script>
-    		function contentLoaded(elem, url) {
+    		function contentLoaded(elem, file) {
 			console.log("Object loaded");
 			console.log(elem);
-			console.log(url);
+			console.log(file);
+			const url = new URL(file)
 			const extension = url.pathname.split(".")[1]
-
+			console.log(extension);
 			const element = document.createElement(TYPES.get(extension))
 			console.log(element);
 

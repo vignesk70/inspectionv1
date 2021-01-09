@@ -22,9 +22,9 @@
                     <button type="submit" class="btn btn-primary" name="dates">
                         Filter Dates
                     </button>
-                    <a  href="/generatexlsx" target="_blank" class="btn btn-success btn-excel" name="xlsx">
+                    <button type="submit" class="btn btn-success btn-excel" id="clickexcel" name="xlsx">
                         <i class="fa fa-download"></i><span class="ml-2"></span>Excel
-                    </a>
+                    </button>
                     </form>
                 </div>
 
@@ -266,6 +266,31 @@
 			
     		};
 	</script>
+    <script>
+        $(document).ready(function(){
+            $("#clickexcel").click(function(){
+            //alert("The paragraph was clicked." + $("#id_start_date").val() + $("#id_end_date").val());
+            //document.getElementById("result").innerHTML = "You will receive an email with the results in a while."
+            alert("You will receive an email with the results.")
+            $.ajax({
+                url: '/genexcel/',
+                data: {
+                'start_date': $("#id_start_date").val(),
+                'end_date': $("#id_end_date").val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                if (data.done) {
+                    alert("You will receive an email with the results in a while.");
+                }
+                
+                }
+            });
+            
+
+        });
+        });
+        </script>
 
 </section>
 

@@ -1630,11 +1630,11 @@ class GenerateExcelfile(LoginRequiredMixin,TemplateView):
 
         return context
 def genexcel(request):
-    print(request)
+    # print(request)
     datarecords = []
     dataset = {}
     categories = InspectionCategory.objects.all().order_by('category')
-    print(len(categories))
+    # print(len(categories))
     items = ItemInCategory.objects.all()
     daterange=(request.GET.get('start_date'),request.GET.get('end_date'))
     sites = InspectionMaster.objects.filter(add_date__range=daterange)
@@ -1644,12 +1644,12 @@ def genexcel(request):
     siterowdata = []
     labels = ['Site No.','Station','State','Date']
     labels.extend([' '.join(category.category.split()[1:]) for category in categories])
-    print(len(labels))
-    print(labels)
+    # print(len(labels))
+    # print(labels)
     i=0
     for site in sites:
         siterow=[]
-        print("debug in site",i)
+        # print("debug in site",i)
         i+=1
         # print(site.site_id.site_no,site.site_id.name,site.site_id.state,site.add_date)
         siterow.extend([str(site.site_id.site_no),str(site.site_id.name),str(site.site_id.state),str(site.add_date)])
@@ -1715,9 +1715,9 @@ def genexcel(request):
 
 
 
-    print("printing workbook")
+    # print("printing workbook")
     filedate = datetime.now().strftime('%Y%m%d%H%M%S')
-    filename='PetronESI_'+filedate+'.xlsx'
+    filename='/var/tmp/PetronESI_'+filedate+'.xlsx'
     workbook = xlsxwriter.Workbook(filename)
     worksheet = workbook.add_worksheet()
     maxrow,maxcol = 0,0
@@ -1736,19 +1736,17 @@ def genexcel(request):
         for cols in range(0,maxcol):
             worksheet.write_string(rows+1,cols, siterowdata[rows][cols])
             # print(rows,cols,':',siterowdata[rows][cols])
-
-
     workbook.close()
 
     subject = 'Petron ESI Download Excel'
     from_email = 'vigneswaren.krishnamoorthy@gmail.com'
-    to_email = ['vignes_k@yahoo.com']
+    to_email = [request.user.email] #['vignes_k@yahoo.com']
     msg = 'Download excel attached'
     mail=EmailMessage(subject,msg,from_email,to_email)
     mail.content_subtype = 'html'
     mail.attach_file(filename)
     email_res = mail.send()
-    print(email_res)
+    # print(email_res)
     data = {
         'done':True
     }

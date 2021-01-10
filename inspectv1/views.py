@@ -431,7 +431,7 @@ def getSum(self, errtype):
                 topissue = None
             for each in all_errors:
                 try:
-                    print(each,topissue)
+                    # print(each,topissue)
                     if topissue in each.keys():
                         topissue = each[topissue]
                 except:
@@ -563,7 +563,7 @@ def getSum(self, errtype):
 
             for each in all_errors:
                 try:
-                    print(each,topissue)
+                    # print(each,topissue)
                     if topissue in each.keys():
                         topissue = each[topissue]
                 except:
@@ -619,7 +619,7 @@ def getSum(self, errtype):
 
             for key,value in tagsdict.items():
                 try:
-                    print(key,topcategory,topissue)
+                    # print(key,topcategory,topissue)
                     if topcategory.split()[0] in key:
                         topissue = value
                 except:
@@ -738,8 +738,8 @@ def showmediafiles(sites):
             print(sites.count())
     medialistall = []
     siteswimage = sites.exclude(item_image='')
-    print(sites.count())
-    print(siteswimage.count())
+    # print(sites.count())
+    # print(siteswimage.count())
 
     for x in siteswimage:
         # print(x.item_id.items,x.master_id.site_id.site_no,x.master_id.site_id.name,x.master_id.add_date)
@@ -760,8 +760,8 @@ def showmediafiles(sites):
             except:
                 pass
         medialistall.append(medialist)
-    print(len(medialistall))
-    print(medialistall)
+    # print(len(medialistall))
+    # print(medialistall)
 
     # for site in sites:
 

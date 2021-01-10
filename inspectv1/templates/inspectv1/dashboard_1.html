@@ -23,7 +23,7 @@
                         Filter Dates
                     </button>
                     <button type="submit" class="btn btn-success btn-excel" id="clickexcel" name="xlsx">
-                        <i class="fa fa-download"></i><span class="ml-2"></span>Excel
+                        <i class="fa fa-envelope-o"></i><span class="ml-2"></span>Excel
                     </button>
                     </form>
                 </div>
@@ -248,30 +248,45 @@
 	<!-- Stops media autoplay -->
 	<script>
     		function contentLoaded(elem, file) {
-			const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["oga", "video"], ["mp3", "video"], ["m4a", "video"], ["wav", "video"]]);
+			<!-- const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["oga", "video"], ["mp3", "video"], ["m4a", "video"], ["wav", "video"]]); -->
+			const TYPE = ['mp4', 'webm', 'ogg', 'oga', 'mp3', 'm4a', 'wav'];
 			console.log("Object loaded");
 			console.log(elem);
 			console.log(file);
 			const url = new URL(file)
 			const extension = url.pathname.split(".")[1]
 			console.log(extension);
-			const element = document.createElement(TYPES.get(extension))
-			console.log(element);
+			<!-- const element = document.createElement(TYPES.get(extension)); -->
+			if ( TYPE.includes(extension) ) {
+  				elem.innerHTML = "";
+				const element = document.createElement("VIDEO");
+				element.setAttribute("src", url);
+				element.setAttribute("controls", "controls");
+				element.setAttribute("width", "100%");
+  				element.setAttribute("height", "100%");
+  				element.setAttribute("position", "absolute");
+				element.setAttribute("top", "0");
+				element.setAttribute("left", "0");
+				
+				console.log(element);
+				elem.replaceWith(element);
+			}
+			
 
         		<!-- var $c = $(".embed").contents(); -->
 			<!-- console.log(JSON.stringify($c)); -->
 			<!-- var $d = $("embed", this).contents().find("video").attr("autoplay"); -->
 			<!-- $d.removeAttr("autoplay"); -->
 			<!-- console.log($d); -->
-			
+					
     		};
 	</script>
     <script>
         $(document).ready(function(){
             $("#clickexcel").click(function(){
             //alert("The paragraph was clicked." + $("#id_start_date").val() + $("#id_end_date").val());
-            //document.getElementById("result").innerHTML = "You will receive an email with the results in a while."
-            alert("You will receive an email with the results.")
+            //document.getElementById("result").innerHTML = "The Excel file will be emailed to you shortly."
+            alert("The Excel file will be emailed to you.")
             $.ajax({
                 url: '/genexcel/',
                 data: {
@@ -281,7 +296,7 @@
                 dataType: 'json',
                 success: function (data) {
                 if (data.done) {
-                    alert("You will receive an email with the results in a while.");
+                    alert("The Excel file will be emailed to you shortly.");
                 }
                 
                 }

@@ -18,7 +18,7 @@
                 <div class="col-sm-auto">
 
                     <button type="submit" class="btn btn-primary" id="clickexcel" name= "butxlsx">
-                        <i class="fa fa-download"></i><span class="ml-2"></span>Excel
+                        <i class="fa fa-envelope-o"></i><span class="ml-2"></span>Excel
                     </button>
                     
                     </form>
@@ -43,8 +43,8 @@
   $(document).ready(function(){
   $("#clickexcel").click(function(){
     //alert("The paragraph was clicked." + $("#id_start_date").val() + $("#id_end_date").val());
-    document.getElementById("result").innerHTML = "You will receive an email with the results in a while."
-    alert("You will receive and email with the results.")
+    document.getElementById("result").innerHTML = "The Excel file will be emailed to you shortly."
+    alert("The Excel file will be emailed to you.")
     $.ajax({
         url: '/genexcel/',
         data: {
@@ -54,7 +54,7 @@
         dataType: 'json',
         success: function (data) {
           if (data.done) {
-            alert("You will receive an email with the results in a while.");
+            alert("The Excel file will be emailed to you shortly.");
           }
           
         }

@@ -248,14 +248,10 @@
 	<!-- Stops media autoplay -->
 	<script>
     		function contentLoaded(elem, file) {
-			<!-- const TYPES = new Map([["mp4", "video"], ["webm", "video"], ["ogg", "video"], ["oga", "video"], ["mp3", "video"], ["m4a", "video"], ["wav", "video"]]); -->
+			<!-- const TYPES = new Map([["mp4", "video"], ["ogg", "video"], ["mp3", "video"], ["m4a", "video"]]); -->
 			const TYPE = ['mp4', 'webm', 'ogg', 'oga', 'mp3', 'm4a', 'wav'];
-			console.log("Object loaded");
-			console.log(elem);
-			console.log(file);
-			const url = new URL(file)
-			const extension = url.pathname.split(".")[1]
-			console.log(extension);
+			const url = new URL(file);
+			const extension = url.pathname.split(".")[1];
 			<!-- const element = document.createElement(TYPES.get(extension)); -->
 			if ( TYPE.includes(extension) ) {
   				elem.innerHTML = "";
@@ -267,18 +263,8 @@
   				element.setAttribute("position", "absolute");
 				element.setAttribute("top", "0");
 				element.setAttribute("left", "0");
-				
-				console.log(element);
 				elem.replaceWith(element);
-			}
-			
-
-        		<!-- var $c = $(".embed").contents(); -->
-			<!-- console.log(JSON.stringify($c)); -->
-			<!-- var $d = $("embed", this).contents().find("video").attr("autoplay"); -->
-			<!-- $d.removeAttr("autoplay"); -->
-			<!-- console.log($d); -->
-					
+			}	
     		};
 	</script>
     <script>

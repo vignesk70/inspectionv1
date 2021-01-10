@@ -1633,6 +1633,8 @@ def genexcel(request):
     # print(request)
     datarecords = []
     dataset = {}
+    if settings.DEBUG:
+        print("DEBUG - start gen excel",datetime.now())
     categories = InspectionCategory.objects.all().order_by('category')
     # print(len(categories))
     items = ItemInCategory.objects.all()
@@ -1712,7 +1714,8 @@ def genexcel(request):
     # for site in siteschecked:
     #     print(site.values())
         
-
+    if settings.DEBUG:
+        print("DEBUG - end gen excel",datetime.now())
 
 
     # print("printing workbook")

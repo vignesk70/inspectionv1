@@ -1742,7 +1742,7 @@ def genexcel(request):
     workbook.close()
 
     subject = 'Petron ESI Download Excel'
-    from_email = 'vigneswaren.krishnamoorthy@gmail.com'
+    from_email = settings.EMAIL_HOST_USER
     to_email = [request.user.email] #['vignes_k@yahoo.com']
     msg = 'Download excel attached'
     mail=EmailMessage(subject,msg,from_email,to_email)

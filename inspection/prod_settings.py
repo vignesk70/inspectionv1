@@ -14,4 +14,4 @@ EMAIL_HOST = 'smtp.mail.yahoo.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'navidad.engineering@yahoo.com'
-EMAIL_HOST_PASSWORD = 'jggsxjwidzsllhsc'
+EMAIL_HOST_PASSWORD = 'muibrbndpyffsblj'

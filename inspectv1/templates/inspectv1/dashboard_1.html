@@ -256,7 +256,7 @@
 			if ( TYPE.includes(extension) ) {
   				elem.innerHTML = "";
 				const element = document.createElement("VIDEO");
-				element.setAttribute("src", url);
+				element.setAttribute("src", url.pathname);
 				element.setAttribute("controls", "controls");
 				element.setAttribute("width", "100%");
   				element.setAttribute("height", "100%");

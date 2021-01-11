@@ -56,7 +56,7 @@
                                 <td>{{x.itemvalue}}</td>
                                 <td>{% if x.item_imageurl %}
                                 <a href="{{ x.item_imageurl }}" target="_blank"><object data="{{x.item_imageurl }}"
-                                    width="50" height="50" ></object></a>
+                                    width="50" height="50" onload="contentLoaded(this, data)"></object></a>
                                 {% else %}
                                 {% endif %}</td>
                                 <td>{{x.errortype}}</td>

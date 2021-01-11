@@ -106,12 +106,15 @@
 	<script>
     		function contentLoaded(elem, file) {
 			const TYPE_VIDEO = ['mp4', 'webm', 'ogg'];
-			//const TYPE_AUDIO = ['oga', 'mp3', 'm4a', 'wav'];
+			const TYPE_AUDIO = ['oga', 'mp3', 'm4a', 'wav'];
 			const url = new URL(file);
 			const extension = url.pathname.split(".")[1];
-			if ( TYPE_VIDEO.includes(extension) ) {
+			if ( (TYPE_VIDEO.concat(TYPE_AUDIO)).includes(extension) ) {
   				elem.innerHTML = "";
 				const element = document.createElement("VIDEO");
+				if ( TYPE_AUDIO.includes(extension) ) {
+					element.setAttribute("controls", "controls");
+				}
 				element.setAttribute("src", url.pathname);
 				element.setAttribute("width", "50");
   				element.setAttribute("height", "50");

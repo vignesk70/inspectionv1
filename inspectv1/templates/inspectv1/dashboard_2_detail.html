@@ -106,7 +106,7 @@
 	<script>
     		function contentLoaded(elem, file) {
 			const TYPE_VIDEO = ['mp4', 'webm', 'ogg'];
-			const TYPE_AUDIO = ['oga', 'mp3', 'm4a', 'wav'];
+			//const TYPE_AUDIO = ['oga', 'mp3', 'm4a', 'wav'];
 			const url = new URL(file);
 			const extension = url.pathname.split(".")[1];
 			if ( TYPE_VIDEO.includes(extension) ) {
@@ -116,12 +116,7 @@
 				element.setAttribute("width", "50");
   				element.setAttribute("height", "50");
 				elem.replaceWith(element);
-			} else if ( TYPE_AUDIO.includes(extension) ) {
-				const path = require('path');
-				const directories = path.dirname(url);
-				new_data = new URL( path.join(directories, 'sound-icon.jpg') );
-				elem.setAttribute('data', new_data.pathname);
-			}	
+			} 	
     		};
 	</script>
 

@@ -55,8 +55,8 @@
                                 <td>{{x.itemname}}</td>
                                 <td>{{x.itemvalue}}</td>
                                 <td>{% if x.item_imageurl %}
-                                <a href="{{ x.item_imageurl }}" target="_blank"><img src="{{x.item_imageurl }}"
-                                    style="width:50px;"></a>
+                                <a href="{{ x.item_imageurl }}" target="_blank"><object data="{{x.item_imageurl }}"
+                                    width="50" height="50" ></object></a>
                                 {% else %}
                                 {% endif %}</td>
                                 <td>{{x.errortype}}</td>
@@ -101,6 +101,27 @@
 
 
 </section>
+
+	<!-- Stops media autoplay -->
+	<script>
+    		function contentLoaded(elem, file) {
+			const TYPE = ['mp4', 'webm', 'ogg', 'oga', 'mp3', 'm4a', 'wav'];
+			const url = new URL(file);
+			const extension = url.pathname.split(".")[1];
+			if ( TYPE.includes(extension) ) {
+  				elem.innerHTML = "";
+				const element = document.createElement("VIDEO");
+				element.setAttribute("src", url.pathname);
+				//element.setAttribute("controls", "controls");
+				element.setAttribute("width", "50");
+  				element.setAttribute("height", "50");
+  				//element.setAttribute("position", "absolute");
+				//element.setAttribute("top", "0");
+				//element.setAttribute("left", "0");
+				elem.replaceWith(element);
+			}	
+    		};
+	</script>
 
 <script src="https://d3js.org/d3-color.v1.min.js"></script>
 <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>

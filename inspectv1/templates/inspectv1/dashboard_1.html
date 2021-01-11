@@ -248,11 +248,11 @@
 	<!-- Stops media autoplay -->
 	<script>
     		function contentLoaded(elem, file) {
-			<!-- const TYPES = new Map([["mp4", "video"], ["ogg", "video"], ["mp3", "video"], ["m4a", "video"]]); -->
+			//const TYPES = new Map([["mp4", "video"], ["ogg", "video"], ["mp3", "video"], ["m4a", "video"]]);
 			const TYPE = ['mp4', 'webm', 'ogg', 'oga', 'mp3', 'm4a', 'wav'];
 			const url = new URL(file);
 			const extension = url.pathname.split(".")[1];
-			<!-- const element = document.createElement(TYPES.get(extension)); -->
+			//const element = document.createElement(TYPES.get(extension));
 			if ( TYPE.includes(extension) ) {
   				elem.innerHTML = "";
 				const element = document.createElement("VIDEO");

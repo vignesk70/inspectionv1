@@ -113,7 +113,7 @@
   				elem.innerHTML = "";
 				const element = document.createElement("VIDEO");
 				if ( TYPE_AUDIO.includes(extension) ) {
-					element.setAttribute("controls", "controls");
+					element.setAttribute("controls", "");
 				}
 				element.setAttribute("src", url.pathname);
 				element.setAttribute("width", "50");

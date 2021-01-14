@@ -12,7 +12,7 @@ import xlsxwriter
 import pandas as pd
 from django.conf import settings
 from django.http import HttpResponse  # HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render  # , redirect
 from django.views.generic import TemplateView, ListView, DetailView
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
@@ -1755,13 +1755,3 @@ def genexcel(request):
     }
 
     return HttpResponse('0')
-
-def login_success(request):
-    """
-    Redirects users based on whether they are in the inspector group
-    """
-    if request.user.groups.filter(name="inspector").exists():
-        # user is an inspector
-        return redirect('/inspection')
-    else:
-        return redirect('/dashboard')

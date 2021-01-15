@@ -1760,14 +1760,8 @@ def login_success(request):
     """
     Redirects users based on whether they are in the inspector group
     """
-    if settings.DEBUG:
-            print("DEBUG: in login_success",request)
     if request.user.groups.filter(name="inspector").exists():
         # user is an inspector
-        if settings.DEBUG:
-            print("DEBUG: in login_success inspector")
         return redirect('/inspection')
     else:
-        if settings.DEBUG:
-            print("DEBUG: in login_success other")
         return redirect('/dashboard')

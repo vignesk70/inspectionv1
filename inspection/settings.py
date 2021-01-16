@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from .urls import app_name
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -173,8 +172,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # inspectv1 is the app_name in urls.py
-viewFunction = str(app_name) + ':' + 'login_success'
-LOGIN_REDIRECT_URL = viewFunction
+LOGIN_REDIRECT_URL = 'inspectv1:login_success'
 LOGIN_URL = '/accounts/login/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = "/media/"

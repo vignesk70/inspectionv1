@@ -1,6 +1,10 @@
 import os
 import io
+import math
+import sys
 import json
+from PIL import Image, ImageOps
+from pathlib import Path
 from math import radians, acos, sin, cos
 # import array as arr
 from collections import Counter, OrderedDict
@@ -266,6 +270,9 @@ def Add(request):
             if bool(request.FILES.get('item_image', False)):
                 inspectDetailObj.item_image = request.FILES['item_image']
             inspectDetailObj.save()
+            if bool(request.FILES.get('item_image', False)):
+                print(inspectDetailObj.item_image.url)
+                reduceImage(inspectDetailObj.item_image.url)
         except InspectionDetails.DoesNotExist:
             inspectDetailObj.master_id_id = master_id
             inspectDetailObj.category_id_id = request.POST['category_id']
@@ -274,6 +281,9 @@ def Add(request):
             if bool(request.FILES.get('item_image', False)):
                 inspectDetailObj.item_image = request.FILES['item_image']
             inspectDetailObj.save()
+            if bool(request.FILES.get('item_image', False)):
+                if settings.DEBUG: print(inspectDetailObj.item_image.url)
+                reduceImage(inspectDetailObj.item_image.url)
         # inspectDetailObj.master_id_id = master_id
         # inspectDetailObj.category_id_id = request.POST['category_id']
         # inspectDetailObj.item_id_id = request.POST['item_id']
@@ -1765,3 +1775,55 @@ def login_success(request):
         return redirect('/inspection')
     else:
         return redirect('/dashboard')
+
+def reduceImage(imageurl):
+    current_folder = settings.BASE_DIR
+    file_name = imageurl
+    file_size = os.path.getsize(current_folder + file_name) 
+
+    if file_size > 100000:
+        try:
+            im = Image.open(current_folder + file_name)
+            # Preserve image orientation
+            im = ImageOps.exif_transpose(im)
+            # Save at largest dimensions under 100,000 bytes
+            JPEGSaveWithTargetSize(im, current_folder + file_name, 100000)
+        except:
+            print("ERROR: Unable to open/identify -", file_name, file=sys.stderr)
+
+
+def JPEGSaveWithTargetSize(im, filename, target):
+   """Save the image as JPEG with the given name at largest dimensions that is less than "target" bytes"""
+   im_width, im_height = im.size
+   # Get the largest dimension
+   Dmax = max(im_width, im_height)
+   # The smallest dimension should be >= 420px
+   Dmin = math.floor( 420 * Dmax / min(im_width, im_height) )
+   # Largest permissible dimension to achieve target file size
+   Dopt = -1
+   
+   while Dmin <= Dmax:
+      im_copy = im.copy()
+      m = math.floor((Dmin + Dmax) / 2)
+      
+      # Encode into memory and get size
+      buffer = io.BytesIO()
+      im_copy.thumbnail((m,m))
+      im_copy.save(buffer, format="JPEG", quality=80)
+      s = buffer.getbuffer().nbytes
+      
+      if s <= target:
+         Dopt = m
+         Dmin = math.ceil(1.01 * m)
+      elif s > target:
+         Dmax = math.floor(0.99 * m)
+         # Save processing time since the thumbnail is bigger than needed anyway
+         im = im_copy.copy()
+      #print("Dmin Dmax Dopt m s = ", Dmin, Dmax, Dopt, m, s)
+
+   # Write to disk at the defined dimension
+   if Dopt > -1:
+      im.thumbnail((Dopt,Dopt))
+      im.save(filename, format="JPEG", quality=80)
+   else:
+      print("ERROR: No acceptable image dimension found", file=sys.stderr)      

@@ -261,6 +261,17 @@ def Add(request):
         #     inspectDetailObj.delete()
         # except:
         #     pass
+        # try:
+        #     inspectiondtlobj = InspectionDetails.objects.filter(master_id=master_id,category_id_id=request.POST['category_id'])
+        #     print(inspectiondtlobj)
+        #     inspectiondtlobj.delete()
+        # except:
+        #     pass
+        if request.POST['deleteonsave']=='true':
+            print("going to delete")
+            inspectiondtlobj = InspectionDetails.objects.filter(master_id=master_id,category_id_id=request.POST['category_id'])
+            inspectiondtlobj.delete()
+            
         try:
             inspectDetailObj = InspectionDetails.objects.get(
 

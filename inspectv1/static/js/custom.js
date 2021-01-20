@@ -289,7 +289,7 @@ $(document).ready(function () {
 
 $("document").ready(function () {
   $(document).on("click", ".submitbutton", function (event) {
-
+    deleteonsave = true;
     event.preventDefault();
     console.log("clicked");
     var throw_error;
@@ -334,6 +334,8 @@ $("document").ready(function () {
             form_data.append("site_id", site_id);
             form_data.append("item_value", itemvalue);
             form_data.append("master_id", master_id);
+            form_data.append("deleteonsave",deleteonsave);
+            deleteonsave=false;
             //form_data.append("csrfmiddlewaretoken", '{{ csrf_token }}');
 
 

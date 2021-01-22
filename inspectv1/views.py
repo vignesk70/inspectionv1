@@ -1838,3 +1838,51 @@ def JPEGSaveWithTargetSize(im, filename, target):
       im.save(filename, format="JPEG", quality=80)
    else:
       print("ERROR: No acceptable image dimension found", file=sys.stderr)      
+
+class ListSitesForDash(LoginRequiredMixin, ListView):
+    model = InspectionMaster
+    template_name = 'inspectv1/listsites.html'
+    form_class = DashboardDateFilterForm
+    startdate = None
+    enddate = None
+
+    def get_context_data(self, **kwargs):
+        sitedata = []
+        context = super(ListSitesForDash, self).get_context_data(**kwargs)
+        try:
+            if self.request.GET['start_date']:
+                self.startdate = (self.request.GET['start_date'])
+                self.enddate = (self.request.GET['end_date'])
+                initial_dict = {'start_date': self.startdate,
+                                'end_date': self.enddate}
+                form = DashboardDateFilterForm(None, initial=initial_dict)
+                context['form'] = form
+
+        except:
+            initial_dict = {'start_date': getstartq(self)[0].strftime("%Y-%m-%d"),
+                            'end_date': datetime.now().strftime("%Y-%m-%d")}
+            form = DashboardDateFilterForm(None, initial=initial_dict)
+            context['form'] = form
+
+        listofsites = InspectionMaster.objects.filter(
+            add_date__range=getstartq(self)).order_by('-id')
+        sitevisited = listofsites.count()
+        for sites in listofsites:
+            data = {}
+            error = {}
+            data['sitename'] = sites.site_id.name
+            data['siteadd'] = sites.add_date
+            data['siteid'] = sites.id
+            data['siteno'] = sites.site_id.site_no
+            for errors in getERRTYPE():
+                error[errors] = getCount(sites.id, errors)
+
+            sitedata.append(data)
+            data["errors"] = error
+        context['sitevisited'] = sitevisited
+        context['headers'] = getERRTYPE()
+        context["sitedata"] = sitedata
+
+        # context["details"] = InspectionDetails.objects.all().filter()
+
+        return context

@@ -1,0 +1,114 @@
+{% extends 'inspectv1/base.html' %}
+{%load static%}
+{% block content %}
+{% load bootstrap4 %}
+
+<section class="datefilters">
+    <div class="container mb-2">
+        <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse" href="#collapsefilters"
+                aria-expanded="false" aria-controls="collapsefilters">
+                Date Filters
+            </a></h5>
+        <div class="collapse" id="collapsefilters">
+            <div class="row">
+                <div class="col">
+                    <form action="#" method="get" class="form">
+                        {% csrf_token %}
+                        {% bootstrap_field form.start_date layout='horizontal'%}
+                </div>
+                <div class="col">
+                    {% bootstrap_field form.end_date layout='horizontal'%}
+                </div>
+                <div class="col-sm-auto">
+
+                    <button type="submit" class="btn btn-primary" name="dates">
+                        Filter Dates
+                    </button>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+</section>
+<div class="inspection">
+
+    <div class="row">
+
+        <div class="col-sm-12">
+            <div class="row sitelist" style="padding-top:10px;">
+                <div class="col-sm-12">
+                    <div class="row mb-2">
+
+                        <div class="container">
+
+                            <div class="pagetitle">Inspection list as of {% now "d/m/Y g:i a" %}
+                                <p>Sites visited: {{sitevisited}}</p>
+                            </div>
+
+
+                            <div class="dashtable">
+                                <table id="mytable" class="table display">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>Site Id</th>
+                                            <th>Site Name</th>
+                                            <th>Date Visited</th>
+                                            
+
+                                        </tr>
+                                    </thead>
+                                    {%if sitedata%}
+                                    <tbody>
+
+                                        {% for x in sitedata %}
+                                        <tr>
+
+                                            <td>{{x.siteno}}</td>
+                                            <td><a
+                                                    href="{%url 'inspectv1:inspectdetail' pk=x.siteid%}">{{x.sitename}}</a>
+                                            </td>
+                                            <td><span
+                                                    style="display: none;">{{x.siteadd|date:"Ymd"}}</span>{{x.siteadd|date:"d/m/Y"}}
+                                            </td>
+
+                                        </tr>
+                                        {%endfor%}
+
+                                    </tbody>
+
+                                    {%endif%}
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('#mytable').DataTable({
+            "columnDefs": [{
+                "targets": [2],
+                "visible": true,
+                "searchable": true
+            }],
+            "order": [
+                [2, 'desc']
+            ]
+        });
+    });
+</script>
+
+
+{% endblock content %}

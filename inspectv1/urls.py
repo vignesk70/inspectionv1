@@ -33,5 +33,5 @@ urlpatterns = [
     path('generatexlsx/',views.GenerateExcelfile.as_view(), name='generatexlsx'),
     path('genexcel/',views.genexcel,name="genexcel"),
     path('login_success/', views.login_success, name='login_success'),
-    path('listsitesdash/',views.ListSitesForDash.as_view(), name='listdash'),
+    path('listsitesdash/',views.ListSitesForDash.as_view(), name='listsitesdash'),
 ]

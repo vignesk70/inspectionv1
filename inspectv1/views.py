@@ -1,11 +1,11 @@
 import os
 import io
-import math
+import imghdr
 import sys
 import json
 from PIL import Image, ImageOps
 from pathlib import Path
-from math import radians, acos, sin, cos
+from math import radians, acos, sin, cos, floor, ceil
 # import array as arr
 from collections import Counter, OrderedDict
 from datetime import datetime
@@ -1762,7 +1762,7 @@ def genexcel(request):
             # print(rows,cols,':',siterowdata[rows][cols])
     workbook.close()
 
-    subject = 'Petron ESI Download Excel'
+    subject = 'Petron ESI Download Excel '+filedate
     from_email = settings.EMAIL_HOST_USER
     to_email = [request.user.email] #['vignes_k@yahoo.com']
     msg = 'Download excel attached'
@@ -1792,56 +1792,65 @@ def reduceImage(imageurl):
     file_name = imageurl
     file_size = os.path.getsize(current_folder + file_name) 
 
-    if file_size > 100000:
+    fileTypes = ['gif', 'jpeg', 'bmp', 'png', 'webp']
+    file_type = imghdr.what(current_folder + file_name)
+    if settings.DEBUG:
+        print("DEBUG - file type =", file_type)
+
+    if file_type in fileTypes and file_size > 100000:
         try:
             im = Image.open(current_folder + file_name)
             # Preserve image orientation
             im = ImageOps.exif_transpose(im)
             # Save at largest dimensions under 100,000 bytes
-            JPEGSaveWithTargetSize(im, current_folder + file_name, 100000)
+            ImageSaveWithTargetSize(im, current_folder + file_name, file_type, 100000)
         except:
-            print("ERROR: Unable to open/identify -", file_name, file=sys.stderr)
+            if settings.DEBUG:
+                print("DEBUG - ERROR: Unable to open/identify -", file_name)
 
 
-def JPEGSaveWithTargetSize(im, filename, target):
-   """Save the image as JPEG with the given name at largest dimensions that is less than "target" bytes"""
-   im_width, im_height = im.size
-   # Get the largest dimension
-   Dmax = max(im_width, im_height)
-   # The smallest dimension should be >= 420px
-   Dmin = math.floor( 420 * Dmax / min(im_width, im_height) )
-   # Largest permissible dimension to achieve target file size
-   Dopt = -1
+def ImageSaveWithTargetSize(im, filename, filetype, target):
+    """Save the image with the same name at largest dimensions that is less than "target" bytes"""
+    im_width, im_height = im.size
+    # Get the largest dimension
+    Dmax = max(im_width, im_height)
+    # The smallest dimension should be >= 420px
+    Dmin = floor( 420 * Dmax / min(im_width, im_height) )
+    # Largest permissible dimension to achieve target file size
+    Dopt = -1
    
-   while Dmin <= Dmax:
-      im_copy = im.copy()
-      m = math.floor((Dmin + Dmax) / 2)
+    while Dmin <= Dmax:
+        im_copy = im.copy()
+        m = floor((Dmin + Dmax) / 2)
       
-      # Encode into memory and get size
-      buffer = io.BytesIO()
-      im_copy.thumbnail((m,m))
-      im_copy.save(buffer, format="JPEG", quality=80)
-      s = buffer.getbuffer().nbytes
+        # Encode into memory and get size
+        buffer = io.BytesIO()
+        im_copy.thumbnail((m,m))
+        im_copy.save(buffer, format=filetype, quality=80)
+        s = buffer.getbuffer().nbytes
       
-      if s <= target:
-         Dopt = m
-         Dmin = math.ceil(1.01 * m)
-      elif s > target:
-         Dmax = math.floor(0.99 * m)
-         # Save processing time since the thumbnail is bigger than needed anyway
-         im = im_copy.copy()
-      #print("Dmin Dmax Dopt m s = ", Dmin, Dmax, Dopt, m, s)
+        if s <= target:
+            Dopt = m
+            Dmin = ceil(1.01 * m)
+        elif s > target:
+            Dmax = floor(0.99 * m)
+            # Save processing time since the thumbnail is bigger than needed anyway
+            im = im_copy.copy()
+        #print("Dmin Dmax Dopt m s = ", Dmin, Dmax, Dopt, m, s)
 
-   # Write to disk at the defined dimension
-   if Dopt > -1:
-      im.thumbnail((Dopt,Dopt))
-      im.save(filename, format="JPEG", quality=80)
-   else:
-      print("ERROR: No acceptable image dimension found", file=sys.stderr)      
+    # Write to disk at the defined dimension
+    if Dopt > -1:
+        im.thumbnail((Dopt,Dopt))
+    else:
+        im.thumbnail((m,m))
+        if settings.DEBUG:
+            print("DEBUG - Target filesize not achieved: Smallest filesize used")  
 
+    im.save(filename, format=filetype, quality=80)
+    
 class ListSitesForDash(LoginRequiredMixin, ListView):
     model = InspectionMaster
-    template_name = 'inspectv1/listsites.html'
+    template_name = 'inspectv1/listsitesdash.html'
     form_class = DashboardDateFilterForm
     startdate = None
     enddate = None

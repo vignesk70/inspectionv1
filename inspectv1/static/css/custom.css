@@ -146,14 +146,14 @@ li .nocircle {
 .card:hover .bar-issue, 
 .card:hover .bar-site, 
 .card:hover .bar-distinct {
-  -webkit-animation: animIn 0.3s ease-out;
-  -webkit-animation-delay: calc(var(--animation-order) * 100ms);
-  -moz-animation: animIn 0.3s ease-out;
-  -moz-animation-delay: calc(var(--animation-order) * 100ms);
-  -o-animation: animIn 0.3s ease-out;
-  -o-animation-delay: calc(var(--animation-order) * 100ms);
-  animation: animIn 0.3s ease-out;  
-  animation-delay: calc(var(--animation-order) * 100ms);
+  -webkit-animation: animIn 0.5s ease-out;
+  -webkit-animation-delay: calc(var(--animation-order) * 150ms);
+  -moz-animation: animIn 0.5s ease-out;
+  -moz-animation-delay: calc(var(--animation-order) * 150ms);
+  -o-animation: animIn 0.5s ease-out;
+  -o-animation-delay: calc(var(--animation-order) * 150ms);
+  animation: animIn 0.5s ease-out;  
+  animation-delay: calc(var(--animation-order) * 150ms);
 }
 
 .card:hover .fa {
@@ -467,6 +467,11 @@ h5:hover {
 
 .progress-number {
   color: #2F4F4F;
+}
+
+.progress-group:hover .progress-text,
+.progress-group:hover .progress-number {
+  color: #0018A8;
 }
 
 /* Animation for running counter */

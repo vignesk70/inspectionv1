@@ -1762,7 +1762,7 @@ def genexcel(request):
             # print(rows,cols,':',siterowdata[rows][cols])
     workbook.close()
 
-    subject = 'Petron ESI Download Excel '+filedate
+    subject = 'Petron ESI Download Excel'
     from_email = settings.EMAIL_HOST_USER
     to_email = [request.user.email] #['vignes_k@yahoo.com']
     msg = 'Download excel attached'

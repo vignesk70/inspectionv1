@@ -5,11 +5,11 @@
 
 <section class="datefilters">
     <div class="container mb-2">
-        <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse" href="#collapsefilters"
+        {% comment %} <h5 class='page-title datefilterheader'> <a class="" data-toggle="collapse" href="#collapsefilters"
                 aria-expanded="false" aria-controls="collapsefilters">
                 Date Filters
-            </a></h5>
-        <div class="collapse" id="collapsefilters">
+            </a></h5> {% endcomment %}
+        <div class="" id="collapsefilters">
             <div class="row">
                 <div class="col">
                     <form action="#" method="get" class="form">
@@ -42,9 +42,7 @@
 
                         <div class="container">
 
-                            <div class="pagetitle">Inspection list as of {% now "d/m/Y g:i a" %}
-                                <p>Sites visited: {{sitevisited}}</p>
-                            </div>
+                            <div class="pagetitle">Sites visited: {{sitevisited}}</div>
 
 
                             <div class="dashtable">

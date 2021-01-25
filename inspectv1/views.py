@@ -1883,6 +1883,7 @@ class ListSitesForDash(LoginRequiredMixin, ListView):
             data['siteadd'] = sites.add_date
             data['siteid'] = sites.id
             data['siteno'] = sites.site_id.site_no
+            data['sitestate'] = sites.site_id.state
             for errors in getERRTYPE():
                 error[errors] = getCount(sites.id, errors)
 

@@ -56,6 +56,7 @@
 
                                             <th>Site Id</th>
                                             <th>Site Name</th>
+                                            <th>State</th>
                                             <th>Date Visited</th>
                                             
 
@@ -71,6 +72,7 @@
                                             <td><a
                                                     href="{%url 'inspectv1:dash2detail' pk=x.siteid%}">{{x.sitename}}</a>
                                             </td>
+                                            <td>{{x.sitestate}}</td>
                                             <td><span
                                                     style="display: none;">{{x.siteadd|date:"Ymd"}}</span>{{x.siteadd|date:"d/m/Y"}}
                                             </td>

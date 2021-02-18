@@ -289,6 +289,8 @@ $(document).ready(function () {
 
 $("document").ready(function () {
   $(document).on("click", ".submitbutton", function (event) {
+    $(".loader").css("visibility", "visible");
+    $(".alert-success").hide();
     deleteonsave = true;
     event.preventDefault();
     console.log("clicked");
@@ -299,7 +301,9 @@ $("document").ready(function () {
       console.log("still online");
     }
 
-    $("#category_" + category_id)
+    // Give the UI time to render because ajax.async:false freezes the UI on chrome
+    setTimeout(function() {
+      $("#category_" + category_id)
       .find("input[type=hidden]")
       .each(function () {
         if ($(this).prop("name") == "item_id") {
@@ -379,6 +383,17 @@ $("document").ready(function () {
                 contentType: false,
                 processData: false,
                 async: false,
+                /*xhr: function () {
+                  var xhr = $.ajaxSettings.xhr();
+                  xhr.upload.onprogress = function (e) {
+                    console.log("in xhr function");
+                    // For uploads
+                    if (e.lengthComputable) {
+                      console.log(e.loaded / e.total);
+                    }
+                  };
+                  return xhr;
+                },*/
                 success: function (data) {
                   if (throw_error) {
                     /*if (
@@ -429,7 +444,7 @@ $("document").ready(function () {
                   //$("#savebutton_" + category_id).hide();
                   // $(showcard(category_id));
                   jQuery("#master_id").val(data);
-                  $(".alert").show();
+                  $(".alert-success").show();
                 },
               });
 
@@ -450,6 +465,9 @@ $("document").ready(function () {
           }
         }
       });
+      console.log("at the end");
+      $(".loader").css("visibility", "hidden");
+    }, 30);
     $(showcard(category_id));
   });
 });
@@ -740,6 +758,8 @@ function addToDb(key, arr, file) {
 
 function readItemfromDB() {
   var savedRequests = [];
+  var total = 0;
+  var count = 0;
   var req = indexedDB.open(DB_NAME, DB_VERSION);
   req.onsuccess = function (evt) {
     db = this.result;
@@ -749,7 +769,8 @@ function readItemfromDB() {
     try {
       req = store.count();
       req.onsuccess = function (e) {
-        console.log('Count: ', e.target.result)
+        console.log('Count: ', e.target.result);
+        total = e.target.result;
       }
     } catch (error) {
       console.log(error.errorCode);
@@ -759,6 +780,7 @@ function readItemfromDB() {
     req = getObjectStore(DB_STORE_NAME).openCursor();
     req.onsuccess = function (e) {
       var cursor = e.target.result;
+      if (cursor != null) $(".alert-danger").show();
 
       if (cursor) {
         //console.log("cursor:", cursor.value)
@@ -766,7 +788,7 @@ function readItemfromDB() {
         cursor.continue()
       } else {
         for (let savedRequest of savedRequests) {
-          console.log('saved request', savedRequest)
+          console.log('saved request', savedRequest);
           var requestUrl = '/add/';
           var method = 'POST';
           keys = savedRequest.payload.keys;
@@ -797,19 +819,23 @@ function readItemfromDB() {
             method: method,
             body: form_data
           }).then(function (response) {
-            console.log('server resopnse:', response);
+            console.log('server response:', response);
             if (response.status < 400) {
               getObjectStore(DB_STORE_NAME, 'readwrite').delete(savedRequest.sitekey)
             }
           }).catch(function (error) {
-            console.log('Send to Server failed:', error)
+            console.log('Send to Server failed:', error);
             throw error
+          }).finally(function() {
+            ++count;
+            //console.log('background upload completed', count, total);
+            if (count === total) $(".alert-danger").hide();
           })
         }
       }
     }
   };
-
+  
 };
 
 function getissuedetails(id) {
@@ -827,6 +853,24 @@ function getissuedetails(id) {
       alert(obj)
     }
   });
+
+};
+
+function validatefile(imageid) {
+  //console.log(imageid);
+  const fi = document.getElementById(imageid);
+  // Check if any file is selected.
+  if (fi.files.length > 0) {
+    for (var i = 0; i < fi.files.length; i++) {
+      var fsize = fi.files.item(i).size;
+      var file = Math.round((fsize / 1024));
+      // The file size limit.
+      if (file > 12288) {
+          alert("File size too large - Attachment must be less than 12MB.");
+          fi.value = null;
+      }
+    }
+  }
 
 };
 opendb()

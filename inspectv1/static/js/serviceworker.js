@@ -44,6 +44,9 @@ self.addEventListener('fetch', function (event) {
   if (event.request.url.match('^.*(\/listsites\/).*$')) {
     return false;
   }
+  if (event.request.url.match('^.*(\/listsitesdash\/).*$')) {
+    return false;
+  }
   if (event.request.url.match('^.*(\/inspectdetail\/).*$')) {
     return false;
   }

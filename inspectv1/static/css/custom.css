@@ -733,3 +733,34 @@ label {
   background-color: #1D6F42 !important;
   border-color: #1D6F42 !important;
 }
+
+.loader {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  height: 100%;
+  width: 100%;
+  background-color: #FFFFFFB3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.span-alert-danger::after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4,end) 900ms infinite;      
+  animation: ellipsis steps(4,end) 900ms infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+@keyframes ellipsis {
+  to { width: 1.25em; }
+}
+
+@-webkit-keyframes ellipsis {
+  to { width: 1.25em; }
+}

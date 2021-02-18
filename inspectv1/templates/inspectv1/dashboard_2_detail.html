@@ -105,7 +105,7 @@
 	<!-- Stops media autoplay -->
 	<script>
     		function contentLoaded(elem, file) {
-			const TYPE_VIDEO = ['mp4', 'webm', 'ogg'];
+			const TYPE_VIDEO = ['mp4', 'webm', 'ogg', 'm4v', 'mov', 'wmv', 'avi'];
 			const TYPE_AUDIO = ['oga', 'mp3', 'm4a', 'wav'];
 			const url = new URL(file);
 			const extension = url.pathname.split(".")[1];

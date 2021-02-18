@@ -5,7 +5,7 @@
 {% load bootstrap4 %}
 
 <div class="inspection">
-
+	
 	<div class="row">
 		<div class="col-sm-3">
 			<div class="card mt-3">
@@ -123,7 +123,7 @@
 										{% endif %}
 										{% endifequal %}
 										{%endfor%}
-										<input type="file" name="my_image" id="image_{{list.id}}" style="display:none">
+										<input type="file" name="my_image" id="image_{{list.id}}" onchange="validatefile('image_{{list.id}}');" style="display:none;">
 									</div>
 								</div>
 								{%endfor%}
@@ -152,6 +152,10 @@
 				style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
 				<span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
 			</div>
+			<div class="alert alert-danger alertbox"
+				style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px;">
+				<span class="span span-alert-danger" style="position:relative; top:-13px;">Background Saving In Progress</span>
+			</div>
 			{% endif %}
 
 
@@ -159,7 +163,9 @@
 
 		</div>
 	</div>
-
+	<div class="loader" style="visibility: hidden;">
+		<span class="spinner-border text-primary"></span>
+	</div>
 
 </div>
 

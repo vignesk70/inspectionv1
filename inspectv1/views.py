@@ -1,10 +1,12 @@
 import os
 import io
-import imghdr
+import filetype
 import sys
 import json
+import ffmpeg
 from PIL import Image, ImageOps
 from pathlib import Path
+from shutil import copyfile
 from math import radians, acos, sin, cos, floor, ceil
 # import array as arr
 from collections import Counter, OrderedDict
@@ -220,6 +222,7 @@ def Add(request):
         if request.POST['master_id'] == '':
             # master_id = 0
             if 'dateadd' in request.POST:
+                # 1st save where record exists but master_id is unknown
                 dateadd = request.POST['dateadd']
             # inspectionmaster = InspectionMaster.objects.all().filter(
             #     user_id_id=request.user.id, site_id_id=siteid, add_date=dateadd)
@@ -233,6 +236,7 @@ def Add(request):
                 if settings.DEBUG:
                     print("DEBUG:masterid in dateadd", master_id)
             if master_id == 0:
+                # 1st save where no record exists
                 try:
                     inspectObj = InspectionMaster()
                     inspectObj.site_id_id = siteid
@@ -250,6 +254,7 @@ def Add(request):
                         print("Integrity Error", err)
 
         else:
+            # second save onwards where master_id is known
             master_id = request.POST['master_id']
         if settings.DEBUG:
             print("DEBUG:masterid after save", master_id)
@@ -285,7 +290,7 @@ def Add(request):
             inspectDetailObj.save()
             if bool(request.FILES.get('item_image', False)):
                 print(inspectDetailObj.item_image.url)
-                reduceImage(inspectDetailObj.item_image.url)
+                reduceMedia(inspectDetailObj.item_image.url)
         except InspectionDetails.DoesNotExist:
             inspectDetailObj.master_id_id = master_id
             inspectDetailObj.category_id_id = request.POST['category_id']
@@ -296,7 +301,7 @@ def Add(request):
             inspectDetailObj.save()
             if bool(request.FILES.get('item_image', False)):
                 if settings.DEBUG: print(inspectDetailObj.item_image.url)
-                reduceImage(inspectDetailObj.item_image.url)
+                reduceMedia(inspectDetailObj.item_image.url)
         # inspectDetailObj.master_id_id = master_id
         # inspectDetailObj.category_id_id = request.POST['category_id']
         # inspectDetailObj.item_id_id = request.POST['item_id']
@@ -1789,28 +1794,46 @@ def login_success(request):
     else:
         return redirect('/dashboard')
 
-def reduceImage(imageurl):
+
+def reduceMedia(imageurl):
     current_folder = settings.BASE_DIR
     file_name = imageurl
-    file_size = os.path.getsize(current_folder + file_name) 
+    file_path = current_folder + file_name
+    file_size = os.path.getsize(file_path) 
 
-    fileTypes = ['gif', 'jpeg', 'bmp', 'png', 'webp']
-    file_type = imghdr.what(current_folder + file_name)
-    if settings.DEBUG:
-        print("DEBUG - file type =", file_type)
+    imageFileTypes = ['jpeg', 'gif', 'bmp', 'png', 'webp']
+    videoFileTypes = ['mp4', 'mov', 'avi']
+    kind = filetype.guess(file_path)
 
-    if file_type in fileTypes and file_size > 100000:
-        try:
-            im = Image.open(current_folder + file_name)
-            # Preserve image orientation
-            im = ImageOps.exif_transpose(im)
-            # Save at largest dimensions under 100,000 bytes
-            ImageSaveWithTargetSize(im, current_folder + file_name, file_type, 100000)
-        except:
-            if settings.DEBUG:
-                print("DEBUG - ERROR: Unable to open/identify -", file_name)
-
-
+    if kind is not None:
+        file_type = 'jpeg' if (kind.extension == 'jpg') else kind.extension
+        if settings.DEBUG:
+            print("DEBUG - file type =", file_type)
+        
+        if file_type in imageFileTypes and file_size > 100000:
+            try:
+                im = Image.open(file_path)
+                # Preserve image orientation
+                im = ImageOps.exif_transpose(im)
+                # Save at largest dimensions under 100,000 bytes
+                ImageSaveWithTargetSize(im, file_path, file_type, 100000)
+                im.close()
+            except:
+                if settings.DEBUG:
+                    print("DEBUG - IMAGE ERROR: Unable to open/identify -", file_name)
+        elif file_type in videoFileTypes and file_size > 500000:
+            try:
+                # Create a temp file because FFmpeg cannot edit existing files in-place
+                tempfile_name = 'tempfile.'+file_type
+                temp_file_path = os.path.join(current_folder, tempfile_name)
+                copyfile(file_path, temp_file_path)
+                VideoSaveWithOptimization(temp_file_path, file_path)
+                # Remove the temp file
+                os.remove(temp_file_path)
+            except:
+                if settings.DEBUG:
+                    print("DEBUG - VIDEO ERROR: Unable to open/identify -", file_name)
+         
 def ImageSaveWithTargetSize(im, filename, filetype, target):
     """Save the image with the same name at largest dimensions that is less than "target" bytes"""
     im_width, im_height = im.size
@@ -1850,6 +1873,47 @@ def ImageSaveWithTargetSize(im, filename, filetype, target):
 
     im.save(filename, format=filetype, quality=80)
     
+def VideoSaveWithOptimization(tempfilename, filename):
+    hasAudioStream = False
+    streams = ffmpeg.probe(filename)['streams']
+    for stream in streams:
+        if stream['codec_type'] == 'audio':
+            hasAudioStream = True
+        if stream['codec_type'] == 'video':
+            v_stream = stream
+    
+    v_width = v_stream['width']
+    v_height = v_stream['height']
+    if settings.DEBUG:
+        print(f"DEBUG - Old width & height = {v_width}x{v_height}")
+    # Get the smallest dimension
+    Dmin = min(v_width, v_height)
+    # The smallest dimension should be >= 480px
+    if Dmin > 480:
+        if v_width < v_height:
+            v_height = -2 
+            v_width = 480
+        else:
+            v_width = -2 
+            v_height = 480
+   
+    input = ffmpeg.input(tempfilename)
+    audio = input.audio.filter("aresample", 44100) if hasAudioStream else None
+    video = (input.video
+                .filter('fps', fps=24)
+                .filter('scale', width=v_width, height=v_height)
+            )
+
+    streams = []
+    streams.append(video)
+    if audio:
+            streams.append(audio)
+   
+    (ffmpeg
+            .output(*streams, filename, vcodec='libx264', acodec='aac', tune='zerolatency', preset='superfast', crf=26, audio_bitrate=64000)
+            .overwrite_output().run()
+    )
+   
 class ListSitesForDash(LoginRequiredMixin, ListView):
     model = InspectionMaster
     template_name = 'inspectv1/listsitesdash.html'

@@ -48,7 +48,7 @@
 							</script>
 							{% endifequal %}
 							{%endfor%}
-							<div><input type="file" name="my_image" id="image_{{list.id}}" style="display:none">
+							<div><input type="file" name="my_image" id="image_{{list.id}}" onchange="validatefile('image_{{list.id}}');" style="display:none;">
 							</div>
 						</div>
 						{%endfor%}
@@ -67,6 +67,10 @@
 	<div class="alert alert-success alertbox"
 		style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px; display:none;">
 		<span class="span" style="position:relative; top:-13px;">Data Saved Successfully</span>
+	</div>
+	<div class="alert alert-danger alertbox"
+		style="height: 3px; position: absolute;top: 0px; width:100%; left: 11px; display:none;">
+		<span class="span span-alert-danger" style="position:relative; top:-13px;">Background Saving In Progress</span>
 	</div>
 
 </div>

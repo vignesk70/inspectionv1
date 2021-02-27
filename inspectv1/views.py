@@ -1658,7 +1658,7 @@ class GenerateExcelfile(LoginRequiredMixin,TemplateView):
 
         return context
 def genexcel(request):
-    # print(request)
+    print(request, request.user.email)
     datarecords = []
     dataset = {}
     if settings.DEBUG:

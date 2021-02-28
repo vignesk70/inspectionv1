@@ -17,8 +17,8 @@ from mailmerge import MailMerge
 import xlsxwriter
 import pandas as pd
 from django.conf import settings
-from django.http import HttpResponse  # HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render #, redirect
 from django.views.generic import TemplateView, ListView, DetailView
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
@@ -1658,7 +1658,7 @@ class GenerateExcelfile(LoginRequiredMixin,TemplateView):
 
         return context
 def genexcel(request):
-    print(request, request.user.email)
+    #print(request, request.user.email)
     datarecords = []
     dataset = {}
     if settings.DEBUG:
@@ -1790,9 +1790,9 @@ def login_success(request):
     """
     if request.user.groups.filter(name="inspector").exists():
         # user is an inspector
-        return redirect('/inspection')
+        return HttpResponseRedirect('/inspection')
     else:
-        return redirect('/dashboard')
+        return HttpResponseRedirect('/dashboard')
 
 
 def reduceMedia(imageurl):

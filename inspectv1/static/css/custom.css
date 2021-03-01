@@ -274,7 +274,7 @@ input[type="checkbox"][readonly] {
   display: block;
   padding-left: 50px;
   padding-top: 160px;
-  width: max-content;
+  width: fit-content;
   color: #2F4F4F !important;
 }
 

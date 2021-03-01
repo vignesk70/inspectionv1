@@ -274,6 +274,7 @@
             $("#clickexcel").click(function(){
             //alert("The paragraph was clicked." + $("#id_start_date").val() + $("#id_end_date").val());
             //document.getElementById("result").innerHTML = "The Excel file will be emailed to you shortly."
+            event.preventDefault();
             alert("The Excel file will be emailed to you.")
             $.ajax({
                 url: '/genexcel/',

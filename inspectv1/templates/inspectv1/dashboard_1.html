@@ -282,6 +282,7 @@
                 'end_date': $("#id_end_date").val()
                 },
                 dataType: 'json',
+                cache: false,
                 success: function (data) {
                 if (data.done) {
                     alert("The Excel file will be emailed to you shortly.");

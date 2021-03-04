@@ -67,7 +67,7 @@
                 <div class="card-deck h-100">
 
                     <div class="card mb-3"
-                        onclick="location.href='{% url 'inspectv1:dashdetails' key %}?start_date={{form.initial.start_date}}&end_date={{form.initial.end_date}}'">
+                        onclick="cardClick('{% url 'inspectv1:dashdetails' key %}?start_date={{form.initial.start_date}}&end_date={{form.initial.end_date}}')">
                         <div
                             class="card-header {% cycle 'bg-info' 'bg-success' 'bg-warning' 'bg-primary' 'bg-danger' 'bg-operations' 'bg-risk'%}">
                             <span class="info-box-number">
@@ -249,7 +249,7 @@
 
 	<!-- Stops media autoplay -->
 	<script>
-    		function contentLoaded(elem, file) {
+    	function contentLoaded(elem, file) {
 			//const TYPES = new Map([["mp4", "video"], ["ogg", "video"], ["mp3", "video"], ["m4a", "video"]]);
 			const TYPE = ['mp4', 'webm', 'ogg', 'm4v', 'mov', 'wmv', 'avi', 'oga', 'mp3', 'm4a', 'wav'];
 			const url = new URL(file);
@@ -267,7 +267,13 @@
 				element.setAttribute("left", "0");
 				elem.replaceWith(element);
 			}	
-    		};
+    	};
+
+        function cardClick(cardlink) {
+            //console.log("card click");
+            showDownloader();
+            location.href=cardlink;
+        }
 	</script>
     <script>
         $(document).ready(function(){

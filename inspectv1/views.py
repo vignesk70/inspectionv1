@@ -604,8 +604,8 @@ def getSum(self, errtype):
             if settings.DEBUG:
                 print("DEBUG: Start getSum - STATUTORY",errtype,datetime.now())
 
-            tagsdict = {'C.4':'MSB relay calibration expired - calibrate ASAP.',
-                        'C.5':'Relay calibration expired - calibrate ASAP.',
+            tagsdict = {'C.04':'MSB relay calibration expired - calibrate ASAP.',
+                        'C.05':'Relay calibration expired - calibrate ASAP.',
                         'C.10':'CO2 extinguisher cert. expired - to recertify.',
                         'C.17':'Genset ST registration expired - to renew.'}
             todaydate = datetime.now().strftime('%Y-%m-%d')
@@ -618,7 +618,7 @@ def getSum(self, errtype):
                 q2 = details.filter(category_id__category__contains=keys,item_id__items__startswith='Due').filter(item_value__lt=todaydate)
 
             query=''
-            q3 = details.filter(Q(category_id__category__contains='C.4')|Q(category_id__category__contains='C.5')|Q(category_id__category__contains='C.10')|Q(category_id__category__contains='C.17')).filter(item_id__items__startswith='Due').filter(item_value__lt=todaydate)
+            q3 = details.filter(Q(category_id__category__contains='C.04')|Q(category_id__category__contains='C.05')|Q(category_id__category__contains='C.10')|Q(category_id__category__contains='C.17')).filter(item_id__items__startswith='Due').filter(item_value__lt=todaydate)
 
 
             merged = q1|q3
@@ -1118,7 +1118,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             # MSB relay overdue for calibration - pls arrange. (STATUTORY, 3)
             sitesfound = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self),
-                item_id__items__contains='Due', category_id__category__contains='C.4')
+                item_id__items__contains='Due', category_id__category__contains='C.04')
             datenow = datetime.now()
             for sites in sitesfound:
                 datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
@@ -1132,7 +1132,7 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             # Relay overdue for calibration - pls arrange. (STATUTORY, 3)
             sitesfound = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self),
-                item_id__items__contains='Due', category_id__category__contains='C.5')
+                item_id__items__contains='Due', category_id__category__contains='C.05')
             datenow = datetime.now()
             for sites in sitesfound:
                 datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")

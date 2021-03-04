@@ -741,11 +741,18 @@ label {
   left: 0; 
   height: 100%;
   width: 100%;
-  background-color: #FFFFFFB3;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1;
+}
+
+.upload {
+  background-color: #FFFFFFB3;
+}
+
+.download {
+  background-color: #FFFFFF;
 }
 
 .span-alert-danger::after {

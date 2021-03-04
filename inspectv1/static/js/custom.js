@@ -289,7 +289,7 @@ $(document).ready(function () {
 
 $("document").ready(function () {
   $(document).on("click", ".submitbutton", function (event) {
-    $(".loader").css("visibility", "visible");
+    $(".upload").show();
     $(".alert-success").hide();
     deleteonsave = true;
     event.preventDefault();
@@ -466,7 +466,7 @@ $("document").ready(function () {
         }
       });
       console.log("at the end");
-      $(".loader").css("visibility", "hidden");
+      $(".upload").fadeOut("fast");
     }, 30);
     $(showcard(category_id));
   });

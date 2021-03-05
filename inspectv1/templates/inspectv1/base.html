@@ -129,18 +129,22 @@
       crossorigin="anonymous"></script> -->
 
     <div class="loader download" style="display: none;">
-      <span class="spinner-grow text-primary"></span>
+      <div class="spinner-grow text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
     </div>
 
     <script>
       function showDownloader() {
         //console.log("showing loading...");
         $(".download").show();
+        $("body").css("overflow", "hidden");
         return true;
       }
 
       function hideDownloader() {
         $(".download").hide();
+        $("body").css("overflow", "visible");
         //console.log("hiding loading...");
       }
 

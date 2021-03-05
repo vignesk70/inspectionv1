@@ -124,8 +124,7 @@
                             {% for x in sitedata %}
                             <tr>
                                 <td>{{x.siteno}}</td>
-                                <td><a href="{%url 'inspectv1:dash2detail' pk=x.masterid%}"
-                                        target="_blank">{{x.name}}</a> 
+                                <td><a href="{%url 'inspectv1:dash2detail' pk=x.masterid%}">{{x.name}}</a> 
                                         
                                         {% if x.item_imageurl %}
                                         <span><i class="fa fa-paperclip"></i></span>

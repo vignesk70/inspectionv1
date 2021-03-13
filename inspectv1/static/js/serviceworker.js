@@ -56,6 +56,9 @@ self.addEventListener('fetch', function (event) {
   if (event.request.url.match('^.*(\/dashboarddetails\/).*$')) {
     return false;
   }
+  if (event.request.url.match('^.*(\/dashdetails\/).*$')) {
+    return false;
+  }
   if (event.request.url.indexOf('/accounts/') !== -1) {
     return false;
   }

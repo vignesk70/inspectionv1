@@ -417,7 +417,7 @@ def getSum(self, errtype):
             # details = InspectionDetails.objects.filter(
             #             master_id__add_date__range=getstartq(self),item_id__errortype=errtype).annotate(itemval = Cast('item_value',output_field=FloatField(default=0.0)))
             details = InspectionDetails.objects.filter(
-                        master_id__add_date__range=getstartq(self),item_id__errortype=errtype) #.annotate(itemval = Cast('item_value',output_field=FloatField(default=0.0)))
+                        master_id__add_date__range=getstartq(self),item_id__errortype=errtype).annotate(itemval = Cast('item_value',output_field=FloatField(default=0.0)))
 
             # q1 = details.filter(item_id__items__in=b1_error_messages.keys()).filter(Q(itemval__lt=216)|Q(itemval__gt=253))
             # if settings.DEBUG:
@@ -433,17 +433,31 @@ def getSum(self, errtype):
             # if settings.DEBUG:
             #    if len(q3)>0: print(q3.count())
 
-            q1 = details.filter(item_id__items__in=b1_error_messages.keys()).filter(Q(item_value__lt=216)|Q(item_value__gt=253))
+            q01 = details.filter(item_id__items__in=b1_error_messages.keys())
+            q1list = list(q01.values('id', 'itemval').order_by('id'))
+            #print(q1list)
+            q1list = [n.get("id") for n in q1list if n.get("itemval") < 216 or n.get("itemval") > 253]
+            #print(q1list)
+
+            #q1 = details.filter(item_id__items__in=b1_error_messages.keys()).filter(Q(item_value__lt=216)|Q(item_value__gt=253))
+            q1 = q01.filter(id__in=q1list)
             if settings.DEBUG:
                 if len(q1)>0: 
                     print(q1)
 
-
-            q2 = details.filter(item_id__items__in=b2_error_messages.keys()).filter(Q(item_value__gte=80))
+            q02 = details.filter(item_id__items__in=b2_error_messages.keys())
+            q2list = list(q02.values('id', 'itemval').order_by('id'))
+            q2list = [n.get("id") for n in q2list if n.get("itemval") >= 80]
+            #q2 = details.filter(item_id__items__in=b2_error_messages.keys()).filter(Q(item_value__gte=80))
+            q2 = q02.filter(id__in=q2list)
             if settings.DEBUG:
                 if len(q2)>0: print(q2.count())
 
-            q3 = details.filter(item_id__items__in=b3_error_messages.keys()).filter(Q(item_value__lt=0.85))
+            q03 = details.filter(item_id__items__in=b3_error_messages.keys())
+            q3list = list(q03.values('id', 'itemval').order_by('id'))
+            q3list = [n.get("id") for n in q3list if n.get("itemval") < 0.85]
+            #q3 = details.filter(item_id__items__in=b3_error_messages.keys()).filter(Q(item_value__lt=0.85))
+            q3 = q03.filter(id__in=q3list)
             if settings.DEBUG:
                if len(q3)>0: print(q3.count())
 
@@ -1119,11 +1133,12 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             sitesfound = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self),
                 item_id__items__contains='Due', category_id__category__contains='C.04')
-            datenow = datetime.now()
+            datenow = datetime.now().date()
             for sites in sitesfound:
-                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
-                diffdate = delta.relativedelta(
-                    datadate, datenow)
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d").date()
+                #diffdate = delta.relativedelta(
+                #    datadate, datenow)
+                diffdate = datadate - datenow
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
                         sites, 'MSB relay calibration expired - calibrate ASAP.'))
@@ -1133,11 +1148,12 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             sitesfound = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self),
                 item_id__items__contains='Due', category_id__category__contains='C.05')
-            datenow = datetime.now()
+            datenow = datetime.now().date()
             for sites in sitesfound:
-                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
-                diffdate = delta.relativedelta(
-                    datadate, datenow)
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d").date()
+                #diffdate = delta.relativedelta(
+                #    datadate, datenow)
+                diffdate = datadate - datenow
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
                         sites, 'Relay calibration expired - calibrate ASAP.'))
@@ -1147,11 +1163,12 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             sitesfound = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self),
                 item_id__items__contains='Due', category_id__category__contains='C.10')
-            datenow = datetime.now()
+            datenow = datetime.now().date()
             for sites in sitesfound:
-                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
-                diffdate = delta.relativedelta(
-                    datadate, datenow)
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d").date()
+                #diffdate = delta.relativedelta(
+                #    datadate, datenow)
+                diffdate = datadate - datenow
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
                         sites, 'CO2 extinguisher cert. expired - to recertify.'))
@@ -1161,11 +1178,12 @@ class ShowDashboardDetails(LoginRequiredMixin, FormView):
             sitesfound = InspectionDetails.objects.filter(
                 master_id__add_date__range=getstartq(self),
                 item_id__items__contains='Due', category_id__category__contains='C.17')
-            datenow = datetime.now()
+            datenow = datetime.now().date()
             for sites in sitesfound:
-                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d")
-                diffdate = delta.relativedelta(
-                    datadate, datenow)
+                datadate = datetime.strptime(sites.item_value, "%Y-%m-%d").date()
+                #diffdate = delta.relativedelta(
+                #    datadate, datenow)
+                diffdate = datadate - datenow
                 if diffdate.days < 0:
                     sitedata.append(addtositedata(
                         sites, 'Genset ST registration expired - to renew.'))

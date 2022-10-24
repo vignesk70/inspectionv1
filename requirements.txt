@@ -7,7 +7,7 @@ chardet==3.0.4
 colorama==0.4.4
 defusedxml==0.6.0
 diff-match-patch==20181111
-Django==3.1.12
+Django==3.2.15
 django-adminlte2==0.4.1
 django-bootstrap4==1.1.1
 django-import-export==2.0.2
@@ -38,7 +38,7 @@ PyYAML==5.3.1
 requests==2.22.0
 six==1.15.0
 soupsieve==1.9.5
-sqlparse==0.3.0
+sqlparse==0.4.2
 tablib==1.1.0
 toml==0.10.2
 urllib3==1.25.8

@@ -21,14 +21,14 @@ idna==2.8
 isort==5.7.0
 jdcal==1.4.1
 lazy-object-proxy==1.4.3
-lxml==4.6.2
+lxml==4.9.1
 MarkupPy==1.14
 mccabe==0.6.1
 numpy==1.19.5
 odfpy==1.4.1
 openpyxl==3.0.3
 pandas==1.1.5
-Pillow==8.3.2
+Pillow==9.0.1
 psycopg2-binary==2.8.6
 pycodestyle==2.5.0
 pylint==2.6.0

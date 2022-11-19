@@ -7,7 +7,7 @@ chardet==3.0.4
 colorama==0.4.4
 defusedxml==0.6.0
 diff-match-patch==20181111
-Django==3.1.12
+Django==3.2.15
 django-adminlte2==0.4.1
 django-bootstrap4==1.1.1
 django-import-export==2.0.2
@@ -21,14 +21,14 @@ idna==2.8
 isort==5.7.0
 jdcal==1.4.1
 lazy-object-proxy==1.4.3
-lxml==4.6.2
+lxml==4.9.1
 MarkupPy==1.14
 mccabe==0.6.1
 numpy==1.19.5
 odfpy==1.4.1
 openpyxl==3.0.3
 pandas==1.1.5
-Pillow==8.3.2
+Pillow==9.2.0
 psycopg2-binary==2.8.6
 pycodestyle==2.5.0
 pylint==2.6.0
@@ -38,7 +38,7 @@ PyYAML==5.3.1
 requests==2.22.0
 six==1.15.0
 soupsieve==1.9.5
-sqlparse==0.3.0
+sqlparse==0.4.2
 tablib==1.1.0
 toml==0.10.2
 urllib3==1.25.8

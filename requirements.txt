@@ -31,7 +31,7 @@ pandas==1.1.5
 Pillow==10.0.0
 psycopg2-binary==2.8.6
 pycodestyle==2.5.0
-pylint==2.6.0
+pylint==2.6.1
 python-dateutil==2.8.1
 pytz==2019.3
 PyYAML==5.3.1

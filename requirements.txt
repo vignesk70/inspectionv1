@@ -23,7 +23,7 @@ idna==3.7
 isort==5.7.0
 jdcal==1.4.1
 lazy-object-proxy==1.4.3
-lxml==4.6.2
+lxml==4.9.1
 MarkupPy==1.14
 mccabe==0.6.1
 numpy==1.22.2

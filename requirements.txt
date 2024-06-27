@@ -16,7 +16,7 @@ docx-mailmerge==0.5.0
 et-xmlfile==1.0.1
 ffmpeg-python==0.2.0
 filetype==1.0.7
-future==0.18.2
+future==0.18.3
 idna==3.7
 isort==5.7.0
 jdcal==1.4.1

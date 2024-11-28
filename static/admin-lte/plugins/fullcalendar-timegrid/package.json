@@ -48,7 +48,7 @@
   },
   "copyright": "2019 Adam Shaw",
   "dependencies": {
-    "@fullcalendar/daygrid": "~4.3.0"
+    "@fullcalendar/daygrid": "~4.4.2"
   },
   "description": "Display your events on a grid of time slots",
   "devDependencies": {},
